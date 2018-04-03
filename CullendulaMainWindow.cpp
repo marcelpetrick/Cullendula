@@ -9,6 +9,7 @@
 #include <QtCore/QList>
 #include <QtCore/QDebug> //todom maybe remove
 #include <QFileInfo>
+#include <QPixmap>
 
 //----------------------------------------------------------------------------
 
@@ -19,6 +20,11 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
 {
     setAcceptDrops(true);
     ui->setupUi(this);
+
+    // connects for the useable push-buttons (and their hotkeys)
+    connect(ui->leftPB, &QPushButton::clicked, this, &CullendulaMainWindow::slotButtonLeftTriggered);
+    connect(ui->rightPB, &QPushButton::clicked, this, &CullendulaMainWindow::slotButtonRightTriggered);
+    connect(ui->savePB, &QPushButton::clicked, this, &CullendulaMainWindow::slotButtonCenterTriggered);
 
     // necessary! even if the QLabel itself accepts already drops
     setAcceptDrops(true);
@@ -86,6 +92,30 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event)
 
 //----------------------------------------------------------------------------
 
+void CullendulaMainWindow::slotButtonLeftTriggered()
+{
+    qDebug() << "void CullendulaMainWindow::slotButtonLeftTriggered()";
+
+    // TODO just for testing if the shortcuts work
+
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::slotButtonRightTriggered()
+{
+    qDebug() << "void CullendulaMainWindow::slotButtonRightTriggered()";
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::slotButtonCenterTriggered()
+{
+    qDebug() << "void CullendulaMainWindow::slotButtonCenterTriggered()";
+}
+
+//----------------------------------------------------------------------------
+
 void CullendulaMainWindow::processNewPath()
 {
     qDebug() << "CullendulaMainWindow::processNewPath():";
@@ -133,6 +163,7 @@ void CullendulaMainWindow::createImageFileList()
     m_workingPath.setNameFilters(filters);
 
     QFileInfoList availableImages = m_workingPath.entryInfoList(QDir::Files);
+    availableImages.toVector();
 
     if(!availableImages.isEmpty())
     {
@@ -141,14 +172,20 @@ void CullendulaMainWindow::createImageFileList()
         {
             qDebug() << "\t" << file.absoluteFilePath();
         }
+
+        // load now the very first image
+        QString const path = availableImages.first().absoluteFilePath();
+        qDebug() << "file to use:" << path;
+        // load image
+        QPixmap const pixmap = QPixmap(path);
+        // set to the label
+        ui->centerLabel->setScaledContents(true);
+        ui->centerLabel->setPixmap(pixmap);
     }
     else
     {
         qDebug() << "no nice files found :(";
     }
-
-    // TODO load the picture and apply as  pixmap to the label
-    //ui->label->setPixmap(QPixmap(availableImages.first().path()));
 }
 
 //----------------------------------------------------------------------------

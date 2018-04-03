@@ -23,6 +23,13 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent* event) Q_DECL_OVERRIDE; // todom check if necessary
     void dropEvent(QDropEvent* event) Q_DECL_OVERRIDE;
 
+private slots:
+    //! shift left and right (for- and backward) through the current directory
+    void slotButtonLeftTriggered();
+    void slotButtonRightTriggered();
+    //! save to the given output-folder
+    void slotButtonCenterTriggered();
+
 private:
     // [methods]
     //! checks the currently set path and gets the file-list. Afterwards triggers loading of the current image.
@@ -41,4 +48,8 @@ private:
 
     // the currently chosen path to the directory (not file)
     QDir m_workingPath;
+
+    // saves the current state of the given directory; initially empty; shall be reset (TODO)
+    QVector<QFileInfo> m_currentImages;
+    int m_positionCurrentFile = -1;
 };
