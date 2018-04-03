@@ -162,6 +162,9 @@ void CullendulaMainWindow::processNewPath()
 
         // trigger now the creation of the parsing
         createImageFileList();
+
+        // create now the output-folder
+        createOutputFolder();
     }
     else
     {
@@ -254,4 +257,26 @@ void CullendulaMainWindow::createOutputFolder()
     qDebug() << "CullendulaMainWindow::createOutputFolder():";
 
     // TODO
+    QString const c_hardcodedOutput("output"); // TODO improve this - either by user-input via menu or config-file ..
+    QDir outputDirTest(m_workingPath.path() + QDir::separator() + c_hardcodedOutput);
+
+    if(outputDirTest.exists())
+    {
+        qDebug() << "output-folder exists already :) - nothing to do";
+    }
+    else
+    {
+        //create a new output dir
+        m_workingPath.mkdir("output");
+        if(outputDirTest.exists())
+        {
+            qDebug() << "output-folder exists after creation!";
+        }
+        else
+        {
+            qDebug() << "very severe error - could not create output-dir :(";
+        }
+    }
+
+    // TODO maybe return something or throw or whatever ... delete /home/..
 }
