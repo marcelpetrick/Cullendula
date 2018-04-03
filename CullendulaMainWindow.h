@@ -24,7 +24,7 @@ protected:
     void dropEvent(QDropEvent* event) Q_DECL_OVERRIDE;
 
 private:
-// [methods]
+    // [methods]
     //! checks the currently set path and gets the file-list. Afterwards triggers loading of the current image.
     void processNewPath();
 
@@ -35,7 +35,7 @@ private:
     //! Initially: just create sub-dir "output".
     void createOutputFolder();
 
-// [members]
+    // [members]
     // the ui
     Ui::CullendulaMainWindow* ui;
 

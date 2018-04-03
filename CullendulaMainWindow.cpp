@@ -19,7 +19,7 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
     setAcceptDrops(true);
     ui->setupUi(this);
 
-//    ui->label->setAcceptDrops(true);
+    //    ui->label->setAcceptDrops(true);
     setAcceptDrops(true);
 }
 
@@ -55,32 +55,32 @@ void CullendulaMainWindow::dragLeaveEvent(QDragLeaveEvent* event)
 
 void CullendulaMainWindow::dropEvent(QDropEvent* event)
 {
-  const QMimeData* mimeData = event->mimeData();
+    const QMimeData* mimeData = event->mimeData();
 
-  // check for our needed mime type, here a file or a list of files
-  if (mimeData->hasUrls())
-  {
-    QStringList pathList;
-    QList<QUrl> urlList = mimeData->urls();
-
-    // extract the local paths of the files: print all of them; can be removed laters
-    qDebug() << "new drop:";
-    for (auto const& url : urlList)
+    // check for our needed mime type, here a file or a list of files
+    if (mimeData->hasUrls())
     {
-      qDebug() << "\tdropped: " << url;
+        QStringList pathList;
+        QList<QUrl> urlList = mimeData->urls();
+
+        // extract the local paths of the files: print all of them; can be removed laters
+        qDebug() << "new drop:";
+        for (auto const& url : urlList)
+        {
+            qDebug() << "\tdropped: " << url;
+        }
+
+        // just use the very first one ..
+        if(!urlList.isEmpty())
+        {
+            m_workingPath.setPath(urlList.first().path());
+
+            // trigger now the follow-up
+            processNewPath();
+        }
     }
 
-    // just use the very first one ..
-    if(!urlList.isEmpty())
-    {
-        m_workingPath.setPath(urlList.first().path());
-
-        // trigger now the follow-up
-        processNewPath();
-    }
-  }
-
-  event->acceptProposedAction();
+    event->acceptProposedAction();
 }
 
 //----------------------------------------------------------------------------
@@ -92,19 +92,37 @@ void CullendulaMainWindow::processNewPath()
     qDebug() << "absolutePath:" << m_workingPath.absolutePath();
     qDebug() << "absoluteFilePath:" << m_workingPath.absoluteFilePath(m_workingPath.path());
 
-    // check existance ..
+    // convert the given path (which maybe includes a filename)
+    QFileInfo fileInfo(m_workingPath.path());
+
+    //! @todo currently wrong! cuts of the path even if the suffix is a directory
+    //! shall return for \Cullendula\testItemFolder --> \Cullendula\testItemFolder
+    //! and for \Cullendula\testItemFolder\cat0.jpg --> \Cullendula\testItemFolder
+    QDir tempDir = fileInfo.dir();
+    qDebug() << "directory:" << tempDir.path();
+
+    // additionally check if the directory is useable
+    if(tempDir.exists())
+    {
+        m_workingPath.setPath(tempDir.path());
+
+        // trigger now the creation of the parsing
+        createImageFileList();
+    }
 }
 
 //----------------------------------------------------------------------------
 
 void CullendulaMainWindow::createImageFileList()
 {
-
+    qDebug() << "CullendulaMainWindow::createImageFileList():";
 }
 
 //----------------------------------------------------------------------------
 
 void CullendulaMainWindow::createOutputFolder()
 {
+    qDebug() << "CullendulaMainWindow::createOutputFolder():";
 
+    // TODO
 }
