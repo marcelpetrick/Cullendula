@@ -119,6 +119,8 @@ void CullendulaMainWindow::slotButtonRightTriggered()
 void CullendulaMainWindow::slotButtonCenterTriggered()
 {
     qDebug() << "void CullendulaMainWindow::slotButtonCenterTriggered()";
+
+    // move the current file to the output-folder
 }
 
 //----------------------------------------------------------------------------
@@ -193,17 +195,6 @@ void CullendulaMainWindow::createImageFileList()
             qDebug() << "\t" << file.absoluteFilePath();
         }
 
-//! attention: just for testing!
-//        // load now the very first image
-//        QString const path = availableImages.first().absoluteFilePath();
-//        qDebug() << "file to use:" << path;
-//        // load image
-//        QPixmap const pixmap = QPixmap(path);
-//        // set to the label
-//        ui->centerLabel->setScaledContents(true);
-//        ui->centerLabel->setPixmap(pixmap);
-//! end of testing
-
         // save the current file-list as vector and initialize the position-member
         m_currentImages = availableImages.toVector();
         m_positionCurrentFile = 0;
@@ -245,6 +236,8 @@ void CullendulaMainWindow::refreshLabel()
     int const w = ui->centerLabel->width();
     int const h = ui->centerLabel->height();
     qDebug() << "label-size:" << w << "*" << h;
+    // TODO prevent upscaling of smaller photos to big label ..
+    // TODO implement the resize-event for the widget
 
     // set a scaled pixmap keeping its aspect ratio
     ui->centerLabel->setPixmap(pixmap.scaled(w, h, Qt::KeepAspectRatio));
@@ -256,8 +249,6 @@ void CullendulaMainWindow::createOutputFolder()
 {
     qDebug() << "CullendulaMainWindow::createOutputFolder():";
 
-    // TODO
-    QString const c_hardcodedOutput("output"); // TODO improve this - either by user-input via menu or config-file ..
     QDir outputDirTest(m_workingPath.path() + QDir::separator() + c_hardcodedOutput);
 
     if(outputDirTest.exists())

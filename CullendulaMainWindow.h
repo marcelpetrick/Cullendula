@@ -8,6 +8,11 @@ namespace Ui {
 class CullendulaMainWindow;
 }
 
+// for constants
+namespace {
+    QString const c_hardcodedOutput = "output";
+}
+
 class CullendulaMainWindow : public QMainWindow
 {
     Q_OBJECT
