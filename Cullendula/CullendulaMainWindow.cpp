@@ -1,18 +1,20 @@
+
+// own includes
 #include "CullendulaMainWindow.h"
 #include "ui_CullendulaMainWindow.h"
 
 // Qt includes
-#include <QDropEvent>
+#include <QtGui/QDropEvent>
 #include <QtCore/QMimeData>
 #include <QtCore/QList>
-
-#include <QtCore/QDebug>
+#include <QtCore/QDebug> //todom maybe remove
 
 //----------------------------------------------------------------------------
 
 CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
     QMainWindow(parent),
-    ui(new Ui::CullendulaMainWindow)
+    ui(new Ui::CullendulaMainWindow),
+    m_workingPath("")
 {
     setAcceptDrops(true);
     ui->setupUi(this);
@@ -61,18 +63,48 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event)
     QStringList pathList;
     QList<QUrl> urlList = mimeData->urls();
 
-    // extract the local paths of the files: print all of them
+    // extract the local paths of the files: print all of them; can be removed laters
+    qDebug() << "new drop:";
     for (auto const& url : urlList)
     {
-      qDebug() << "found: " << url;
+      qDebug() << "\tdropped: " << url;
     }
 
-    // TODOm just use the very first one ..
+    // just use the very first one ..
+    if(!urlList.isEmpty())
+    {
+        m_workingPath.setPath(urlList.first().path());
 
-    // TODOm call a function to open the files
-    //openFiles(pathList);
+        // trigger now the follow-up
+        processNewPath();
+    }
   }
 
-  qDebug() << "CullendulaMainWindow::dropEvent"; //todom remove
   event->acceptProposedAction();
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::processNewPath()
+{
+    // trim the path ..
+    qDebug() << "CullendulaMainWindow::processNewPath():";
+    qDebug() << "absolutePath:" << m_workingPath.absolutePath();
+    qDebug() << "absoluteFilePath:" << m_workingPath.absoluteFilePath(m_workingPath.path());
+
+    // check existance ..
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::createImageFileList()
+{
+
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::createOutputFolder()
+{
+
 }
