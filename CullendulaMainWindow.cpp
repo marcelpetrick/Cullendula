@@ -1,16 +1,16 @@
-
 // own includes
 #include "CullendulaMainWindow.h"
 #include "ui_CullendulaMainWindow.h"
 
 // Qt includes
 #include <QtGui/QDropEvent>
+#include <QtGui/QPixmap>
+
 #include <QtCore/QMimeData>
 #include <QtCore/QList>
 #include <QtCore/QDebug> //todom maybe remove
-#include <QFileInfo>
-#include <QPixmap>
-#include <QFile>
+#include <QtCore/QFileInfo>
+#include <QtCore/QFile>
 
 //----------------------------------------------------------------------------
 
@@ -70,8 +70,7 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event)
     // check for our needed mime type, here a file or a list of files
     if (mimeData->hasUrls())
     {
-        QStringList pathList;
-        QList<QUrl> urlList = mimeData->urls();
+        const QList<QUrl> urlList = mimeData->urls();
 
         // extract the local paths of the files: print all of them; can be removed laters
         qDebug() << "new drop:";
@@ -83,6 +82,7 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event)
         // just use the very first one ..
         if(!urlList.isEmpty())
         {
+            m_workingPath.setPath("");
             m_workingPath.setPath(urlList.first().path());
 
             // trigger now the follow-up
@@ -129,7 +129,16 @@ void CullendulaMainWindow::processNewPath()
 
     // convert the given path (which maybe includes a filename)
 //    qDebug() << "fileInfo gets the following path:" << m_workingPath.path();
-    QFileInfo const fileInfo(m_workingPath.path().remove(0, 1)); // remove the leading /
+
+    // problem: windows shows as /c:/dir/file.suffix - linux here as /home/dir/file.suffix
+    // so cut the first character for win, but don't for linux ..
+    QString intermediatePath =
+#ifdef __linux__
+            m_workingPath.path();
+#else
+            m_workingPath.path().remove(0, 1); // remove the leading slash ("/")
+#endif
+    QFileInfo const fileInfo(intermediatePath);
 
     //! trim the path
     //! shall return for \Cullendula\testItemFolder --> \Cullendula\testItemFolder
@@ -138,9 +147,11 @@ void CullendulaMainWindow::processNewPath()
 //    qDebug() << "fileInfo.path(): " << fileInfo.path();
 //    qDebug() << "fileInfo.filePath(): " << fileInfo.filePath();
 //    qDebug() << "fileInfo.canonicalFilePath(): " << fileInfo.canonicalFilePath();
-//    qDebug() << "fileInfo.absoluteFilePath(): " << fileInfo.absoluteFilePath();
+    qDebug() << "\tfileInfo.isDir():" << fileInfo.isDir();
+    qDebug() << "fileInfo.absoluteFilePath(): " << fileInfo.absoluteFilePath();
+    qDebug() << "fileInfo.absolutePath(): " << fileInfo.absolutePath();
 
-//    qDebug() << "fileInfo.fileName(): " << fileInfo.fileName();
+    //    qDebug() << "fileInfo.fileName(): " << fileInfo.fileName();
     QDir const tempDir = QDir(fileInfo.isDir() ? fileInfo.absoluteFilePath() : fileInfo.absolutePath());
     qDebug() << "\t resulting directory:" << tempDir.path();
 

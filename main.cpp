@@ -1,16 +1,15 @@
 #include "CullendulaMainWindow.h"
 
 //Qt includes
-#include <QApplication>
+#include <QtWidgets/QApplication>
 
 //----------------------------------------------------------------------------
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    CullendulaMainWindow w;
-    //w.setAcceptDrops(true);
-    w.show();
+    CullendulaMainWindow mainWindow;
+    mainWindow.show();
 
     return a.exec();
 }
