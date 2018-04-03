@@ -8,6 +8,7 @@
 #include <QtCore/QMimeData>
 #include <QtCore/QList>
 #include <QtCore/QDebug> //todom maybe remove
+#include <QFileInfo>
 
 //----------------------------------------------------------------------------
 
@@ -19,7 +20,7 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
     setAcceptDrops(true);
     ui->setupUi(this);
 
-    //    ui->label->setAcceptDrops(true);
+    // necessary! even if the QLabel itself accepts already drops
     setAcceptDrops(true);
 }
 
@@ -87,19 +88,17 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event)
 
 void CullendulaMainWindow::processNewPath()
 {
-    // trim the path ..
     qDebug() << "CullendulaMainWindow::processNewPath():";
-    qDebug() << "absolutePath:" << m_workingPath.absolutePath();
-    qDebug() << "absoluteFilePath:" << m_workingPath.absoluteFilePath(m_workingPath.path());
 
     // convert the given path (which maybe includes a filename)
     QFileInfo fileInfo(m_workingPath.path());
 
-    //! @todo currently wrong! cuts of the path even if the suffix is a directory
+    //! trim the path
     //! shall return for \Cullendula\testItemFolder --> \Cullendula\testItemFolder
     //! and for \Cullendula\testItemFolder\cat0.jpg --> \Cullendula\testItemFolder
-    QDir tempDir = fileInfo.dir();
-    qDebug() << "directory:" << tempDir.path();
+    qDebug() << "\tfileInfo.isFile():" << fileInfo.isFile();
+    QDir const tempDir = QDir(fileInfo.isFile() ? fileInfo.dir() : fileInfo.filePath());
+    qDebug() << "\tdirectory:" << tempDir.path();
 
     // additionally check if the directory is useable
     if(tempDir.exists())
@@ -109,6 +108,10 @@ void CullendulaMainWindow::processNewPath()
         // trigger now the creation of the parsing
         createImageFileList();
     }
+    else
+    {
+        qDebug() << "ERROR: given directory does not exist";
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -116,6 +119,16 @@ void CullendulaMainWindow::processNewPath()
 void CullendulaMainWindow::createImageFileList()
 {
     qDebug() << "CullendulaMainWindow::createImageFileList():";
+
+    // apply the wanted filters
+    QStringList filters;
+    filters << "*.jpg" << "*.jpeg";
+    m_workingPath.setNameFilters(filters);
+
+    QFileInfoList availableImages = m_workingPath.entryInfoList(QDir::Files);
+
+    ui->label->setPixmap(QPixmap(availableImages.first().path()));
+
 }
 
 //----------------------------------------------------------------------------

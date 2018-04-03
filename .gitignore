@@ -40,6 +40,3 @@ Makefile*
 
 # QtCtreator CMake
 CMakeLists.txt.user*
-
-# just for the current implementation and the test-item-folder
-*.jpg
