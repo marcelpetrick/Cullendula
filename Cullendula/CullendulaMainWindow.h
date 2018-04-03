@@ -1,7 +1,6 @@
-#ifndef CullendulaMainWindow_H
-#define CullendulaMainWindow_H
+#pragma once
 
-#include <QMainWindow>
+#include <QtWidgets/QMainWindow>
 
 namespace Ui {
 class CullendulaMainWindow;
@@ -12,11 +11,17 @@ class CullendulaMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit CullendulaMainWindow(QWidget *parent = 0);
-    ~CullendulaMainWindow();
+    explicit CullendulaMainWindow(QWidget* parent = nullptr);
+    ~CullendulaMainWindow() override;
+
+protected:
+    // make the drag&drop possible ... to get the path
+    void dragEnterEvent(QDragEnterEvent* event) Q_DECL_OVERRIDE;
+    void dragMoveEvent(QDragMoveEvent* event) Q_DECL_OVERRIDE;
+    void dragLeaveEvent(QDragLeaveEvent* event) Q_DECL_OVERRIDE;
+    void dropEvent(QDropEvent* event) Q_DECL_OVERRIDE;
 
 private:
-    Ui::CullendulaMainWindow *ui;
+    // the ui
+    Ui::CullendulaMainWindow* ui;
 };
-
-#endif // CullendulaMainWindow_H
