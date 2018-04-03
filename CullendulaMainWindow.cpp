@@ -10,6 +10,7 @@
 #include <QtCore/QDebug> //todom maybe remove
 #include <QFileInfo>
 #include <QPixmap>
+#include <QFile>
 
 //----------------------------------------------------------------------------
 
@@ -20,6 +21,8 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
 {
     setAcceptDrops(true);
     ui->setupUi(this);
+    // present the picture fully visible .. TODO has to be reworked later
+    ui->centerLabel->setScaledContents(true);
 
     // connects for the useable push-buttons (and their hotkeys)
     connect(ui->leftPB, &QPushButton::clicked, this, &CullendulaMainWindow::slotButtonLeftTriggered);
@@ -97,7 +100,8 @@ void CullendulaMainWindow::slotButtonLeftTriggered()
     qDebug() << "void CullendulaMainWindow::slotButtonLeftTriggered()";
 
     // TODO just for testing if the shortcuts work
-
+    m_positionCurrentFile = (m_positionCurrentFile + m_currentImages.size() - 1) % m_currentImages.size();
+    refreshLabel();
 }
 
 //----------------------------------------------------------------------------
@@ -105,6 +109,9 @@ void CullendulaMainWindow::slotButtonLeftTriggered()
 void CullendulaMainWindow::slotButtonRightTriggered()
 {
     qDebug() << "void CullendulaMainWindow::slotButtonRightTriggered()";
+
+    m_positionCurrentFile = (m_positionCurrentFile + 1) % m_currentImages.size();
+    refreshLabel();
 }
 
 //----------------------------------------------------------------------------
@@ -162,8 +169,7 @@ void CullendulaMainWindow::createImageFileList()
     filters << "*.jpg" << "*.jpeg";
     m_workingPath.setNameFilters(filters);
 
-    QFileInfoList availableImages = m_workingPath.entryInfoList(QDir::Files);
-    availableImages.toVector();
+    QFileInfoList const availableImages = m_workingPath.entryInfoList(QDir::Files);
 
     if(!availableImages.isEmpty())
     {
@@ -173,19 +179,56 @@ void CullendulaMainWindow::createImageFileList()
             qDebug() << "\t" << file.absoluteFilePath();
         }
 
-        // load now the very first image
-        QString const path = availableImages.first().absoluteFilePath();
-        qDebug() << "file to use:" << path;
-        // load image
-        QPixmap const pixmap = QPixmap(path);
-        // set to the label
-        ui->centerLabel->setScaledContents(true);
-        ui->centerLabel->setPixmap(pixmap);
+//! attention: just for testing!
+//        // load now the very first image
+//        QString const path = availableImages.first().absoluteFilePath();
+//        qDebug() << "file to use:" << path;
+//        // load image
+//        QPixmap const pixmap = QPixmap(path);
+//        // set to the label
+//        ui->centerLabel->setScaledContents(true);
+//        ui->centerLabel->setPixmap(pixmap);
+//! end of testing
+
+        // save the current file-list as vector and initialize the position-member
+        m_currentImages = availableImages.toVector();
+        m_positionCurrentFile = 0;
+
+        // trigger the initial loading
+        refreshLabel();
     }
     else
     {
         qDebug() << "no nice files found :(";
     }
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::refreshLabel()
+{
+    qDebug() << "CullendulaMainWindow::refreshLabel():";
+
+    // some defensive checks
+    if(m_currentImages.isEmpty())
+    {
+        qDebug() << "ERROR: invalid file-list!";
+    }
+
+    if(m_positionCurrentFile < 0 || m_positionCurrentFile >= m_currentImages.size())
+    {
+        qDebug() << "ERROR: invalid given position";
+    }
+
+    //check for existance
+    QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath());
+    qDebug() << path;
+    //QFile currentFile = QFile(path);
+
+    QPixmap const pixmap = QPixmap(path);
+    // set to the label
+
+    ui->centerLabel->setPixmap(pixmap);
 }
 
 //----------------------------------------------------------------------------

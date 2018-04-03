@@ -31,18 +31,21 @@ private slots:
     void slotButtonCenterTriggered();
 
 private:
-    // [methods]
+// [methods]
     //! checks the currently set path and gets the file-list. Afterwards triggers loading of the current image.
     void processNewPath();
 
     //! Scan given path for image-file-types (for now suffix: jpg, jpeg - more later)
     void createImageFileList();
 
+    //! Refresh the label: if file available, then show as image - else reset to the initial text
+    void refreshLabel();
+
     //! Create and check if an output-folder exists.
     //! Initially: just create sub-dir "output".
     void createOutputFolder();
 
-    // [members]
+// [members]
     // the ui
     Ui::CullendulaMainWindow* ui;
 
