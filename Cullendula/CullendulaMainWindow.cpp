@@ -3,9 +3,10 @@
 
 // Qt includes
 #include <QDropEvent>
-#include <QtCore/QDebug>
 #include <QtCore/QMimeData>
 #include <QtCore/QList>
+
+#include <QtCore/QDebug>
 
 //----------------------------------------------------------------------------
 
@@ -16,9 +17,7 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
     setAcceptDrops(true);
     ui->setupUi(this);
 
-    //connect(ui->label, &QLabel::dropEvent, this, &CullendulaMainWindow::dropvEvent);
-
-    ui->label->setAcceptDrops(true);
+//    ui->label->setAcceptDrops(true);
     setAcceptDrops(true);
 }
 
@@ -38,30 +37,19 @@ void CullendulaMainWindow::dragEnterEvent(QDragEnterEvent *event)
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::dragMoveEvent(QDragMoveEvent *event)
+void CullendulaMainWindow::dragMoveEvent(QDragMoveEvent* event)
 {
-
+    Q_UNUSED(event)
 }
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::dragLeaveEvent(QDragLeaveEvent *event)
+void CullendulaMainWindow::dragLeaveEvent(QDragLeaveEvent* event)
 {
-
+    Q_UNUSED(event)
 }
 
 //----------------------------------------------------------------------------
-
-//void CullendulaMainWindow::dropEvent(QDropEvent* event)
-//{
-//    //from the qt example
-////    textBrowser->setPlainText(event->mimeData()->text());
-////    mimeTypeCombo->clear();
-////    mimeTypeCombo->addItems(event->mimeData()->formats());
-
-//    qDebug() << "CullendulaMainWindow::dropEvent"; //todom remove
-//    event->acceptProposedAction();
-//}
 
 void CullendulaMainWindow::dropEvent(QDropEvent* event)
 {
@@ -73,17 +61,18 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event)
     QStringList pathList;
     QList<QUrl> urlList = mimeData->urls();
 
-    // extract the local paths of the files
-    for (int i = 0; i < urlList.size() && i < 32; +i)
+    // extract the local paths of the files: print all of them
+    for (auto const& url : urlList)
     {
-      pathList.append(urlList.at(i).toLocalFile());
+      qDebug() << "found: " << url;
     }
 
-    // call a function to open the files
+    // TODOm just use the very first one ..
+
+    // TODOm call a function to open the files
     //openFiles(pathList);
   }
 
   qDebug() << "CullendulaMainWindow::dropEvent"; //todom remove
   event->acceptProposedAction();
-
 }

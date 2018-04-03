@@ -15,7 +15,7 @@ public:
     ~CullendulaMainWindow() override;
 
 protected:
-    // make the drag&drop possible ... to get the path
+    // make the drag&drop possible ... to get the path for the dropped file/folder
     void dragEnterEvent(QDragEnterEvent* event) Q_DECL_OVERRIDE;
     void dragMoveEvent(QDragMoveEvent* event) Q_DECL_OVERRIDE;
     void dragLeaveEvent(QDragLeaveEvent* event) Q_DECL_OVERRIDE;
