@@ -22,7 +22,7 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
     setAcceptDrops(true);
     ui->setupUi(this);
     // present the picture fully visible .. TODO has to be reworked later
-    ui->centerLabel->setScaledContents(true);
+    //ui->centerLabel->setScaledContents(true);
 
     // connects for the useable push-buttons (and their hotkeys)
     connect(ui->leftPB, &QPushButton::clicked, this, &CullendulaMainWindow::slotButtonLeftTriggered);
@@ -231,15 +231,20 @@ void CullendulaMainWindow::refreshLabel()
         qDebug() << "ERROR: invalid given position";
     }
 
-    //check for existance
+    // TODO check for existance
     QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath());
-    qDebug() << path;
-    //QFile currentFile = QFile(path);
+    qDebug() << "\t" << path;
 
+    // load the file
     QPixmap const pixmap = QPixmap(path);
-    // set to the label
 
-    ui->centerLabel->setPixmap(pixmap);
+    // scale while keeping the aspect ratio
+    int const w = ui->centerLabel->width();
+    int const h = ui->centerLabel->height();
+    qDebug() << "label-size:" << w << "*" << h;
+
+    // set a scaled pixmap keeping its aspect ratio
+    ui->centerLabel->setPixmap(pixmap.scaled(w, h, Qt::KeepAspectRatio));
 }
 
 //----------------------------------------------------------------------------

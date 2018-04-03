@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>755</width>
-    <height>577</height>
+    <width>681</width>
+    <height>465</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="acceptDrops">
    <bool>false</bool>
@@ -29,10 +35,10 @@
    <widget class="QWidget" name="verticalWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>30</y>
-      <width>721</width>
-      <height>491</height>
+      <x>10</x>
+      <y>10</y>
+      <width>651</width>
+      <height>401</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -45,7 +51,7 @@
      <item>
       <widget class="QLabel" name="centerLabel">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -53,8 +59,14 @@
        <property name="acceptDrops">
         <bool>true</bool>
        </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>drag&amp;drop folder or image-file to start :)</string>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -135,7 +147,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>755</width>
+     <width>681</width>
      <height>22</height>
     </rect>
    </property>
