@@ -1,5 +1,5 @@
 # Cullendula
-Small program to pick out the best shots of the vast amount of taken pictures per session (excusrion).
+Small program to pick out the best shots of the vast amount of taken pictures per session (excursion).
 The name itself is a wordplay of the plant Calendula and the activity "to cull" (slang for sorting the photos).
 
 
@@ -19,3 +19,5 @@ If you don't like - expand it or don't use :)
 
 # open tasks
 - .. a lot .. see all TODO in the code
+- add a "move to thrash"-button to move really awkward/bad photos to a distinct folder
+
