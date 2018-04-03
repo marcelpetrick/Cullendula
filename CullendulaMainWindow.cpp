@@ -91,14 +91,21 @@ void CullendulaMainWindow::processNewPath()
     qDebug() << "CullendulaMainWindow::processNewPath():";
 
     // convert the given path (which maybe includes a filename)
-    QFileInfo fileInfo(m_workingPath.path());
+//    qDebug() << "fileInfo gets the following path:" << m_workingPath.path();
+    QFileInfo const fileInfo(m_workingPath.path().remove(0, 1)); // remove the leading /
 
     //! trim the path
     //! shall return for \Cullendula\testItemFolder --> \Cullendula\testItemFolder
     //! and for \Cullendula\testItemFolder\cat0.jpg --> \Cullendula\testItemFolder
-    qDebug() << "\tfileInfo.isFile():" << fileInfo.isFile();
-    QDir const tempDir = QDir(fileInfo.isFile() ? fileInfo.dir() : fileInfo.filePath());
-    qDebug() << "\tdirectory:" << tempDir.path();
+//    qDebug() << "\tfileInfo.isFile():" << fileInfo.isFile();
+//    qDebug() << "fileInfo.path(): " << fileInfo.path();
+//    qDebug() << "fileInfo.filePath(): " << fileInfo.filePath();
+//    qDebug() << "fileInfo.canonicalFilePath(): " << fileInfo.canonicalFilePath();
+//    qDebug() << "fileInfo.absoluteFilePath(): " << fileInfo.absoluteFilePath();
+
+//    qDebug() << "fileInfo.fileName(): " << fileInfo.fileName();
+    QDir const tempDir = QDir(fileInfo.isDir() ? fileInfo.absoluteFilePath() : fileInfo.absolutePath());
+    qDebug() << "\t resulting directory:" << tempDir.path();
 
     // additionally check if the directory is useable
     if(tempDir.exists())
@@ -127,8 +134,21 @@ void CullendulaMainWindow::createImageFileList()
 
     QFileInfoList availableImages = m_workingPath.entryInfoList(QDir::Files);
 
-    ui->label->setPixmap(QPixmap(availableImages.first().path()));
+    if(!availableImages.isEmpty())
+    {
+        qDebug() << "found the following JPGs:";
+        for(auto const& file : availableImages)
+        {
+            qDebug() << "\t" << file.absoluteFilePath();
+        }
+    }
+    else
+    {
+        qDebug() << "no nice files found :(";
+    }
 
+    // TODO load the picture and apply as  pixmap to the label
+    //ui->label->setPixmap(QPixmap(availableImages.first().path()));
 }
 
 //----------------------------------------------------------------------------
