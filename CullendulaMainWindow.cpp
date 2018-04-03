@@ -97,9 +97,8 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event)
 
 void CullendulaMainWindow::slotButtonLeftTriggered()
 {
-    qDebug() << "void CullendulaMainWindow::slotButtonLeftTriggered()";
+    qDebug() << "CullendulaMainWindow::slotButtonLeftTriggered()";
 
-    // TODO just for testing if the shortcuts work
     m_positionCurrentFile = (m_positionCurrentFile + m_currentImages.size() - 1) % m_currentImages.size();
     refreshLabel();
 }
@@ -108,7 +107,7 @@ void CullendulaMainWindow::slotButtonLeftTriggered()
 
 void CullendulaMainWindow::slotButtonRightTriggered()
 {
-    qDebug() << "void CullendulaMainWindow::slotButtonRightTriggered()";
+    qDebug() << "CullendulaMainWindow::slotButtonRightTriggered()";
 
     m_positionCurrentFile = (m_positionCurrentFile + 1) % m_currentImages.size();
     refreshLabel();
@@ -118,9 +117,33 @@ void CullendulaMainWindow::slotButtonRightTriggered()
 
 void CullendulaMainWindow::slotButtonCenterTriggered()
 {
-    qDebug() << "void CullendulaMainWindow::slotButtonCenterTriggered()";
+    qDebug() << "CullendulaMainWindow::slotButtonCenterTriggered()";
 
     // move the current file to the output-folder
+    QDir outputDir(m_workingPath.path() + QDir::separator() + c_hardcodedOutput); // TODO maybe save as member - equal to 'outputDirTest'
+    if(outputDir.exists())
+    {
+        QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath());
+        qDebug() << "\t path of file to move:" << path;
+        QFileInfo fileInfo(path);
+        QString const fileName (fileInfo.fileName());
+        qDebug() << "fileName:" << fileName;
+        QString const outputFileName(outputDir.path() + QDir::separator() + fileName);
+        qDebug() << "outputFileName:" << outputFileName;
+        bool const successfullyRenamed = outputDir.rename(path, outputFileName);
+        qDebug() << "successfullyRenamed?" << successfullyRenamed;
+
+        if(successfullyRenamed)
+        {
+            // go to the next picture by removing the entry from the file-list, but keep the position
+            m_currentImages.removeAt(m_positionCurrentFile);
+            refreshLabel();
+        }
+    }
+    else
+    {
+        qDebug() << "output folder does not exist!";
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -220,9 +243,16 @@ void CullendulaMainWindow::refreshLabel()
         qDebug() << "ERROR: invalid file-list!";
     }
 
-    if(m_positionCurrentFile < 0 || m_positionCurrentFile >= m_currentImages.size())
+    if(m_positionCurrentFile < 0)
     {
-        qDebug() << "ERROR: invalid given position";
+        qDebug() << "WARNING: invalid position given: current < 0";
+        m_positionCurrentFile = 0;
+    }
+
+    if(m_positionCurrentFile >= m_currentImages.size())
+    {
+        qDebug() << "WARNING: invalid position given: current > number of files";
+        m_positionCurrentFile = m_currentImages.size() - 1;
     }
 
     // TODO check for existance
