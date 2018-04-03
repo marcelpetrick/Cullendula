@@ -40,3 +40,8 @@ Makefile*
 
 # QtCtreator CMake
 CMakeLists.txt.user*
+
+# current project
+*.qmake.stash
+Cullendula
+
