@@ -123,7 +123,7 @@ void CullendulaMainWindow::slotButtonCenterTriggered()
     QDir outputDir(m_workingPath.path() + QDir::separator() + c_hardcodedOutput); // TODO maybe save as member - equal to 'outputDirTest'
     if(outputDir.exists())
     {
-        QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath());
+        QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath()); // TODO this will lead to crash, because index out of bounds
         qDebug() << "\t path of file to move:" << path;
         QFileInfo fileInfo(path);
         QString const fileName (fileInfo.fileName());
@@ -240,7 +240,8 @@ void CullendulaMainWindow::refreshLabel()
     // some defensive checks
     if(m_currentImages.isEmpty())
     {
-        qDebug() << "ERROR: invalid file-list!";
+        qDebug() << "ERROR: invalid (empty) file-list! will return ... but then the text-label shall appear again";
+        return;
     }
 
     if(m_positionCurrentFile < 0)
