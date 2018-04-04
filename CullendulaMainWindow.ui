@@ -50,6 +50,11 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="font">
+          <font>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
          <property name="acceptDrops">
           <bool>true</bool>
          </property>
@@ -58,7 +63,7 @@
          </property>
          <property name="text">
           <string>drag&amp;drop folder or file to start :)
-(currently only *.jpg/*.jpeg are loaded)</string>
+(currently only *.jpg/*.jpeg from the directory are loaded)</string>
          </property>
          <property name="scaledContents">
           <bool>false</bool>
@@ -88,18 +93,52 @@
          </item>
          <item>
           <widget class="QPushButton" name="leftPB">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>25</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+             <kerning>true</kerning>
+            </font>
+           </property>
            <property name="text">
-            <string>&lt;-</string>
+            <string>←</string>
            </property>
            <property name="shortcut">
             <string>Left</string>
+           </property>
+           <property name="autoRepeat">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="savePB">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>15</pointsize>
+            </font>
+           </property>
            <property name="text">
-            <string>save</string>
+            <string>save ↑</string>
            </property>
            <property name="shortcut">
             <string>Up</string>
@@ -108,14 +147,30 @@
          </item>
          <item>
           <widget class="QPushButton" name="rightPB">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>25</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="acceptDrops">
             <bool>false</bool>
            </property>
            <property name="text">
-            <string>-&gt;</string>
+            <string>→ </string>
            </property>
            <property name="shortcut">
             <string>Right</string>
+           </property>
+           <property name="autoRepeat">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -145,7 +200,7 @@
      <x>0</x>
      <y>0</y>
      <width>651</width>
-     <height>22</height>
+     <height>18</height>
     </rect>
    </property>
    <property name="acceptDrops">
