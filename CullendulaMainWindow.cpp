@@ -21,8 +21,9 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
 {
     setAcceptDrops(true);
     ui->setupUi(this);
-    // present the picture fully visible .. TODO has to be reworked later
-    //ui->centerLabel->setScaledContents(true);
+
+    // disable the buttons immediately; until the directory is set
+    activateButtons(false);
 
     // connects for the useable push-buttons (and their hotkeys)
     connect(ui->leftPB, &QPushButton::clicked, this, &CullendulaMainWindow::slotButtonLeftTriggered);
@@ -246,7 +247,7 @@ void CullendulaMainWindow::refreshLabel()
 {
     qDebug() << "CullendulaMainWindow::refreshLabel():";
 
-    // some defensive checks
+    // some defensive checks: so is at least one file available?
     if(m_currentImages.isEmpty())
     {
         qDebug() << "ERROR: invalid (empty) file-list! will return ... but then the text-label shall appear again";
@@ -268,6 +269,9 @@ void CullendulaMainWindow::refreshLabel()
     // TODO check for existance
     QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath());
     qDebug() << "\t" << path;
+
+    // activate the buttons
+    activateButtons(true);
 
     // load the file
     QPixmap const pixmap = QPixmap(path);
@@ -310,4 +314,15 @@ void CullendulaMainWindow::createOutputFolder()
     }
 
     // TODO maybe return something or throw or whatever ... delete /home/..
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::activateButtons(const bool active)
+{
+    // en-/disable all four buttons
+    ui->leftPB->setEnabled(active);
+    ui->rightPB->setEnabled(active);
+    ui->savePB->setEnabled(active);
+    ui->trashPB->setEnabled(active);
 }

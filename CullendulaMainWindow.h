@@ -52,6 +52,9 @@ private:
     //! Initially: just create sub-dir "output".
     void createOutputFolder();
 
+    //! Handle the state of the buttons.
+    void activateButtons(bool const active = false);
+
 // [members]
     // the ui
     Ui::CullendulaMainWindow* ui;

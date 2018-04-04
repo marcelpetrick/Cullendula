@@ -19,14 +19,14 @@ note bene: if you don't like, THEN don't use OR help to fix and expand it :)
 
 
 # Open tasks
-- .. a lot .. see all TODO in the code
-- add a "move to thrash"-button to move really awkward/bad photos to a distinct folder
+- .. a lot .. see all TODO in the code: make it more crash-resilient due to unchecked file-access
+- add a "move to trash"-button to move really awkward/bad photos to a distinct folder
 
-- refactor into some currentpost+filelist class and the main-class
-- handle
+- refactor into some currentpost+filelist class and the main-class, which handles th ui
 - show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
-- show position and amount: like: "3/234 output: 7 thrash: 10" - maybe in the status-bar?
+- show position and amount: like: "3/234 output: 7 trash: 10" - maybe in the status-bar?
 
 - add an icon for the program
 - make the used image-file-suffixes configureable
 - add some version/help menu-entry
+
