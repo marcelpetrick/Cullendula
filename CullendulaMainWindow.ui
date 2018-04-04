@@ -96,13 +96,13 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>0</height>
+             <height>45</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>30</height>
+             <height>45</height>
             </size>
            </property>
            <property name="font">
@@ -126,15 +126,21 @@
          </item>
          <item>
           <widget class="QPushButton" name="savePB">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>45</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>30</height>
+             <height>45</height>
             </size>
            </property>
            <property name="font">
             <font>
-             <pointsize>15</pointsize>
+             <pointsize>20</pointsize>
             </font>
            </property>
            <property name="text">
@@ -143,14 +149,50 @@
            <property name="shortcut">
             <string>Up</string>
            </property>
+           <property name="autoRepeat">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="trashPB">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>45</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>45</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>20</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>trash ↓</string>
+           </property>
+           <property name="shortcut">
+            <string>Down</string>
+           </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="rightPB">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>45</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>30</height>
+             <height>45</height>
             </size>
            </property>
            <property name="font">

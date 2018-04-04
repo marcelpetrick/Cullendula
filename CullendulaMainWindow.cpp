@@ -27,7 +27,8 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
     // connects for the useable push-buttons (and their hotkeys)
     connect(ui->leftPB, &QPushButton::clicked, this, &CullendulaMainWindow::slotButtonLeftTriggered);
     connect(ui->rightPB, &QPushButton::clicked, this, &CullendulaMainWindow::slotButtonRightTriggered);
-    connect(ui->savePB, &QPushButton::clicked, this, &CullendulaMainWindow::slotButtonCenterTriggered);
+    connect(ui->savePB, &QPushButton::clicked, this, &CullendulaMainWindow::slotButtonSaveTriggered);
+    connect(ui->trashPB, &QPushButton::clicked, this, &CullendulaMainWindow::slotButtonTrashTriggered);
 
     // necessary! even if the QLabel itself accepts already drops
     setAcceptDrops(true);
@@ -115,9 +116,9 @@ void CullendulaMainWindow::slotButtonRightTriggered()
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::slotButtonCenterTriggered()
+void CullendulaMainWindow::slotButtonSaveTriggered()
 {
-    qDebug() << "CullendulaMainWindow::slotButtonCenterTriggered()";
+    qDebug() << "CullendulaMainWindow::slotButtonSaveTriggered()";
 
     // move the current file to the output-folder
     QDir outputDir(m_workingPath.path() + QDir::separator() + c_hardcodedOutput); // TODO maybe save as member - equal to 'outputDirTest'
@@ -144,6 +145,14 @@ void CullendulaMainWindow::slotButtonCenterTriggered()
     {
         qDebug() << "output folder does not exist!";
     }
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::slotButtonTrashTriggered()
+{
+    qDebug() << "CullendulaMainWindow::slotButtonTrashTriggered()";
+    // TODO fill with code; similar to save ... refactor this into a function, so that the two slots serve just a dispatcher
 }
 
 //----------------------------------------------------------------------------

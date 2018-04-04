@@ -32,8 +32,10 @@ private slots:
     //! shift left and right (for- and backward) through the current directory
     void slotButtonLeftTriggered();
     void slotButtonRightTriggered();
-    //! save to the given output-folder
-    void slotButtonCenterTriggered();
+    //! save to the given output-folder (by moving)
+    void slotButtonSaveTriggered();
+    //! save to the given trash-folder (by moving)
+    void slotButtonTrashTriggered();
 
 private:
 // [methods]
