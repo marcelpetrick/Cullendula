@@ -22,6 +22,10 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
     setAcceptDrops(true);
     ui->setupUi(this);
 
+    // make the current version information visible to the user - as long as no menu with help&stuff exists
+    QString const versionString = "v0.1";
+    setWindowTitle(windowTitle().append(" - ").append(versionString));
+
     // disable the buttons immediately; until the directory is set
     activateButtons(false);
 
