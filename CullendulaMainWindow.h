@@ -19,7 +19,7 @@ namespace Ui {
 // for constants
 namespace {
     //! v0.1 was the basic release; working, but ugly
-    //! v0.2 improved useability; more features (move to trash!); refactored code-base; improved code-quality
+    //! v0.2 improved useability and stability; more features (move to trash!); refactored code-base; improved code-quality
     QString const c_versionString = " - v0.2";
 }
 
@@ -34,8 +34,6 @@ public:
 protected:
     //! Need to be reimplemented to make the drag&drop possible ... to get the path for the dropped file/folder
     void dragEnterEvent(QDragEnterEvent* event) Q_DECL_OVERRIDE;
-//    void dragMoveEvent(QDragMoveEvent* event) Q_DECL_OVERRIDE; // todom check if necessary
-//    void dragLeaveEvent(QDragLeaveEvent* event) Q_DECL_OVERRIDE; // todom check if necessary
     void dropEvent(QDropEvent* event) Q_DECL_OVERRIDE;
 
 private slots:

@@ -55,20 +55,6 @@ void CullendulaMainWindow::dragEnterEvent(QDragEnterEvent *event)
 
 //----------------------------------------------------------------------------
 
-//void CullendulaMainWindow::dragMoveEvent(QDragMoveEvent* event)
-//{
-//    Q_UNUSED(event)
-//}
-
-////----------------------------------------------------------------------------
-
-//void CullendulaMainWindow::dragLeaveEvent(QDragLeaveEvent* event)
-//{
-//    Q_UNUSED(event)
-//}
-
-//----------------------------------------------------------------------------
-
 void CullendulaMainWindow::dropEvent(QDropEvent* event)
 {
     const QMimeData* mimeData = event->mimeData();
@@ -141,7 +127,7 @@ void CullendulaMainWindow::slotButtonSaveTriggered()
     }
     else
     {
-        qDebug() << "output folder does not exist!";
+        qDebug() << "\tERROR: moving file did not succeed";
     }
 }
 
@@ -159,7 +145,7 @@ void CullendulaMainWindow::slotButtonTrashTriggered()
     }
     else
     {
-        qDebug() << "output folder does not exist!";
+        qDebug() << "\tERROR: moving file did not succeed";
     }
 }
 
@@ -173,7 +159,7 @@ void CullendulaMainWindow::refreshLabel()
     activateButtons(true);
 
     QString const path = m_fileSystemHandler.getCurrentImagePath();
-    if(path.isEmpty())
+    if(path.isEmpty()) // just the case if no valid images found
     {
         ui->centerLabel->setText("no more valid images found: work maybe finished? :)");
     }

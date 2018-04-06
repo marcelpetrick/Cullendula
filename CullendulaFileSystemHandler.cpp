@@ -286,10 +286,14 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const 
             bool const successfullyRenamed = outputDir.rename(path, outputFileName);
             qDebug() << "successfullyRenamed?" << successfullyRenamed;
 
+            // in case the file was successfully moved (= renamed path), then adjust the internal structures
             if(successfullyRenamed)
             {
                 // go to the next picture by removing the entry from the file-list, but keep the position
                 m_currentImages.removeAt(m_positionCurrentFile);
+                //if this was the last item of the list (like pos 2 at list of 3; which has now just 2 elements), then modulo
+                int const listSize = m_currentImages.size();
+                m_positionCurrentFile = (listSize > 0) ? (m_positionCurrentFile % listSize) : -1;
                 returnValue = true;
             }
         }
