@@ -175,21 +175,23 @@ void CullendulaMainWindow::refreshLabel()
     QString const path = m_fileSystemHandler.getCurrentImagePath();
     if(path.isEmpty())
     {
-        return;
+        ui->centerLabel->setText("no more valid images found: work maybe finished? :)");
     }
+    else
+    {
+        // load the file
+        QPixmap const pixmap = QPixmap(path);
 
-    // load the file
-    QPixmap const pixmap = QPixmap(path);
+        // scale while keeping the aspect ratio
+        int const w = ui->centerLabel->width();
+        int const h = ui->centerLabel->height();
+        qDebug() << "label-size:" << w << "*" << h;
+        // TODO prevent upscaling of smaller photos to big label ..
+        // TODO implement the resize-event for the widget
 
-    // scale while keeping the aspect ratio
-    int const w = ui->centerLabel->width();
-    int const h = ui->centerLabel->height();
-    qDebug() << "label-size:" << w << "*" << h;
-    // TODO prevent upscaling of smaller photos to big label ..
-    // TODO implement the resize-event for the widget
-
-    // set a scaled pixmap keeping its aspect ratio
-    ui->centerLabel->setPixmap(pixmap.scaled(w, h, Qt::KeepAspectRatio));
+        // set a scaled pixmap keeping its aspect ratio
+        ui->centerLabel->setPixmap(pixmap.scaled(w, h, Qt::KeepAspectRatio));
+    }
 }
 
 //----------------------------------------------------------------------------

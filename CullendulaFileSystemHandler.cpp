@@ -40,32 +40,38 @@ bool CullendulaFileSystemHandler::setWorkingPath(const QString urlPath)
 
 QString CullendulaFileSystemHandler::getCurrentImagePath()
 {
+    QString returnValue;
     qDebug() << "CullendulaFileSystemHandler::getCurrentImagePath():";
 
-    // some defensive checks: so is at least one file available?
-    if(m_currentImages.isEmpty())
+//    // some defensive checks: so is at least one file available?
+//    if(m_currentImages.isEmpty())
+//    {
+//        qDebug() << "ERROR: invalid (empty) file-list! will return ... but then the text-label shall appear again";
+//        return QString();
+//    }
+
+//    if(m_positionCurrentFile < 0)
+//    {
+//        qDebug() << "WARNING: invalid position given: current < 0";
+//        m_positionCurrentFile = 0;
+//    }
+
+//    if(m_positionCurrentFile >= m_currentImages.size())
+//    {
+//        qDebug() << "WARNING: invalid position given: current > number of files";
+//        m_positionCurrentFile = m_currentImages.size() - 1;
+//    }
+
+    if(checkInternalSanity())
     {
-        qDebug() << "ERROR: invalid (empty) file-list! will return ... but then the text-label shall appear again";
-        return QString();
+        // TODO check for existance
+        QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath());
+        qDebug() << "\t" << path;
+
+        returnValue = path;
     }
 
-    if(m_positionCurrentFile < 0)
-    {
-        qDebug() << "WARNING: invalid position given: current < 0";
-        m_positionCurrentFile = 0;
-    }
-
-    if(m_positionCurrentFile >= m_currentImages.size())
-    {
-        qDebug() << "WARNING: invalid position given: current > number of files";
-        m_positionCurrentFile = m_currentImages.size() - 1;
-    }
-
-    // TODO check for existance
-    QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath());
-    qDebug() << "\t" << path;
-
-    return path;
+    return returnValue;
 }
 
 //----------------------------------------------------------------------------
@@ -256,26 +262,65 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const 
     bool returnValue(false);
     qDebug() << "CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder():";
 
-    // move the current file to the output-folder
-    QDir outputDir(m_workingPath.path() + QDir::separator() + subdir); // TODO maybe save as member - equal to 'outputDirTest'
-    if(outputDir.exists())
-    {
-        QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath()); // TODO this will lead to crash, because index out of bounds
-        qDebug() << "\t path of file to move:" << path;
-        QFileInfo fileInfo(path);
-        QString const fileName (fileInfo.fileName());
-        qDebug() << "fileName:" << fileName;
-        QString const outputFileName(outputDir.path() + QDir::separator() + fileName);
-        qDebug() << "outputFileName:" << outputFileName;
-        bool const successfullyRenamed = outputDir.rename(path, outputFileName);
-        qDebug() << "successfullyRenamed?" << successfullyRenamed;
+    bool const saneInternalState = checkInternalSanity();
 
-        if(successfullyRenamed)
+    if(saneInternalState)
+    {
+        // move the current file to the output-folder
+        QDir outputDir(m_workingPath.path() + QDir::separator() + subdir);
+        if(outputDir.exists())
         {
-            // go to the next picture by removing the entry from the file-list, but keep the position
-            m_currentImages.removeAt(m_positionCurrentFile);
-            returnValue = true;
+            QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath()); // TODO this will lead to crash, because index out of bounds
+            qDebug() << "\t path of file to move:" << path;
+            QFileInfo fileInfo(path);
+            QString const fileName (fileInfo.fileName());
+            qDebug() << "fileName:" << fileName;
+            QString const outputFileName(outputDir.path() + QDir::separator() + fileName);
+            qDebug() << "outputFileName:" << outputFileName;
+            bool const successfullyRenamed = outputDir.rename(path, outputFileName);
+            qDebug() << "successfullyRenamed?" << successfullyRenamed;
+
+            if(successfullyRenamed)
+            {
+                // go to the next picture by removing the entry from the file-list, but keep the position
+                m_currentImages.removeAt(m_positionCurrentFile);
+                returnValue = true;
+            }
         }
+    }
+
+    return returnValue;
+}
+
+//----------------------------------------------------------------------------
+
+bool CullendulaFileSystemHandler::checkInternalSanity()
+{
+    bool returnValue(true);
+
+    QDir const outputDir(m_workingPath.path());
+    if(!outputDir.exists())
+    {
+        qDebug() << "CullendulaFileSystemHandler::checkInternalSanity(): ERROR: workingPath not valid!";
+        returnValue = false;
+    }
+
+    if(m_currentImages.empty())
+    {
+        qDebug() << "CullendulaFileSystemHandler::checkInternalSanity(): ERROR: list of current images is empty!";
+        returnValue = false;
+    }
+
+    if(m_positionCurrentFile < 0)
+    {
+        qDebug() << "CullendulaFileSystemHandler::checkInternalSanity(): ERROR: position" << QString::number(m_positionCurrentFile) << "is a negative number!";
+        returnValue = false;
+    }
+
+    if(m_positionCurrentFile >= m_currentImages.size())
+    {
+        qDebug() << "CullendulaFileSystemHandler::checkInternalSanity(): ERROR: position" << QString::number(m_positionCurrentFile) << " is out of range of the image-list with size" << QString::number(m_currentImages.size());
+        returnValue = false;
     }
 
     return returnValue;

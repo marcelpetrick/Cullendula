@@ -55,6 +55,9 @@ private:
     //! TODO
     bool moveCurrentFileToGivenSubfolder(QString const subdir);
 
+    //! Check if the current file-list, position and working-path are valid. Else return false.
+    bool checkInternalSanity();
+
     // [members]
     // the currently chosen path to the directory (not file)
     QDir m_workingPath;
