@@ -1,10 +1,16 @@
+//----------------------------------------------------------------------------------
+// description: Cullendula - small GUI-app to pick the best shots from a session
+// author: mail@marcelpetrick.it
+// repo: https://github.com/marcelpetrick/Cullendula
+//----------------------------------------------------------------------------------
+
 #pragma once
 
 // Qt includes
 #include <QtWidgets/QMainWindow>
-#include <QObject>
-#include <QDir>
-#include <QFileInfo>
+//#include <QtCore/QObject>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 
 // for constants
 namespace {
@@ -16,8 +22,6 @@ class CullendulaFileSystemHandler
 {
 public:
     CullendulaFileSystemHandler();
-
-    // [methods]
 
     //! TODO
     bool setWorkingPath(QString const urlPath);
@@ -46,7 +50,7 @@ private:
 
     //! Create and check if an output-folder exists.
     //! Initially: just create sub-dir "output".
-    bool createOutputFolder();
+    bool createOutputFolder(QString const subdir);
 
     //! TODO
     bool moveCurrentFileToGivenSubfolder(QString const subdir);

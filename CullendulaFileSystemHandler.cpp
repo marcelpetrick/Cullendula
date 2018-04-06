@@ -1,3 +1,9 @@
+//----------------------------------------------------------------------------------
+// description: Cullendula - small GUI-app to pick the best shots from a session
+// author: mail@marcelpetrick.it
+// repo: https://github.com/marcelpetrick/Cullendula
+//----------------------------------------------------------------------------------
+
 //own includes
 #include "CullendulaFileSystemHandler.h"
 
@@ -9,7 +15,7 @@
 
 CullendulaFileSystemHandler::CullendulaFileSystemHandler()
     :
-    m_workingPath("")
+      m_workingPath("")
 {
     qDebug() << "CullendulaFileSystemHandler::CullendulaFileSystemHandler()";
 }
@@ -68,6 +74,10 @@ bool CullendulaFileSystemHandler::switchCurrentPositionToTheLeft()
 {
     bool returnValue(false);
     m_positionCurrentFile = (m_positionCurrentFile + m_currentImages.size() - 1) % m_currentImages.size();
+
+    // TODO add some check if the current chosen position would be a valid entry
+    returnValue = true;
+
     return returnValue;
 }
 
@@ -77,6 +87,10 @@ bool CullendulaFileSystemHandler::switchCurrentPositionToTheRight()
 {
     bool returnValue(false);
     m_positionCurrentFile = (m_positionCurrentFile + 1) % m_currentImages.size();
+
+    // TODO add some check if the current chosen position would be a valid entry
+    returnValue = true;
+
     return returnValue;
 }
 
@@ -88,7 +102,7 @@ bool CullendulaFileSystemHandler::saveCurrentFile()
     qDebug() << "CullendulaFileSystemHandler::saveCurrentFile():";
 
     //TODO check the returnValue!
-    moveCurrentFileToGivenSubfolder(c_hardcodedOutput);
+    returnValue = moveCurrentFileToGivenSubfolder(c_hardcodedOutput);
 
     return returnValue;
 }
@@ -101,7 +115,7 @@ bool CullendulaFileSystemHandler::trashCurrentFile()
     qDebug() << "CullendulaFileSystemHandler::trashCurrentFile():";
 
     //TODO check the returnValue!
-    moveCurrentFileToGivenSubfolder(c_hardcodedTrash);
+    returnValue = moveCurrentFileToGivenSubfolder(c_hardcodedTrash);
 
     return returnValue;
 }
@@ -115,12 +129,12 @@ bool CullendulaFileSystemHandler::processNewPath()
     qDebug() << "CullendulaFileSystemHandler::processNewPath():";
 
     // convert the given path (which maybe includes a filename)
-//    qDebug() << "fileInfo gets the following path:" << m_workingPath.path();
+    //    qDebug() << "fileInfo gets the following path:" << m_workingPath.path();
 
     // problem: windows shows as /c:/dir/file.suffix - linux here as /home/dir/file.suffix
     // so cut the first character for win, but don't for linux ..
     QString intermediatePath =
-#ifdef __linux__
+        #ifdef __linux__
             m_workingPath.path();
 #else
             m_workingPath.path().remove(0, 1); // remove the leading slash ("/")
@@ -130,10 +144,10 @@ bool CullendulaFileSystemHandler::processNewPath()
     //! trim the path
     //! shall return for \Cullendula\testItemFolder --> \Cullendula\testItemFolder
     //! and for \Cullendula\testItemFolder\cat0.jpg --> \Cullendula\testItemFolder
-//    qDebug() << "\tfileInfo.isFile():" << fileInfo.isFile();
-//    qDebug() << "fileInfo.path(): " << fileInfo.path();
-//    qDebug() << "fileInfo.filePath(): " << fileInfo.filePath();
-//    qDebug() << "fileInfo.canonicalFilePath(): " << fileInfo.canonicalFilePath();
+    //    qDebug() << "\tfileInfo.isFile():" << fileInfo.isFile();
+    //    qDebug() << "fileInfo.path(): " << fileInfo.path();
+    //    qDebug() << "fileInfo.filePath(): " << fileInfo.filePath();
+    //    qDebug() << "fileInfo.canonicalFilePath(): " << fileInfo.canonicalFilePath();
     qDebug() << "\tfileInfo.isDir():" << fileInfo.isDir();
     qDebug() << "fileInfo.absoluteFilePath(): " << fileInfo.absoluteFilePath();
     qDebug() << "fileInfo.absolutePath(): " << fileInfo.absolutePath();
@@ -150,8 +164,9 @@ bool CullendulaFileSystemHandler::processNewPath()
         // trigger now the creation of the parsing
         returnValue = createImageFileList();
 
-        // create now the output-folder
-        returnValue &= createOutputFolder();
+        // create now the output-folders
+        returnValue &= createOutputFolder(c_hardcodedOutput);
+        returnValue &= createOutputFolder(c_hardcodedTrash);
     }
     else
     {
@@ -200,25 +215,25 @@ bool CullendulaFileSystemHandler::createImageFileList()
     return returnValue;
 }
 
-
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::createOutputFolder()
+bool CullendulaFileSystemHandler::createOutputFolder(QString const subdir)
 {
     bool returnValue(false);
 
     qDebug() << "CullendulaFileSystemHandler::createOutputFolder():";
 
-    QDir outputDirTest(m_workingPath.path() + QDir::separator() + c_hardcodedOutput);
+    QDir outputDirTest(m_workingPath.path() + QDir::separator() + subdir);
 
     if(outputDirTest.exists())
     {
         qDebug() << "output-folder exists already :) - nothing to do";
+        returnValue = true;
     }
     else
     {
         //create a new output dir
-        m_workingPath.mkdir(c_hardcodedOutput);
+        m_workingPath.mkdir(subdir);
         if(outputDirTest.exists())
         {
             qDebug() << "output-folder exists after creation!";
@@ -231,7 +246,7 @@ bool CullendulaFileSystemHandler::createOutputFolder()
     }
 
     // TODO maybe return something or throw or whatever ... delete /home/..
-        return returnValue;
+    return returnValue;
 }
 
 //----------------------------------------------------------------------------
@@ -265,4 +280,3 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const 
 
     return returnValue;
 }
-

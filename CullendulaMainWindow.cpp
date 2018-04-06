@@ -1,3 +1,9 @@
+//----------------------------------------------------------------------------------
+// description: Cullendula - small GUI-app to pick the best shots from a session
+// author: mail@marcelpetrick.it
+// repo: https://github.com/marcelpetrick/Cullendula
+//----------------------------------------------------------------------------------
+
 // own includes
 #include "CullendulaMainWindow.h"
 #include "ui_CullendulaMainWindow.h"
