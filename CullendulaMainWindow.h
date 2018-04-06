@@ -1,5 +1,8 @@
 #pragma once
 
+// own includes
+#include "CullendulaFileSystemHandler.h"
+
 // Qt includes
 #include <QtWidgets/QMainWindow>
 #include <QtCore/QDir>
@@ -24,8 +27,8 @@ public:
 protected:
     //! Need to be reimplemented to make the drag&drop possible ... to get the path for the dropped file/folder
     void dragEnterEvent(QDragEnterEvent* event) Q_DECL_OVERRIDE;
-    void dragMoveEvent(QDragMoveEvent* event) Q_DECL_OVERRIDE; // todom check if necessary
-    void dragLeaveEvent(QDragLeaveEvent* event) Q_DECL_OVERRIDE; // todom check if necessary
+//    void dragMoveEvent(QDragMoveEvent* event) Q_DECL_OVERRIDE; // todom check if necessary
+//    void dragLeaveEvent(QDragLeaveEvent* event) Q_DECL_OVERRIDE; // todom check if necessary
     void dropEvent(QDropEvent* event) Q_DECL_OVERRIDE;
 
 private slots:
@@ -65,4 +68,7 @@ private:
     // saves the current state of the given directory; initially empty; shall be reset (TODO)
     QVector<QFileInfo> m_currentImages;
     int m_positionCurrentFile = -1;
+
+    // handles all the path- and file-related operations
+    CullendulaFileSystemHandler m_fileSystemHandler;
 };

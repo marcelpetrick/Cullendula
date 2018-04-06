@@ -55,17 +55,17 @@ void CullendulaMainWindow::dragEnterEvent(QDragEnterEvent *event)
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::dragMoveEvent(QDragMoveEvent* event)
-{
-    Q_UNUSED(event)
-}
+//void CullendulaMainWindow::dragMoveEvent(QDragMoveEvent* event)
+//{
+//    Q_UNUSED(event)
+//}
 
-//----------------------------------------------------------------------------
+////----------------------------------------------------------------------------
 
-void CullendulaMainWindow::dragLeaveEvent(QDragLeaveEvent* event)
-{
-    Q_UNUSED(event)
-}
+//void CullendulaMainWindow::dragLeaveEvent(QDragLeaveEvent* event)
+//{
+//    Q_UNUSED(event)
+//}
 
 //----------------------------------------------------------------------------
 

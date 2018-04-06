@@ -25,10 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
 		main.cpp \
-		CullendulaMainWindow.cpp
+		CullendulaMainWindow.cpp \
+    CullendulaFileSystemHandler.cpp
 
 HEADERS += \
-		CullendulaMainWindow.h
+		CullendulaMainWindow.h \
+    CullendulaFileSystemHandler.h
 
 FORMS += \
 		CullendulaMainWindow.ui
