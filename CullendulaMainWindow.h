@@ -5,15 +5,16 @@
 
 // Qt includes
 #include <QtWidgets/QMainWindow>
-#include <QtCore/QDir>
 
 namespace Ui {
-class CullendulaMainWindow;
+    class CullendulaMainWindow;
 }
 
 // for constants
 namespace {
-    QString const c_hardcodedOutput = "output";
+    //! v0.1 was the basic release; working, but ugly
+    //! v0.2 improved useability; more features (move to trash!); refactored code-base; improved code-quality
+    QString const c_versionString = " - v0.2";
 }
 
 class CullendulaMainWindow : public QMainWindow
@@ -32,7 +33,7 @@ protected:
     void dropEvent(QDropEvent* event) Q_DECL_OVERRIDE;
 
 private slots:
-    //! shift left and right (for- and backward) through the current directory
+    //! shift left and right (for- and backward) through the image-file-list (current directory)
     void slotButtonLeftTriggered();
     void slotButtonRightTriggered();
     //! save to the given output-folder (by moving)
@@ -41,19 +42,8 @@ private slots:
     void slotButtonTrashTriggered();
 
 private:
-// [methods]
-    //! checks the currently set path and gets the file-list. Afterwards triggers loading of the current image.
-    void processNewPath();
-
-    //! Scan given path for image-file-types (for now suffix: jpg, jpeg - more later)
-    void createImageFileList();
-
     //! Refresh the label: if file available, then show as image - else reset to the initial text
     void refreshLabel();
-
-    //! Create and check if an output-folder exists.
-    //! Initially: just create sub-dir "output".
-    void createOutputFolder();
 
     //! Handle the state of the buttons.
     void activateButtons(bool const active = false);
@@ -61,13 +51,6 @@ private:
 // [members]
     // the ui
     Ui::CullendulaMainWindow* ui;
-
-    // the currently chosen path to the directory (not file)
-    QDir m_workingPath;
-
-    // saves the current state of the given directory; initially empty; shall be reset (TODO)
-    QVector<QFileInfo> m_currentImages;
-    int m_positionCurrentFile = -1;
 
     // handles all the path- and file-related operations
     CullendulaFileSystemHandler m_fileSystemHandler;
