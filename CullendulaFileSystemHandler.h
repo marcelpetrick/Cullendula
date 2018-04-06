@@ -58,6 +58,10 @@ private:
     //! Check if the current file-list, position and working-path are valid. Else return false.
     bool checkInternalSanity();
 
+    //! adjust the current position inside the filelist by the given offset.
+    //! @returns sanity-check
+    bool adjustCurrentPositionBy(const int offset);
+
     // [members]
     // the currently chosen path to the directory (not file)
     QDir m_workingPath;

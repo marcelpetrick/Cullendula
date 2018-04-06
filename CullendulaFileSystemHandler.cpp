@@ -76,13 +76,23 @@ QString CullendulaFileSystemHandler::getCurrentImagePath()
 
 //----------------------------------------------------------------------------
 
+bool CullendulaFileSystemHandler::adjustCurrentPositionBy(int const offset)
+{
+    bool returnValue =checkInternalSanity();
+
+    if(checkInternalSanity())
+    {
+        m_positionCurrentFile = (m_positionCurrentFile + m_currentImages.size() + offset) % m_currentImages.size();
+    }
+
+    return returnValue;
+}
+
+//----------------------------------------------------------------------------
+
 bool CullendulaFileSystemHandler::switchCurrentPositionToTheLeft()
 {
-    bool returnValue(false);
-    m_positionCurrentFile = (m_positionCurrentFile + m_currentImages.size() - 1) % m_currentImages.size();
-
-    // TODO add some check if the current chosen position would be a valid entry
-    returnValue = true;
+    bool returnValue = adjustCurrentPositionBy(-1);
 
     return returnValue;
 }
@@ -91,11 +101,7 @@ bool CullendulaFileSystemHandler::switchCurrentPositionToTheLeft()
 
 bool CullendulaFileSystemHandler::switchCurrentPositionToTheRight()
 {
-    bool returnValue(false);
-    m_positionCurrentFile = (m_positionCurrentFile + 1) % m_currentImages.size();
-
-    // TODO add some check if the current chosen position would be a valid entry
-    returnValue = true;
+    bool returnValue = adjustCurrentPositionBy(1);
 
     return returnValue;
 }
@@ -227,7 +233,7 @@ bool CullendulaFileSystemHandler::createOutputFolder(QString const subdir)
 {
     bool returnValue(false);
 
-    qDebug() << "CullendulaFileSystemHandler::createOutputFolder():";
+    qDebug() << "CullendulaFileSystemHandler::createOutputFolder():" << subdir;
 
     QDir outputDirTest(m_workingPath.path() + QDir::separator() + subdir);
 
