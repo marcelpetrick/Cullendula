@@ -134,6 +134,17 @@ bool CullendulaFileSystemHandler::trashCurrentFile()
 
 //----------------------------------------------------------------------------
 
+QString CullendulaFileSystemHandler::getCurrentStatus()
+{
+    QString returnValue("showing ");
+    returnValue += QString::number(m_positionCurrentFile + 1); //for the regular users indexing starts at 1 ..
+    returnValue += " of " + QString::number(m_currentImages.size());
+
+    return returnValue;
+}
+
+//----------------------------------------------------------------------------
+
 bool CullendulaFileSystemHandler::processNewPath()
 {
     bool returnValue(false);

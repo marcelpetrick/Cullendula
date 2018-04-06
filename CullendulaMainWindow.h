@@ -52,6 +52,9 @@ private:
     //! Handle the state of the buttons.
     void activateButtons(bool const active = false);
 
+    //! Print the given string to the status-bar.
+    void printStatus(QString const message);
+
 // [members]
     // the ui
     Ui::CullendulaMainWindow* ui;

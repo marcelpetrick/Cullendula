@@ -37,6 +37,8 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
 
     // necessary! even if the QLabel itself accepts already drops
     setAcceptDrops(true);
+
+    printStatus("system is up and running :)");
 }
 
 //----------------------------------------------------------------------------
@@ -51,6 +53,8 @@ CullendulaMainWindow::~CullendulaMainWindow()
 void CullendulaMainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     event->accept();
+
+    printStatus("drop current load and let's see what you dragged?");
 }
 
 //----------------------------------------------------------------------------
@@ -80,6 +84,10 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event)
                 refreshLabel();
             }
         }
+    }
+    else
+    {
+        printStatus("The load was not usable! :(");
     }
 
     event->acceptProposedAction();
@@ -155,13 +163,14 @@ void CullendulaMainWindow::refreshLabel()
 {
     qDebug() << "CullendulaMainWindow::refreshLabel():";
 
-    // activate the buttons
-    activateButtons(true);
-
     QString const path = m_fileSystemHandler.getCurrentImagePath();
     if(path.isEmpty()) // just the case if no valid images found
     {
-        ui->centerLabel->setText("no more valid images found: work maybe finished? :)");
+        ui->centerLabel->setText("no more valid images found: work maybe finished? :)\ndrag&drop the next folder or files if you want!");
+
+        activateButtons(false);
+
+        printStatus("no more files");
     }
     else
     {
@@ -177,6 +186,10 @@ void CullendulaMainWindow::refreshLabel()
 
         // set a scaled pixmap keeping its aspect ratio
         ui->centerLabel->setPixmap(pixmap.scaled(w, h, Qt::KeepAspectRatio));
+
+        activateButtons(true);
+
+        printStatus(m_fileSystemHandler.getCurrentStatus());
     }
 }
 
@@ -189,4 +202,12 @@ void CullendulaMainWindow::activateButtons(const bool active)
     ui->rightPB->setEnabled(active);
     ui->savePB->setEnabled(active);
     ui->trashPB->setEnabled(active);
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::printStatus(const QString message)
+{
+    // messages shall disappear after five seconds
+    ui->statusBar->showMessage(message, 5000);
 }

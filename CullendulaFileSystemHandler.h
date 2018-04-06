@@ -41,6 +41,9 @@ public:
     //! TODO
     bool trashCurrentFile();
 
+    //! Return a string which describes the current position in the file-list.
+    QString getCurrentStatus();
+
 private:
     //! checks the currently set path and gets the file-list. Afterwards triggers loading of the current image.
     bool processNewPath();
