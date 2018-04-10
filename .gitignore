@@ -45,3 +45,8 @@ CMakeLists.txt.user*
 *.qmake.stash
 Cullendula
 
+*.vcxproj.user
+*.vcxproj.filters
+*.v12.suo
+*.sln
+*.sdf
