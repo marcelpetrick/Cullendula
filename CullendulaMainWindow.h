@@ -47,6 +47,11 @@ private slots:
     //! save to the given trash-folder (by moving)
     void slotButtonTrashTriggered();
 
+    //! Slots for the help-menu-entries
+    void about();
+    void aboutQt();
+    //! - end -
+
 private:
     //! Refresh the label: if file available, then show as image - else reset to the initial text
     void refreshLabel();
@@ -57,10 +62,20 @@ private:
     //! Print the given string to the status-bar.
     void printStatus(QString const message);
 
+    //! TODO
+    void createActions();
+    void createMenus();
+
 // [members]
-    // the ui
+    //! the ui
     Ui::CullendulaMainWindow* ui;
 
-    // handles all the path- and file-related operations
+    //! handles all the path- and file-related operations
     CullendulaFileSystemHandler m_fileSystemHandler;
+
+    //! members for the help menu
+    QMenu* helpMenu = nullptr;
+    QAction* aboutAct = nullptr;
+    QAction* aboutQtAct = nullptr;
+    //! - end -
 };

@@ -14,6 +14,8 @@
 #include <QtCore/QMimeData>
 #include <QtCore/QDebug> //todom maybe remove
 
+#include <QMessageBox>
+
 //----------------------------------------------------------------------------
 
 CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
@@ -37,6 +39,10 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
 
     // necessary! even if the QLabel itself accepts already drops
     setAcceptDrops(true);
+
+    // create the menu
+    createActions();
+    createMenus();
 
     printStatus("system is up and running :)");
 }
@@ -211,3 +217,52 @@ void CullendulaMainWindow::printStatus(const QString message)
     // messages shall disappear after five seconds
     ui->statusBar->showMessage(message, c_StatusBarDelay);
 }
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::createActions()
+{
+    aboutAct = new QAction(tr("&About Cullendula"), this);
+    aboutAct->setStatusTip(tr("Show the application's About box"));
+    connect(aboutAct, &QAction::triggered, this, &CullendulaMainWindow::about);
+
+    aboutQtAct = new QAction(tr("About &Qt"), this);
+    aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
+    connect(aboutQtAct, &QAction::triggered, qApp, &QApplication::aboutQt);
+    connect(aboutQtAct, &QAction::triggered, this, &CullendulaMainWindow::aboutQt);
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::createMenus()
+{
+    helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(aboutAct);
+    helpMenu->addAction(aboutQtAct);
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::about()
+{
+    printStatus(tr("Invoked Help|About"));
+    QMessageBox mBox(QMessageBox::Information, tr("About Cullendula"),
+                     tr("Helper program to sort out (\"cull\") a collection of pictures in a directory after a nice photo-walk or event.<br>"
+                        "Should work cross-platform.<br>"
+                        "<br>"
+                        "Developed by <a href='mail@marcelpetrick.it'>mail@marcelpetrick.it</a><br>"
+                        "Sourcecode can be found inside the repository at <a href='https://github.com/marcelpetrick/Cullendula/'>https://github.com/marcelpetrick/Cullendula</a><br>"
+                        "Feel free to use and share: GPL v3 :3"));
+    mBox.setTextFormat(Qt::RichText);
+    mBox.exec();
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::aboutQt()
+{
+    printStatus(tr("Invoked <b>Help|About Qt</b>"));
+}
+
+//----------------------------------------------------------------------------
+
