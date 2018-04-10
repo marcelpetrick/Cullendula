@@ -22,7 +22,7 @@ CullendulaFileSystemHandler::CullendulaFileSystemHandler()
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::setWorkingPath(const QString urlPath)
+bool CullendulaFileSystemHandler::setWorkingPath(const QString & urlPath)
 {
     bool returnValue(false);
 
@@ -64,7 +64,7 @@ QString CullendulaFileSystemHandler::getCurrentImagePath()
 
     if(checkInternalSanity())
     {
-        // TODO check for existance
+        // TODO check for existence
         QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath());
         qDebug() << "\t" << path;
 
@@ -179,7 +179,7 @@ bool CullendulaFileSystemHandler::processNewPath()
     QDir const tempDir = QDir(fileInfo.isDir() ? fileInfo.absoluteFilePath() : fileInfo.absolutePath());
     qDebug() << "\t resulting directory:" << tempDir.path();
 
-    // additionally check if the directory is useable
+    // additionally check if the directory is usable
     if(tempDir.exists())
     {
         m_workingPath.setPath(tempDir.path());
@@ -208,7 +208,7 @@ bool CullendulaFileSystemHandler::createImageFileList()
     qDebug() << "CullendulaFileSystemHandler::createImageFileList():";
 
     // apply the wanted filters
-    QStringList filters; // TODO make configureable for the user
+    QStringList filters; // TODO make configurable for the user
     filters << "*.jpg" << "*.jpeg";
     m_workingPath.setNameFilters(filters);
 
@@ -240,7 +240,7 @@ bool CullendulaFileSystemHandler::createImageFileList()
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::createOutputFolder(QString const subdir)
+bool CullendulaFileSystemHandler::createOutputFolder(QString const & subdir)
 {
     bool returnValue(false);
 
@@ -274,7 +274,7 @@ bool CullendulaFileSystemHandler::createOutputFolder(QString const subdir)
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const subdir)
+bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const & subdir)
 {
     bool returnValue(false);
     qDebug() << "CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder():";

@@ -176,7 +176,7 @@ void CullendulaMainWindow::slotButtonTrashTriggered()
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::loadAndScalePhoto(QString const path)
+void CullendulaMainWindow::loadAndScalePhoto(QString const& path)
 {
     qDebug() << "CullendulaMainWindow::loadAndScalePhoto(): path=" << path;
 
@@ -188,7 +188,7 @@ void CullendulaMainWindow::loadAndScalePhoto(QString const path)
     int height = ui->centerLabel->height() - extraWidthBecauseOfFraming;
     qDebug() << "label-size:" << width << "*" << height;
 
-    // prevent upscaling of smaller photos to big label
+    // prevent upscaling of smaller photos
     if(pixmap.width() < width)
     {
         width = pixmap.width();
@@ -198,6 +198,10 @@ void CullendulaMainWindow::loadAndScalePhoto(QString const path)
     {
         height = pixmap.height();
     }
+
+	// assert that both values are positive
+	width = std::max(0, width);
+	height = std::max(0, height);
 
     // set a scaled pixmap keeping its aspect ratio
     ui->centerLabel->setPixmap(pixmap.scaled(width, height, Qt::KeepAspectRatio));
@@ -242,7 +246,7 @@ void CullendulaMainWindow::activateButtons(const bool active)
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::printStatus(const QString message)
+void CullendulaMainWindow::printStatus(const QString & message)
 {
     // messages shall disappear after five seconds
     ui->statusBar->showMessage(message, c_StatusBarDelay);

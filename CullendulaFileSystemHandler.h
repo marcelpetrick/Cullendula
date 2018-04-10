@@ -23,7 +23,7 @@ public:
     CullendulaFileSystemHandler();
 
     //! TODO
-    bool setWorkingPath(QString const urlPath);
+    bool setWorkingPath(QString const & urlPath);
 
     //! TODO
     QString getCurrentImagePath();
@@ -52,15 +52,15 @@ private:
 
     //! Create and check if an output-folder exists.
     //! Initially: just create sub-dir "output".
-    bool createOutputFolder(QString const subdir);
+    bool createOutputFolder(QString const & subdir);
 
     //! TODO
-    bool moveCurrentFileToGivenSubfolder(QString const subdir);
+    bool moveCurrentFileToGivenSubfolder(QString const & subdir);
 
     //! Check if the current file-list, position and working-path are valid. Else return false.
     bool checkInternalSanity();
 
-    //! adjust the current position inside the filelist by the given offset.
+    //! adjust the current position inside the file list by the given offset.
     //! @returns sanity-check
     bool adjustCurrentPositionBy(const int offset);
 

@@ -63,7 +63,7 @@ private:
     void activateButtons(bool const active = false);
 
     //! Print the given string to the status-bar.
-    void printStatus(QString const message);
+    void printStatus(QString const & message);
 
     //! create actions and fitting menues for the "help-menu"
     void createActions();
@@ -71,7 +71,7 @@ private:
 
     //! Load, scale and assigne the current photo-file to the center-label.
     //! (Yes, could be ressource-intensive when the user starts to play around with resizing.)
-    void loadAndScalePhoto(const QString path);
+    void loadAndScalePhoto(const QString &path);
 
 // [members]
     //! the ui
