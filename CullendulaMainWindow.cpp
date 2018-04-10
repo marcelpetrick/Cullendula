@@ -11,10 +11,9 @@
 // Qt includes
 #include <QtGui/QDropEvent>
 #include <QtGui/QPixmap>
+#include <QtWidgets/QMessageBox>
 #include <QtCore/QMimeData>
 #include <QtCore/QDebug> //todom maybe remove
-
-#include <QMessageBox>
 
 //----------------------------------------------------------------------------
 
@@ -105,14 +104,10 @@ void CullendulaMainWindow::resizeEvent(QResizeEvent* event)
 {
     qDebug() << "CullendulaMainWindow::resizeEvent()";
 
-    QString const path = m_fileSystemHandler.getCurrentImagePath();
-    if(!path.isEmpty()) // just the case if no valid images found
-    {
-        loadAndScalePhoto(path);
-    }
-    // TODO: or easier: just call refreshLabel?
+    QMainWindow::resizeEvent(event);
 
-    event->accept();
+    // reload the current picture (or text)
+    refreshLabel();
 }
 
 //----------------------------------------------------------------------------

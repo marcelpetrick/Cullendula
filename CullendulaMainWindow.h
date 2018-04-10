@@ -20,7 +20,7 @@ namespace Ui {
 namespace {
     //! v0.1 was the basic release; working, but ugly
     //! v0.2 improved useability and stability; more features (move to trash!); refactored code-base; improved code-quality
-    //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus
+    //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
     QString const c_versionString = " - v0.3";
     unsigned int const c_StatusBarDelay = 5000;
 }
@@ -70,7 +70,7 @@ private:
     void createMenus();
 
     //! Load, scale and assigne the current photo-file to the center-label.
-    //! (Yes, could be ressource-intensive when playing with resize.)
+    //! (Yes, could be ressource-intensive when the user starts to play around with resizing.)
     void loadAndScalePhoto(const QString path);
 
 // [members]

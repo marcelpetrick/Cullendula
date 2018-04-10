@@ -8,7 +8,6 @@
 
 // Qt includes
 #include <QtWidgets/QMainWindow>
-//#include <QtCore/QObject>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
