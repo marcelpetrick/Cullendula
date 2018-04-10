@@ -20,7 +20,9 @@ namespace Ui {
 namespace {
     //! v0.1 was the basic release; working, but ugly
     //! v0.2 improved useability and stability; more features (move to trash!); refactored code-base; improved code-quality
-    QString const c_versionString = " - v0.2";
+    //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus
+    QString const c_versionString = " - v0.3";
+    unsigned int const c_StatusBarDelay = 5000;
 }
 
 class CullendulaMainWindow : public QMainWindow

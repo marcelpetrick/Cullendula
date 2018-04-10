@@ -209,5 +209,5 @@ void CullendulaMainWindow::activateButtons(const bool active)
 void CullendulaMainWindow::printStatus(const QString message)
 {
     // messages shall disappear after five seconds
-    ui->statusBar->showMessage(message, 5000);
+    ui->statusBar->showMessage(message, c_StatusBarDelay);
 }

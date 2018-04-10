@@ -51,6 +51,9 @@
         <property name="acceptDrops">
          <bool>true</bool>
         </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;This label will show the current photo (image-file) in case one is loaded.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Please drag and drop a directory or file on this area.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="autoFillBackground">
          <bool>false</bool>
         </property>
@@ -124,6 +127,9 @@
           <kerning>true</kerning>
          </font>
         </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch to the left neighbour (based on the file-list of the current directory).&lt;/p&gt;&lt;p&gt;As shortcut press the &amp;quot;left&amp;quot; arrow key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>←</string>
         </property>
@@ -154,6 +160,9 @@
           <pointsize>20</pointsize>
          </font>
         </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Move the current picture into the specified output-subdirectory. Will automatically switch to the photo which is next&lt;/p&gt;&lt;p&gt;As shortcut press the &amp;quot;up&amp;quot; arrow key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>save ↑</string>
         </property>
@@ -183,6 +192,9 @@
          <font>
           <pointsize>20</pointsize>
          </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Move the current picture into the specified trash-subdirectory. Will automatically switch to the photo which is next&lt;/p&gt;&lt;p&gt;As shortcut press the &amp;quot;down&amp;quot; arrow key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string>trash ↓</string>
@@ -215,6 +227,9 @@
         </property>
         <property name="acceptDrops">
          <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch to the right neighbour (based on the file-list of the current directory).&lt;/p&gt;&lt;p&gt;As shortcut press the &amp;quot;right&amp;quot; arrow key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string>→ </string>
@@ -257,7 +272,11 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="toolTip">
+    <string>This is the status bar. It will display any kind of information like current position, failure messages, ..</string>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
