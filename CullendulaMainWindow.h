@@ -38,6 +38,9 @@ protected:
     void dragEnterEvent(QDragEnterEvent* event) Q_DECL_OVERRIDE;
     void dropEvent(QDropEvent* event) Q_DECL_OVERRIDE;
 
+    //! Reimplemented to make the label with the current photo stretch accordingly.
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+
 private slots:
     //! shift left and right (for- and backward) through the image-file-list (current directory)
     void slotButtonLeftTriggered();
@@ -62,9 +65,13 @@ private:
     //! Print the given string to the status-bar.
     void printStatus(QString const message);
 
-    //! TODO
+    //! create actions and fitting menues for the "help-menu"
     void createActions();
     void createMenus();
+
+    //! Load, scale and assigne the current photo-file to the center-label.
+    //! (Yes, could be ressource-intensive when playing with resize.)
+    void loadAndScalePhoto(const QString path);
 
 // [members]
     //! the ui

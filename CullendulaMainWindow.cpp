@@ -101,6 +101,22 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event)
 
 //----------------------------------------------------------------------------
 
+void CullendulaMainWindow::resizeEvent(QResizeEvent* event)
+{
+    qDebug() << "CullendulaMainWindow::resizeEvent()";
+
+    QString const path = m_fileSystemHandler.getCurrentImagePath();
+    if(!path.isEmpty()) // just the case if no valid images found
+    {
+        loadAndScalePhoto(path);
+    }
+    // TODO: or easier: just call refreshLabel?
+
+    event->accept();
+}
+
+//----------------------------------------------------------------------------
+
 void CullendulaMainWindow::slotButtonLeftTriggered()
 {
     qDebug() << "CullendulaMainWindow::slotButtonLeftTriggered()";
@@ -165,6 +181,35 @@ void CullendulaMainWindow::slotButtonTrashTriggered()
 
 //----------------------------------------------------------------------------
 
+void CullendulaMainWindow::loadAndScalePhoto(QString const path)
+{
+    qDebug() << "CullendulaMainWindow::loadAndScalePhoto(): path=" << path;
+
+    QPixmap const pixmap = QPixmap(path);
+
+    // scale while keeping the aspect ratio
+    const int extraWidthBecauseOfFraming(2);
+    int width = ui->centerLabel->width() - extraWidthBecauseOfFraming;
+    int height = ui->centerLabel->height() - extraWidthBecauseOfFraming;
+    qDebug() << "label-size:" << width << "*" << height;
+
+    // prevent upscaling of smaller photos to big label
+    if(pixmap.width() < width)
+    {
+        width = pixmap.width();
+    }
+
+    if(pixmap.height() < height)
+    {
+        height = pixmap.height();
+    }
+
+    // set a scaled pixmap keeping its aspect ratio
+    ui->centerLabel->setPixmap(pixmap.scaled(width, height, Qt::KeepAspectRatio));
+}
+
+//----------------------------------------------------------------------------
+
 void CullendulaMainWindow::refreshLabel()
 {
     qDebug() << "CullendulaMainWindow::refreshLabel():";
@@ -181,17 +226,7 @@ void CullendulaMainWindow::refreshLabel()
     else
     {
         // load the file
-        QPixmap const pixmap = QPixmap(path);
-
-        // scale while keeping the aspect ratio
-        int const w = ui->centerLabel->width();
-        int const h = ui->centerLabel->height();
-        qDebug() << "label-size:" << w << "*" << h;
-        // TODO prevent upscaling of smaller photos to big label ..
-        // TODO implement the resize-event for the widget
-
-        // set a scaled pixmap keeping its aspect ratio
-        ui->centerLabel->setPixmap(pixmap.scaled(w, h, Qt::KeepAspectRatio));
+        loadAndScalePhoto(path);
 
         activateButtons(true);
 
