@@ -23,6 +23,7 @@ namespace {
     //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
     QString const c_versionString = " - v0.3";
     unsigned int const c_StatusBarDelay = 5000;
+    int const c_extraWidthBecauseOfFraming = 2;
 }
 
 class CullendulaMainWindow : public QMainWindow

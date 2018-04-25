@@ -183,9 +183,8 @@ void CullendulaMainWindow::loadAndScalePhoto(QString const& path)
     QPixmap const pixmap = QPixmap(path);
 
     // scale while keeping the aspect ratio
-    const int extraWidthBecauseOfFraming(2);
-    int width = ui->centerLabel->width() - extraWidthBecauseOfFraming;
-    int height = ui->centerLabel->height() - extraWidthBecauseOfFraming;
+    int width = ui->centerLabel->width() - c_extraWidthBecauseOfFraming;
+    int height = ui->centerLabel->height() - c_extraWidthBecauseOfFraming;
     qDebug() << "label-size:" << width << "*" << height;
 
     // prevent upscaling of smaller photos
@@ -199,9 +198,9 @@ void CullendulaMainWindow::loadAndScalePhoto(QString const& path)
         height = pixmap.height();
     }
 
-	// assert that both values are positive
-	width = std::max(0, width);
-	height = std::max(0, height);
+    // assert that both values are positive
+    width = std::max(0, width);
+    height = std::max(0, height);
 
     // set a scaled pixmap keeping its aspect ratio
     ui->centerLabel->setPixmap(pixmap.scaled(width, height, Qt::KeepAspectRatio));
@@ -224,12 +223,19 @@ void CullendulaMainWindow::refreshLabel()
     }
     else
     {
-        // load the file
-        loadAndScalePhoto(path);
+        if(QFile::exists(path))
+        {
+            // load the file
+            loadAndScalePhoto(path);
 
-        activateButtons(true);
+            activateButtons(true);
 
-        printStatus(m_fileSystemHandler.getCurrentStatus());
+            printStatus(m_fileSystemHandler.getCurrentStatus());
+        }
+        else
+        {
+            qDebug() << "CullendulaMainWindow::refreshLabel(): given path did not exist: " << path;
+        }
     }
 }
 
@@ -299,4 +305,3 @@ void CullendulaMainWindow::aboutQt()
 }
 
 //----------------------------------------------------------------------------
-
