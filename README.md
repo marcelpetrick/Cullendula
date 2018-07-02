@@ -29,3 +29,5 @@ v0.2 improved useability and stability; more features (move to trash!); refactor
 - make the used image-file-suffixes configureable
 - add some version/help menu-entry
 - Important: add a file-existance_check before loading to QPixmap
+- show the name + path of the current file
+- add possibility to open the current file directly
