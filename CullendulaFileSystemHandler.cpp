@@ -43,32 +43,18 @@ QString CullendulaFileSystemHandler::getCurrentImagePath()
     QString returnValue;
     qDebug() << "CullendulaFileSystemHandler::getCurrentImagePath():";
 
-//    // some defensive checks: so is at least one file available?
-//    if(m_currentImages.isEmpty())
-//    {
-//        qDebug() << "ERROR: invalid (empty) file-list! will return ... but then the text-label shall appear again";
-//        return QString();
-//    }
-
-//    if(m_positionCurrentFile < 0)
-//    {
-//        qDebug() << "WARNING: invalid position given: current < 0";
-//        m_positionCurrentFile = 0;
-//    }
-
-//    if(m_positionCurrentFile >= m_currentImages.size())
-//    {
-//        qDebug() << "WARNING: invalid position given: current > number of files";
-//        m_positionCurrentFile = m_currentImages.size() - 1;
-//    }
-
+    // some defensive checks
     if(checkInternalSanity())
     {
         // TODO check for existence
         QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath());
         qDebug() << "\t" << path;
+        QFile const tempFile(path);
+        if(tempFile.exists()/* && tempFile.isReadable()*/) // latter is not the case with Ext4 here ..
+        {
+            returnValue = path;
+        }
 
-        returnValue = path;
     }
 
     return returnValue;
