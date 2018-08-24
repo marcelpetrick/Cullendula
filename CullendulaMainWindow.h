@@ -53,7 +53,7 @@ private slots:
 
     //! Slots for the help-menu-entries
     void about();
-    void aboutQt();
+    //void aboutQt();
     //! - end -
 
 private:

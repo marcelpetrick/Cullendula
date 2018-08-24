@@ -269,7 +269,8 @@ void CullendulaMainWindow::createActions()
     aboutQtAct = new QAction(tr("About &Qt"), this);
     aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
     connect(aboutQtAct, &QAction::triggered, qApp, &QApplication::aboutQt);
-    connect(aboutQtAct, &QAction::triggered, this, &CullendulaMainWindow::aboutQt);
+    //connect(aboutQtAct, &QAction::triggered, this, &CullendulaMainWindow::aboutQt);
+    connect(aboutQtAct, &QAction::triggered, this, [=] () { printStatus(tr("Invoked <b>Help|About Qt</b>")); }); // replaced the slot-call with a lambda :)
 }
 
 //----------------------------------------------------------------------------
@@ -299,9 +300,9 @@ void CullendulaMainWindow::about()
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::aboutQt()
-{
-    printStatus(tr("Invoked <b>Help|About Qt</b>"));
-}
+//void CullendulaMainWindow::aboutQt()
+//{
+//    printStatus(tr("Invoked <b>Help|About Qt</b>"));
+//}
 
 //----------------------------------------------------------------------------
