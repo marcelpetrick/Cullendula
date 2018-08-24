@@ -13,11 +13,9 @@
 
 int main(int argc, char *argv[])
 {
-    Q_UNUSED(argc)
-    Q_UNUSED(argv)
-
+    QApplication a(argc, argv);
     CullendulaMainWindow mainWindow;
     mainWindow.show();
 
-    return QApplication::exec();
+    return a.exec();
 }
