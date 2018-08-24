@@ -230,7 +230,9 @@ void CullendulaMainWindow::refreshLabel()
 
             activateButtons(true);
 
-            printStatus(m_fileSystemHandler.getCurrentStatus());
+            // print the current file-path as user-notification
+            QString const message = m_fileSystemHandler.getCurrentStatus() + ": " + path;
+            printStatus(message);
         }
         else
         {
