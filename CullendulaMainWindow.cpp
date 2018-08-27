@@ -264,12 +264,14 @@ void CullendulaMainWindow::printStatus(const QString & message)
 
 void CullendulaMainWindow::createActions()
 {
-    aboutAct = new QAction(tr("&About Cullendula"), this);
+    aboutAct = new QAction(tr("About Cullendula"), this);
     aboutAct->setStatusTip(tr("Show the application's About box"));
+    aboutAct->setShortcut(Qt::CTRL + Qt::Key_A);
     connect(aboutAct, &QAction::triggered, this, &CullendulaMainWindow::about);
 
-    aboutQtAct = new QAction(tr("About &Qt"), this);
+    aboutQtAct = new QAction(tr("About Qt"), this);
     aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
+    aboutQtAct->setShortcut(Qt::CTRL + Qt::Key_Q);
     connect(aboutQtAct, &QAction::triggered, qApp, &QApplication::aboutQt);
     //connect(aboutQtAct, &QAction::triggered, this, &CullendulaMainWindow::aboutQt);
     connect(aboutQtAct, &QAction::triggered, this, [=] () { printStatus(tr("Invoked <b>Help|About Qt</b>")); }); // replaced the slot-call with a lambda :)
