@@ -6,6 +6,9 @@
 
 #pragma once
 
+// own includes
+#include "CullendulaUndoStack.h"
+
 // Qt includes
 #include <QtCore/QVector>
 #include <QtCore/QDir>
@@ -66,10 +69,13 @@ private:
     bool adjustCurrentPositionBy(const int offset);
 
     // [members]
-    // the currently chosen path to the directory (not file)
+    //! the currently chosen path to the directory (not file)
     QDir m_workingPath;
 
-    // saves the current state of the given directory; initially empty; shall be reset(TODO)
+    //! saves the current state of the given directory; initially empty; shall be reset(TODO)
     QVector<QFileInfo> m_currentImages;
     int m_positionCurrentFile = -1;
+
+    //! Stores the last actions for Undo/Redo
+    CullendulaUndoStack m_undoStack;
 };
