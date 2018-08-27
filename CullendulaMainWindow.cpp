@@ -264,26 +264,26 @@ void CullendulaMainWindow::printStatus(const QString & message)
 
 void CullendulaMainWindow::createActions()
 {
-    aboutAct = new QAction(tr("About Cullendula"), this);
-    aboutAct->setStatusTip(tr("Show the application's About box"));
-    aboutAct->setShortcut(Qt::CTRL + Qt::Key_A);
-    connect(aboutAct, &QAction::triggered, this, &CullendulaMainWindow::about);
+    m_aboutAct = new QAction(tr("About Cullendula"), this);
+    m_aboutAct->setStatusTip(tr("Show the application's About box"));
+    m_aboutAct->setShortcut(Qt::CTRL + Qt::Key_A);
+    connect(m_aboutAct, &QAction::triggered, this, &CullendulaMainWindow::about);
 
-    aboutQtAct = new QAction(tr("About Qt"), this);
-    aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
-    aboutQtAct->setShortcut(Qt::CTRL + Qt::Key_Q);
-    connect(aboutQtAct, &QAction::triggered, qApp, &QApplication::aboutQt);
+    m_aboutQtAct = new QAction(tr("About Qt"), this);
+    m_aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
+    m_aboutQtAct->setShortcut(Qt::CTRL + Qt::Key_Q);
+    connect(m_aboutQtAct, &QAction::triggered, qApp, &QApplication::aboutQt);
     //connect(aboutQtAct, &QAction::triggered, this, &CullendulaMainWindow::aboutQt);
-    connect(aboutQtAct, &QAction::triggered, this, [=] () { printStatus(tr("Invoked <b>Help|About Qt</b>")); }); // replaced the slot-call with a lambda :)
+    connect(m_aboutQtAct, &QAction::triggered, this, [=] () { printStatus(tr("Invoked <b>Help|About Qt</b>")); }); // replaced the slot-call with a lambda :)
 }
 
 //----------------------------------------------------------------------------
 
 void CullendulaMainWindow::createMenus()
 {
-    helpMenu = menuBar()->addMenu(tr("&Help"));
-    helpMenu->addAction(aboutAct);
-    helpMenu->addAction(aboutQtAct);
+    m_helpMenu = menuBar()->addMenu(tr("&Help"));
+    m_helpMenu->addAction(m_aboutAct);
+    m_helpMenu->addAction(m_aboutQtAct);
 }
 
 //----------------------------------------------------------------------------

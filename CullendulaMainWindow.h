@@ -82,8 +82,8 @@ private:
     CullendulaFileSystemHandler m_fileSystemHandler;
 
     //! members for the help menu
-    QMenu* helpMenu = nullptr;
-    QAction* aboutAct = nullptr;
-    QAction* aboutQtAct = nullptr;
+    QMenu* m_helpMenu = nullptr;
+    QAction* m_aboutAct = nullptr;
+    QAction* m_aboutQtAct = nullptr;
     //! - end -
 };
