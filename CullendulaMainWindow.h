@@ -21,8 +21,13 @@ namespace {
     //! v0.1 was the basic release; working, but ugly
     //! v0.2 improved useability and stability; more features (move to trash!); refactored code-base; improved code-quality
     //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
-    QString const c_versionString = " - v0.3.3";
+    //! v0.4 added undo/redo-functionality
+    QString const c_versionString = " - v0.4.0";
+
+    //! Determines how long the status message is visible. After timer runs out, it is removed.
     unsigned int const c_StatusBarDelay = 5000;
+
+    //! prevent pumping window because of scaling. Describes the expected size of the frame.
     int const c_extraWidthBecauseOfFraming = 2;
 }
 
@@ -81,9 +86,15 @@ private:
     //! handles all the path- and file-related operations
     CullendulaFileSystemHandler m_fileSystemHandler;
 
-    //! members for the help menu
+    //! members for the "edit"- menu
+    QMenu* m_editMenu = nullptr;
+    QAction* m_undoAction = nullptr;
+    QAction* m_redoQtAction = nullptr;
+    //! - end -
+
+    //! members for the "help"-menu
     QMenu* m_helpMenu = nullptr;
-    QAction* m_aboutAct = nullptr;
-    QAction* m_aboutQtAct = nullptr;
+    QAction* m_aboutAction = nullptr;
+    QAction* m_aboutQtAction = nullptr;
     //! - end -
 };

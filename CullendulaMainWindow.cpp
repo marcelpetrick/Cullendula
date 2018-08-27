@@ -264,26 +264,44 @@ void CullendulaMainWindow::printStatus(const QString & message)
 
 void CullendulaMainWindow::createActions()
 {
-    m_aboutAct = new QAction(tr("About Cullendula"), this);
-    m_aboutAct->setStatusTip(tr("Show the application's About box"));
-    m_aboutAct->setShortcut(Qt::CTRL + Qt::Key_A);
-    connect(m_aboutAct, &QAction::triggered, this, &CullendulaMainWindow::about);
+    // edit menu
+    m_undoAction = new QAction(tr("Undo"), this);
+    m_undoAction->setStatusTip(tr("Revert the last file-move-operation"));
+    m_undoAction->setShortcut(Qt::CTRL + Qt::Key_Y);
+    connect(m_undoAction, &QAction::triggered, this, [=] () {qDebug("pressed Undo"); });
 
-    m_aboutQtAct = new QAction(tr("About Qt"), this);
-    m_aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
-    m_aboutQtAct->setShortcut(Qt::CTRL + Qt::Key_Q);
-    connect(m_aboutQtAct, &QAction::triggered, qApp, &QApplication::aboutQt);
+    m_redoQtAction = new QAction(tr("Redo"), this);
+    m_redoQtAction->setStatusTip(tr("Redo the last file-move-operation (means: undo undo)"));
+    m_redoQtAction->setShortcut(Qt::CTRL + Qt::Key_Z);
+    connect(m_redoQtAction, &QAction::triggered, this, [=] () {qDebug("pressed Redo"); });
+
+    // help menu
+    m_aboutAction = new QAction(tr("About Cullendula"), this);
+    m_aboutAction->setStatusTip(tr("Show the application's About box"));
+    m_aboutAction->setShortcut(Qt::CTRL + Qt::Key_A);
+    connect(m_aboutAction, &QAction::triggered, this, &CullendulaMainWindow::about);
+
+    m_aboutQtAction = new QAction(tr("About Qt"), this);
+    m_aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
+    m_aboutQtAction->setShortcut(Qt::CTRL + Qt::Key_Q);
+    connect(m_aboutQtAction, &QAction::triggered, qApp, &QApplication::aboutQt);
     //connect(aboutQtAct, &QAction::triggered, this, &CullendulaMainWindow::aboutQt);
-    connect(m_aboutQtAct, &QAction::triggered, this, [=] () { printStatus(tr("Invoked <b>Help|About Qt</b>")); }); // replaced the slot-call with a lambda :)
+    connect(m_aboutQtAction, &QAction::triggered, this, [=] () { printStatus(tr("Invoked <b>Help|About Qt</b>")); }); // replaced the slot-call with a lambda :)
 }
 
 //----------------------------------------------------------------------------
 
 void CullendulaMainWindow::createMenus()
 {
-    m_helpMenu = menuBar()->addMenu(tr("&Help"));
-    m_helpMenu->addAction(m_aboutAct);
-    m_helpMenu->addAction(m_aboutQtAct);
+    // edit menu
+    m_editMenu = menuBar()->addMenu(tr("Edit"));
+    m_editMenu->addAction(m_undoAction);
+    m_editMenu->addAction(m_redoQtAction);
+
+    // help menu
+    m_helpMenu = menuBar()->addMenu(tr("Help"));
+    m_helpMenu->addAction(m_aboutAction);
+    m_helpMenu->addAction(m_aboutQtAction);
 }
 
 //----------------------------------------------------------------------------
