@@ -21,6 +21,10 @@ public:
 
     // get the current size; amount of items
 
+    // due to concerns while thinking about the API in combination with Redo, reading about the Command/Memento-Pattern is necessary ..
+    // https://en.wikipedia.org/wiki/Command_pattern
+    // https://en.wikipedia.org/wiki/Memento_pattern
+
 private:
     //! container
     QVector<QString> m_container;
