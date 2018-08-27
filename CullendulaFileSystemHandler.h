@@ -7,12 +7,13 @@
 #pragma once
 
 // Qt includes
-#include <QtWidgets/QMainWindow>
+#include <QtCore/QVector>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
 // for constants
 namespace {
+    //! Determines the name of the output-folders
     QString const c_hardcodedOutput = "output";
     QString const c_hardcodedTrash = "trash";
 }
@@ -28,16 +29,16 @@ public:
     //! TODO
     QString getCurrentImagePath();
 
-    //! TODO
+    //! Move to the previous (left) picture-file in the vector.
     bool switchCurrentPositionToTheLeft();
 
-    //! TODO
+    //! Move to the next (right) picture-file in the vector.
     bool switchCurrentPositionToTheRight();
 
-    //! TODO
+    //! Moves the current file to the "output"-folder.
     bool saveCurrentFile();
 
-    //! TODO
+    //! Moves the current file to the "trash"-folder.
     bool trashCurrentFile();
 
     //! Return a string which describes the current position in the file-list.
@@ -54,7 +55,7 @@ private:
     //! Initially: just create sub-dir "output".
     bool createOutputFolder(QString const & subdir);
 
-    //! TODO
+    //! Unified functionality to move the current file. Called by save/trash.
     bool moveCurrentFileToGivenSubfolder(QString const & subdir);
 
     //! Check if the current file-list, position and working-path are valid. Else return false.

@@ -9,7 +9,6 @@
 
 // Qt includes
 #include <QtCore/QList>
-#include <QtCore/QFileInfo>
 #include <QtCore/QFile>
 #include <QtCore/QDebug> //todom maybe remove
 
@@ -64,7 +63,7 @@ QString CullendulaFileSystemHandler::getCurrentImagePath()
 
 bool CullendulaFileSystemHandler::adjustCurrentPositionBy(int const offset)
 {
-    bool returnValue =checkInternalSanity();
+    bool returnValue = checkInternalSanity();
 
     if(checkInternalSanity())
     {
