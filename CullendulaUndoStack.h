@@ -10,6 +10,19 @@
 #include <QtCore/QVector>
 #include <QtCore/QString>
 
+//----------------------------------------------------------------------------------
+
+class UndoItem
+{
+public:
+    //! Quite simple: container for a pair of two paths (saved as String).
+    //! Right now access is unlimited.
+    QString fromPath;
+    QString toPath;
+};
+
+//----------------------------------------------------------------------------------
+
 class CullendulaUndoStack
 {
 public:
@@ -27,5 +40,5 @@ public:
 
 private:
     //! container
-    QVector<QString> m_container;
+    QVector<UndoItem> m_container;
 };

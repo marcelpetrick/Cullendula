@@ -26,10 +26,11 @@ class CullendulaFileSystemHandler
 public:
     CullendulaFileSystemHandler();
 
-    //! TODO
+    //! Allows to configure the current path for the search for the album.
     bool setWorkingPath(QString const & urlPath);
 
-    //! TODO
+    //! Return the path to the current item.
+    //! In case no path is valid: return empty QString.
     QString getCurrentImagePath();
 
     //! Move to the previous (left) picture-file in the vector.
