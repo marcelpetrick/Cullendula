@@ -50,3 +50,7 @@ Cullendula
 *.v12.suo
 *.sln
 *.sdf
+/debug/
+/release/
+/CppDependOut/
+*.cdproj
