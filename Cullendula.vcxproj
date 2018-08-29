@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="CullendulaFileSystemHandler.cpp" />
     <ClCompile Include="CullendulaMainWindow.cpp" />
+    <ClCompile Include="CullendulaUndoStack.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +152,7 @@
       <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">MOC CullendulaMainWindow.h</Message>
       <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\moc_CullendulaMainWindow.cpp;%(Outputs)</Outputs>
     </CustomBuild>
+    <ClInclude Include="CullendulaUndoStack.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="debug\moc_CullendulaMainWindow.cpp">
