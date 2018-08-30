@@ -11,5 +11,7 @@ public:
 //    Test_CullendulaUndoStack();
 
 private slots:
-    void slotTestCreation();
+    void slot_Test_Creat_CullendulaUndoStack();
+
+    void slot_Test_Push();
 };
