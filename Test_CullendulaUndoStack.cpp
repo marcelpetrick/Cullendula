@@ -59,6 +59,10 @@ void Test_CullendulaUndoStack::slot_Test_Push()
 
 void Test_CullendulaUndoStack::slot_Test_Pop()
 {
+    m_stackPtr->undo();
+    m_stackPtr->undo();
+    m_stackPtr->undo();
+
     CullendulaUndoItem const foo = m_stackPtr->undo();
     // should yield ("","")
     bool const isEmptyItem = foo.fromPath.isEmpty() && foo.toPath.isEmpty();
@@ -68,10 +72,22 @@ void Test_CullendulaUndoStack::slot_Test_Pop()
 
     CullendulaUndoItem const bar = m_stackPtr->undo();
     // should yield ("a","b")
-    bool const isEmptyItem2 = !bar.fromPath.isEmpty() && !bar.toPath.isEmpty();
-    QVERIFY2(isEmptyItem2 == true, "undo on 1 item-stack");
+    bool const hasExpectedContent = (bar.fromPath == "a") && (bar.toPath == "b");
+    QVERIFY2(hasExpectedContent == true, "undo on 1 item-stack");
 
-    //! @todo big mistake! something is wrong here: first undo yields ("","")
+    CullendulaUndoItem const item2 = m_stackPtr->undo();
+    QVERIFY2((item2.fromPath == "") && (item2.toPath == ""), "undo on 1 item-stack");
+
+    // test with 3 pushed items, then undo them in reverse order
+    m_stackPtr->push("1", "2");
+    m_stackPtr->push("3", "4");
+    m_stackPtr->push("5", "6");
+    CullendulaUndoItem const item3 = m_stackPtr->undo();
+    QVERIFY2((item3.fromPath == "5") && (item3.toPath == "6"), "undo on 1 item-stack");
+    CullendulaUndoItem const item4 = m_stackPtr->undo();
+    QVERIFY2((item4.fromPath == "3") && (item4.toPath == "4"), "undo on 1 item-stack");
+    CullendulaUndoItem const item5 = m_stackPtr->undo();
+    QVERIFY2((item5.fromPath == "1") && (item5.toPath == "2"), "undo on 1 item-stack");
 }
 
 //----------------------------------------------------------------------------------

@@ -18,7 +18,8 @@ CullendulaUndoStack::CullendulaUndoStack()
     //m_container.reserve(10); // TODO
 
     // update and initialize the current position
-    m_currentItem = static_cast<long>(getSize()) - 1;
+    m_currentItem = getSize();
+    //m_currentItem = static_cast<long>(getSize()) - 1;
 }
 
 //----------------------------------------------------------------------------------
@@ -33,11 +34,13 @@ CullendulaUndoStack::~CullendulaUndoStack()
 void CullendulaUndoStack::push(const QString &from, const QString &to)
 {
     //! @todo implement that the container is reset to the position where the "current"-pointer pointed
-    while(static_cast<long>(getSize()) - 1 > m_currentItem)
-    {
-        qDebug() << "push: drop one item"; // todom remove
-        m_container.removeLast();
-    }
+//    int compare = static_cast<long>(getSize());
+//    while(compare > m_currentItem + 1)
+//    {
+//        qDebug() << "push: drop one item"; // todom remove
+//        m_container.removeLast();
+//        compare = static_cast<long>(getSize());
+//    }
 
     CullendulaUndoItem newItem(from, to);
     qDebug() << "push: push_back the new item"; // todom remove
@@ -51,11 +54,16 @@ void CullendulaUndoStack::push(const QString &from, const QString &to)
 
 CullendulaUndoItem CullendulaUndoStack::undo()
 {
-    CullendulaUndoItem returnValue = m_currentItem >= 0 ? m_container.value(m_currentItem) : CullendulaUndoItem();
-    // decrease the current position
-    //! todo
-
-    return CullendulaUndoItem();
+    if(getSize() == 0)
+    {
+        return CullendulaUndoItem();
+    }
+    else
+    {
+        CullendulaUndoItem returnValue = m_container.value(m_currentItem);
+        m_currentItem--;
+        return returnValue;
+    }
 }
 
 //----------------------------------------------------------------------------------
