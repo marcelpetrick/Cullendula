@@ -15,7 +15,21 @@
 //! @class Helper to store the "source, target"-tuples for the moved files.
 class CullendulaUndoItem
 {
-public:
+public: //[ctor]
+
+    CullendulaUndoItem()
+    {
+        // nothing else to do :)
+    }
+
+    CullendulaUndoItem(QString const& from, QString const& to) :
+        fromPath(from),
+        toPath(to)
+    {
+        // nothing else to do :)
+    }
+
+public: //[members]
     //! Quite simple: container for a pair of two paths (saved as String).
     //! Right now access is unlimited.
     QString fromPath;
@@ -28,6 +42,7 @@ class CullendulaUndoStack
 {
 public:
     CullendulaUndoStack();
+    ~CullendulaUndoStack();
 
     // push: insert new pair (from, to); will be converted to CullendulaUndoItem
     void push(QString const& from, QString const& to);
@@ -51,5 +66,5 @@ private:
     //! Keeps track of the pointer. In case of undo it is quite simple just to pop the last item.
     //! Then redo would be enabled, because the pointer is set back by one.
     //! Redo walks back the pointer by one
-    size_t m_currentItem = 0;
+    long m_currentItem; // initialized in ctor
 };

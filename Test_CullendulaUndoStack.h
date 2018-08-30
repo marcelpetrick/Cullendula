@@ -31,15 +31,29 @@ public:
     //    Test_CullendulaUndoStack();
 
 private slots:
+    //! -- slots from QTEST --
+
     //initTestCase() will be called before the first test function is executed.
     void initTestCase();
 
     //cleanupTestCase() will be called after the last test function was executed.
     void cleanupTestCase();
 
+    //init() will be called before each test function is executed.
+    void init();
+
+    //cleanup() will be called after every test function.
+    void cleanup();
+
+    //! -- end of: slots from QTEST --
+
     void slot_Test_Create_CullendulaUndoStack();
 
     void slot_Test_Push();
+
+    //! Used to test if the returned result after popping is the same like expected
+    //! Pop == Undo
+    void slot_Test_Pop();
 
 private:
     //! contains the used undo-stack
