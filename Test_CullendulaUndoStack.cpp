@@ -1,3 +1,9 @@
+//----------------------------------------------------------------------------------
+// description: Cullendula - small GUI-app to pick the best shots from a session
+// author: mail@marcelpetrick.it
+// repo: https://github.com/marcelpetrick/Cullendula
+//----------------------------------------------------------------------------------
+
 #include "Test_CullendulaUndoStack.h"
 
 //----------------------------------------------------------------------------------
@@ -9,21 +15,34 @@
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaUndoStack::slot_Test_Creat_CullendulaUndoStack()
+void Test_CullendulaUndoStack::initTestCase()
 {
-    //! @todo code was taken over from example ..
-    QString str = "Hello";
-    QCOMPARE(str.toUpper(), QString("HELLO"));
+    qDebug() << "Test_CullendulaUndoStack::initTestCase(): called before everything else";
+    m_stackPtr = std::make_shared<CullendulaUndoStack>();
+}
 
-    // TODO implement the creation of the real test
+//----------------------------------------------------------------------------------
 
+void Test_CullendulaUndoStack::cleanupTestCase()
+{
+    qDebug("Test_CullendulaUndoStack::cleanupTestCase(): called after myFirstTest and mySecondTest");
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaUndoStack::slot_Test_Create_CullendulaUndoStack()
+{
+    QVERIFY2(m_stackPtr->getSize() == 0, "CullendulaUndoStack was initialized and is empty");
 }
 
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaUndoStack::slot_Test_Push()
 {
-    QCOMPARE(0,1);
+    m_stackPtr->push("a", "b");
+    QVERIFY2(m_stackPtr->getSize() == 1, "after pushing one");
+    m_stackPtr->push("a", "b");
+    QVERIFY2(m_stackPtr->getSize() == 2, "after pushing another one");
 }
 
 //----------------------------------------------------------------------------------

@@ -1,6 +1,18 @@
+//----------------------------------------------------------------------------------
+// description: Cullendula - small GUI-app to pick the best shots from a session
+// author: mail@marcelpetrick.it
+// repo: https://github.com/marcelpetrick/Cullendula
+//----------------------------------------------------------------------------------
+
+// own includes
+#include <CullendulaUndoStack.h>
+
 // Qt includes
 #include <QtTest/QtTest>
 #include <QtCore/QDebug>
+
+// std-includes
+#include <memory> // for unique_ptr
 
 #pragma once
 
@@ -15,16 +27,21 @@ class Test_CullendulaUndoStack: public QObject
     Q_OBJECT
 
 public:
+    // not needed right now
     //    Test_CullendulaUndoStack();
 
 private slots:
-    void initTestCase()
-        { qDebug("Test_CullendulaUndoStack: called before everything else"); }
+    //initTestCase() will be called before the first test function is executed.
+    void initTestCase();
 
-    void cleanupTestCase()
-        { qDebug("Test_CullendulaUndoStack: called after myFirstTest and mySecondTest"); }
+    //cleanupTestCase() will be called after the last test function was executed.
+    void cleanupTestCase();
 
-    void slot_Test_Creat_CullendulaUndoStack();
+    void slot_Test_Create_CullendulaUndoStack();
 
     void slot_Test_Push();
+
+private:
+    //! contains the used undo-stack
+    std::shared_ptr<CullendulaUndoStack> m_stackPtr = nullptr;
 };
