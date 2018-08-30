@@ -30,3 +30,4 @@ void Test_CullendulaUndoStack::slot_Test_Push()
 
 // uncomment the following line to make the unit-test runnable
 QTEST_MAIN(Test_CullendulaUndoStack)
+
