@@ -94,5 +94,5 @@ void Test_CullendulaUndoStack::slot_Test_Pop()
 //----------------------------------------------------------------------------------
 
 // uncomment the following line to make the unit-test runnable
-QTEST_MAIN(Test_CullendulaUndoStack)
+//QTEST_MAIN(Test_CullendulaUndoStack)
 

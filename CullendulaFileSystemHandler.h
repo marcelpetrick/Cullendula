@@ -48,6 +48,11 @@ public:
     //! Return a string which describes the current position in the file-list.
     QString getCurrentStatus();
 
+    //! Checks if the option is possible. Useful for the GUI (dis-/enabled).
+    //! Hands over the functionality from the CullendulaUndoStack.
+    bool canUndo();
+    bool canRedo();
+
 private:
     //! checks the currently set path and gets the file-list. Afterwards triggers loading of the current image.
     bool processNewPath();
@@ -73,7 +78,7 @@ private:
     //! the currently chosen path to the directory (not file)
     QDir m_workingPath;
 
-    //! saves the current state of the given directory; initially empty; shall be reset(TODO)
+    //! saves the current state of the given directory; initially empty; shall be reset (TODO)
     QVector<QFileInfo> m_currentImages;
     int m_positionCurrentFile = -1;
 

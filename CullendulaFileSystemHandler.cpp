@@ -130,6 +130,20 @@ QString CullendulaFileSystemHandler::getCurrentStatus()
 
 //----------------------------------------------------------------------------
 
+bool CullendulaFileSystemHandler::canUndo()
+{
+    return m_undoStack.canUndo();
+}
+
+//----------------------------------------------------------------------------
+
+bool CullendulaFileSystemHandler::canRedo()
+{
+    return m_undoStack.canRedo();
+}
+
+//----------------------------------------------------------------------------
+
 bool CullendulaFileSystemHandler::processNewPath()
 {
     bool returnValue(false);
@@ -272,19 +286,22 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const 
         QDir outputDir(m_workingPath.path() + QDir::separator() + subdir);
         if(outputDir.exists())
         {
-            QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath()); // TODO this will lead to crash, because index out of bounds
-            qDebug() << "\t path of file to move:" << path;
-            QFileInfo fileInfo(path);
+            QString const originalPath(m_currentImages[m_positionCurrentFile].absoluteFilePath()); // TODO this will lead to crash, because index out of bounds
+            qDebug() << "\t path of file to move:" << originalPath;
+            QFileInfo fileInfo(originalPath);
             QString const fileName (fileInfo.fileName());
             qDebug() << "fileName:" << fileName;
             QString const outputFileName(outputDir.path() + QDir::separator() + fileName);
             qDebug() << "outputFileName:" << outputFileName;
-            bool const successfullyRenamed = outputDir.rename(path, outputFileName);
+            bool const successfullyRenamed = outputDir.rename(originalPath, outputFileName); //! this is the MOVE operation!
             qDebug() << "successfullyRenamed?" << successfullyRenamed;
 
             // in case the file was successfully moved (= renamed path), then adjust the internal structures
             if(successfullyRenamed)
             {
+                //! add to the stack!
+                m_undoStack.push(originalPath, outputFileName);
+
                 // go to the next picture by removing the entry from the file-list, but keep the position
                 m_currentImages.removeAt(m_positionCurrentFile);
                 //if this was the last item of the list (like pos 2 at list of 3; which has now just 2 elements), then modulo

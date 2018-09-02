@@ -56,10 +56,8 @@ private slots:
     //! save to the given trash-folder (by moving)
     void slotButtonTrashTriggered();
 
-    //! Slots for the help-menu-entries
+    //! Slot for the help-menu-entries
     void about();
-    //void aboutQt();
-    //! - end -
 
 private:
     //! Refresh the label: if file available, then show as image - else reset to the initial text
@@ -74,6 +72,9 @@ private:
     //! create actions and fitting menues for the "help-menu"
     void createActions();
     void createMenus();
+
+    //! Called after each operation to display Undo/Redo with correct state.
+    void updateUndoRedoButtonStatus();
 
     //! Load, scale and assigne the current photo-file to the center-label.
     //! (Yes, could be ressource-intensive when the user starts to play around with resizing.)

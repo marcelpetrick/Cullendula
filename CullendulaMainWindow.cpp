@@ -43,6 +43,9 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
     createActions();
     createMenus();
 
+    // set undo/redo correctly
+    updateUndoRedoButtonStatus();
+
     printStatus("system is up and running :)");
 }
 
@@ -149,6 +152,8 @@ void CullendulaMainWindow::slotButtonSaveTriggered()
     if(success)
     {
         refreshLabel();
+        // set undo/redo correctly
+        updateUndoRedoButtonStatus();
     }
     else
     {
@@ -167,6 +172,8 @@ void CullendulaMainWindow::slotButtonTrashTriggered()
     if(success)
     {
         refreshLabel();
+        // set undo/redo correctly
+        updateUndoRedoButtonStatus();
     }
     else
     {
@@ -306,6 +313,21 @@ void CullendulaMainWindow::createMenus()
 
 //----------------------------------------------------------------------------
 
+void CullendulaMainWindow::updateUndoRedoButtonStatus()
+{
+    if(m_undoAction != nullptr)
+    {
+       m_undoAction->setEnabled(m_fileSystemHandler.canUndo());
+    }
+
+    if(m_redoQtAction != nullptr)
+    {
+       m_redoQtAction->setEnabled(m_fileSystemHandler.canRedo());
+    }
+}
+
+//----------------------------------------------------------------------------
+
 void CullendulaMainWindow::about()
 {
     printStatus(tr("Invoked Help|About"));
@@ -319,12 +341,5 @@ void CullendulaMainWindow::about()
     mBox.setTextFormat(Qt::RichText);
     mBox.exec();
 }
-
-//----------------------------------------------------------------------------
-
-//void CullendulaMainWindow::aboutQt()
-//{
-//    printStatus(tr("Invoked <b>Help|About Qt</b>"));
-//}
 
 //----------------------------------------------------------------------------
