@@ -52,6 +52,10 @@ public:
     CullendulaUndoItem undo();
     CullendulaUndoItem redo();
 
+    //! Checks if the option is possible. Useful for the GUI (dis-/enabled).
+    bool canUndo();
+    bool canRedo();
+
     //! Return the current size; amount of items
     size_t getSize();
 

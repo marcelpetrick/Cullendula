@@ -59,6 +59,7 @@ void Test_CullendulaUndoStack::slot_Test_Push()
 
 void Test_CullendulaUndoStack::slot_Test_Pop()
 {
+    // undo on an empty stack should not return something and not fail
     m_stackPtr->undo();
     m_stackPtr->undo();
     m_stackPtr->undo();
@@ -66,14 +67,14 @@ void Test_CullendulaUndoStack::slot_Test_Pop()
     CullendulaUndoItem const foo = m_stackPtr->undo();
     // should yield ("","")
     bool const isEmptyItem = foo.fromPath.isEmpty() && foo.toPath.isEmpty();
-    QVERIFY2(isEmptyItem == true, "undo on empty stack");
+    QVERIFY2(isEmptyItem, "undo on empty stack");
 
     m_stackPtr->push("a", "b");
 
     CullendulaUndoItem const bar = m_stackPtr->undo();
     // should yield ("a","b")
     bool const hasExpectedContent = (bar.fromPath == "a") && (bar.toPath == "b");
-    QVERIFY2(hasExpectedContent == true, "undo on 1 item-stack");
+    QVERIFY2(hasExpectedContent, "undo on 1 item-stack");
 
     CullendulaUndoItem const item2 = m_stackPtr->undo();
     QVERIFY2((item2.fromPath == "") && (item2.toPath == ""), "undo on 1 item-stack");

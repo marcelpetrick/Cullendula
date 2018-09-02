@@ -76,6 +76,25 @@ CullendulaUndoItem CullendulaUndoStack::redo()
 
 //----------------------------------------------------------------------------------
 
+bool CullendulaUndoStack::canUndo()
+{
+    // the container has items
+    // and the current item is not the
+    //! todo question: what to do with the very first item on the stack?!?
+    return (!m_container.isEmpty() && m_currentItem != 0);
+}
+
+//----------------------------------------------------------------------------------
+
+bool CullendulaUndoStack::canRedo()
+{
+    // the container has items
+    // and the "following" item is not past the amount of items
+    return (!m_container.isEmpty() && m_currentItem+1 >= m_container.size());
+}
+
+//----------------------------------------------------------------------------------
+
 size_t CullendulaUndoStack::getSize()
 {
     return static_cast<size_t>(m_container.size());
