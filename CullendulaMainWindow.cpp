@@ -293,7 +293,7 @@ void CullendulaMainWindow::createActions()
     m_aboutQtAction->setShortcut(Qt::CTRL + Qt::Key_Q);
     connect(m_aboutQtAction, &QAction::triggered, qApp, &QApplication::aboutQt);
     //connect(aboutQtAct, &QAction::triggered, this, &CullendulaMainWindow::aboutQt);
-    connect(m_aboutQtAction, &QAction::triggered, this, [=] () { printStatus(tr("Invoked <b>Help|About Qt</b>")); }); // replaced the slot-call with a lambda :)
+    connect(m_aboutQtAction, &QAction::triggered, this, [=] () { printStatus(tr("Invoked Help|About Qt")); }); // replaced the slot-call with a lambda :)
 }
 
 //----------------------------------------------------------------------------
