@@ -89,12 +89,18 @@ void Test_CullendulaUndoStack::slot_Test_Pop()
     m_stackPtr->push("1", "2");
     m_stackPtr->push("3", "4");
     m_stackPtr->push("5", "6");
+    QVERIFY(m_stackPtr->canUndo() == true);
     CullendulaUndoItem const item3 = m_stackPtr->undo();
     QVERIFY2((item3.fromPath == "5") && (item3.toPath == "6"), "undo on 1 item-stack");
+    QVERIFY(m_stackPtr->canUndo() == true);
     CullendulaUndoItem const item4 = m_stackPtr->undo();
     QVERIFY2((item4.fromPath == "3") && (item4.toPath == "4"), "undo on 1 item-stack");
+    QVERIFY(m_stackPtr->canUndo() == true);
     CullendulaUndoItem const item5 = m_stackPtr->undo();
     QVERIFY2((item5.fromPath == "1") && (item5.toPath == "2"), "undo on 1 item-stack");
+    QVERIFY(m_stackPtr->canUndo() == true); // should be false
+    m_stackPtr->undo();
+    QVERIFY(m_stackPtr->canUndo() == true);
 }
 
 //----------------------------------------------------------------------------------

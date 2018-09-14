@@ -18,7 +18,7 @@ CullendulaUndoStack::CullendulaUndoStack()
     //m_container.reserve(10); // TODO
 
     // update and initialize the current position
-    m_currentItem = getSize();
+    m_currentItem = getSize() - 1;
     //m_currentItem = static_cast<long>(getSize()) - 1;
 }
 
@@ -31,8 +31,17 @@ CullendulaUndoStack::~CullendulaUndoStack()
 
 //----------------------------------------------------------------------------------
 
-void CullendulaUndoStack::push(const QString &from, const QString &to)
+void CullendulaUndoStack::push(const QString& from, const QString& to)
 {
+    // if it does not point to the last element on the stack, then cut off the remaining elements
+    if(m_currentItem > 0 && m_currentItem < (getSize() - 1))
+    {
+        qDebug() << "insert at pos" << m_currentItem << " - remove rest of " << getSize() << "items";
+        int const from = m_currentItem;
+        int const n = getSize() - m_currentItem;
+        m_container.remove(from, n);
+    }
+
     //! @todo implement that the container is reset to the position where the "current"-pointer pointed
 //    int compare = static_cast<long>(getSize());
 //    while(compare > m_currentItem + 1)
@@ -54,7 +63,7 @@ void CullendulaUndoStack::push(const QString &from, const QString &to)
 
 CullendulaUndoItem CullendulaUndoStack::undo()
 {
-    if(getSize() == 0)
+    if(getSize() == 0) // prevent failure
     {
         return CullendulaUndoItem();
     }
@@ -95,9 +104,9 @@ bool CullendulaUndoStack::canRedo()
 
 //----------------------------------------------------------------------------------
 
-size_t CullendulaUndoStack::getSize()
+long CullendulaUndoStack::getSize()
 {
-    return static_cast<size_t>(m_container.size());
+    return static_cast<long>(m_container.size());
 }
 
 //----------------------------------------------------------------------------------

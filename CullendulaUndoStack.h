@@ -13,6 +13,12 @@
 //----------------------------------------------------------------------------------
 
 //! @class Helper to store the "source, target"-tuples for the moved files.
+//!         Available operations shall be "undo" and "redo" and "push".
+//!         "canUndo" and "canRedo" tell if the specific operations are available.
+//!         Undo only when at least a non-empty item can be returned.
+//!         TODO: fix this.
+//!
+//! @attention Redo currently not supported.
 class CullendulaUndoItem
 {
 public: //[ctor]
@@ -57,7 +63,7 @@ public:
     bool canRedo();
 
     //! Return the current size; amount of items
-    size_t getSize();
+    long getSize();
 
     // due to concerns while thinking about the API in combination with Redo, reading about the Command/Memento-Pattern is necessary ..
     // https://en.wikipedia.org/wiki/Command_pattern
