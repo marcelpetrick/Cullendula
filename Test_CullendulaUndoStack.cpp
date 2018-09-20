@@ -197,4 +197,5 @@ void Test_CullendulaUndoStack::slot_Test_UndoRedoLoop()
 //----------------------------------------------------------------------------------
 
 // uncomment the following line to make the unit-test runnable
-QTEST_MAIN(Test_CullendulaUndoStack)
+//! @attention Moved to main.cpp
+//QTEST_MAIN(Test_CullendulaUndoStack)

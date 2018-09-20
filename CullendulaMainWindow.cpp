@@ -276,11 +276,13 @@ void CullendulaMainWindow::createActions()
     m_undoAction->setStatusTip(tr("Revert the last file-move-operation"));
     m_undoAction->setShortcut(Qt::CTRL + Qt::Key_Y);
     connect(m_undoAction, &QAction::triggered, this, [=] () {qDebug("pressed Undo"); });
+    //! @todo also add the undo-call!
 
     m_redoQtAction = new QAction(tr("Redo"), this);
     m_redoQtAction->setStatusTip(tr("Redo the last file-move-operation (means: undo undo)"));
     m_redoQtAction->setShortcut(Qt::CTRL + Qt::Key_Z);
     connect(m_redoQtAction, &QAction::triggered, this, [=] () {qDebug("pressed Redo"); });
+    //! @todo also add the redo-call!
 
     // help menu
     m_aboutAction = new QAction(tr("About Cullendula"), this);
