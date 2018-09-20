@@ -63,7 +63,7 @@ void Test_CullendulaUndoStack::slot_Test_Push()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaUndoStack::slot_Test_Pop()
+void Test_CullendulaUndoStack::slot_Test_Undo()
 {
     // undo on an empty stack should not return something and not fail
     m_stackPtr->undo();
@@ -98,8 +98,12 @@ void Test_CullendulaUndoStack::slot_Test_Pop()
     QVERIFY(m_stackPtr->canUndo() == true);
     CullendulaUndoItem const item5 = m_stackPtr->undo();
     QVERIFY2((item5.fromPath == "1") && (item5.toPath == "2"), "undo on 1 item-stack");
-    QVERIFY(m_stackPtr->canUndo() == true); // should be false
+    QVERIFY(m_stackPtr->canUndo() == false); // should be false
     m_stackPtr->undo();
+    QVERIFY(m_stackPtr->canUndo() == false);
+
+    //pushing one element shall allow now some undo
+    m_stackPtr->push("7", "8");
     QVERIFY(m_stackPtr->canUndo() == true);
 }
 

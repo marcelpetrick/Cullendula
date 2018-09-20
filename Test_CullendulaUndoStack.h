@@ -53,7 +53,7 @@ private slots:
 
     //! Used to test if the returned result after popping is the same like expected
     //! Pop == Undo
-    void slot_Test_Pop();
+    void slot_Test_Undo();
 
 private:
     //! contains the used undo-stack
