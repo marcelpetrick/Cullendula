@@ -6,9 +6,11 @@
 # repo: https://github.com/marcelpetrick/Cullendula
 #----------------------------------------------------------------------------------
 
-QT += core gui
-# for the qtest
-QT += widgets testlib
+QT += \
+    core \
+    gui \
+    widgets \
+    testlib
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -22,18 +24,20 @@ TEMPLATE = app
 DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
-	CullendulaMainWindow.cpp \
-	CullendulaFileSystemHandler.cpp \
-	CullendulaUndoStack.cpp \
-	Test_CullendulaUndoStack.cpp \
-	main.cpp
-# last line, the main, has to be removed in case of unit-testing because of the expanding QTEST_MAIN-macro
+    CullendulaMainWindow.cpp \
+    CullendulaFileSystemHandler.cpp \
+    CullendulaUndoStack.cpp \
+    Test_CullendulaUndoStack.cpp \
+    main.cpp
 
 HEADERS += \
-	CullendulaMainWindow.h \
-	CullendulaFileSystemHandler.h \
-	CullendulaUndoStack.h \
-	Test_CullendulaUndoStack.h
+    CullendulaMainWindow.h \
+    CullendulaFileSystemHandler.h \
+    CullendulaUndoStack.h \
+    Test_CullendulaUndoStack.h
 
 FORMS += \
-	CullendulaMainWindow.ui
+    CullendulaMainWindow.ui
+
+RC_FILE += \
+    cullendula.rc
