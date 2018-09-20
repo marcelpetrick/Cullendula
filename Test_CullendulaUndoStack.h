@@ -12,7 +12,7 @@
 #include <QtCore/QDebug>
 
 // std-includes
-#include <memory> // for unique_ptr
+#include <memory> // for shared_ptr
 
 #pragma once
 
@@ -26,12 +26,8 @@ class Test_CullendulaUndoStack: public QObject
 {
     Q_OBJECT
 
-public:
-    // not needed right now
-    //    Test_CullendulaUndoStack();
-
 private slots:
-    //! -- slots from QTEST --
+    //! -- slots from QTest --
 
     //initTestCase() will be called before the first test function is executed.
     void initTestCase();
@@ -45,17 +41,19 @@ private slots:
     //cleanup() will be called after every test function.
     void cleanup();
 
-    //! -- end of: slots from QTEST --
+    //! -- end of: slots from QTest --
 
     void slot_Test_Create_CullendulaUndoStack();
 
     void slot_Test_Push();
 
     //! Used to test if the returned result after popping is the same like expected
-    //! Pop == Undo
     void slot_Test_Undo();
 
+    //! Add items to undo, then undo, then redo.
+    void slot_Test_Redo();
+
 private:
-    //! contains the used undo-stack
+    //! contains the used undo-redo-stack
     std::shared_ptr<CullendulaUndoStack> m_stackPtr = nullptr;
 };

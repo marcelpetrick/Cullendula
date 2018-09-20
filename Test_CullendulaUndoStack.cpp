@@ -12,7 +12,6 @@
 void Test_CullendulaUndoStack::initTestCase()
 {
     qDebug() << "Test_CullendulaUndoStack::initTestCase(): called before everything else";
-    //m_stackPtr = std::make_shared<CullendulaUndoStack>(); // will be done now via init()
 }
 
 //----------------------------------------------------------------------------------
@@ -26,7 +25,7 @@ void Test_CullendulaUndoStack::cleanupTestCase()
 
 void Test_CullendulaUndoStack::init()
 {
-    // reset with a new item
+    // reset with a totally fresh item
     m_stackPtr.reset(new CullendulaUndoStack);
 }
 
@@ -42,7 +41,7 @@ void Test_CullendulaUndoStack::cleanup()
 
 void Test_CullendulaUndoStack::slot_Test_Create_CullendulaUndoStack()
 {
-    QVERIFY2(m_stackPtr->getSize() == 0, "CullendulaUndoStack was initialized and is empty");
+    QVERIFY2(m_stackPtr->getUndoDepth() == 0, "CullendulaUndoStack was initialized and is empty");
 }
 
 //----------------------------------------------------------------------------------
@@ -52,11 +51,11 @@ void Test_CullendulaUndoStack::slot_Test_Push()
     QVERIFY(m_stackPtr->canUndo() == false);
     //QVERIFY(m_stackPtr->canRedo() == false); // not yet implemented
     m_stackPtr->push("a", "b");
-    QVERIFY2(m_stackPtr->getSize() == 1, "after pushing one");
+    QVERIFY2(m_stackPtr->getUndoDepth() == 1, "after pushing one");
     QVERIFY(m_stackPtr->canUndo() == true); // fails currently
     //QVERIFY(m_stackPtr->canRedo() == false); // not yet implemented
     m_stackPtr->push("c", "d");
-    QVERIFY2(m_stackPtr->getSize() == 2, "after pushing another one");
+    QVERIFY2(m_stackPtr->getUndoDepth() == 2, "after pushing another one");
     QVERIFY(m_stackPtr->canUndo() == true);
     //QVERIFY(m_stackPtr->canRedo() == false); // not yet implemented
 }
@@ -83,7 +82,7 @@ void Test_CullendulaUndoStack::slot_Test_Undo()
     QVERIFY2(hasExpectedContent, "undo on 1 item-stack");
 
     CullendulaUndoItem const item2 = m_stackPtr->undo();
-    QVERIFY2((item2.fromPath == "") && (item2.toPath == ""), "undo on 1 item-stack");
+    QVERIFY2((item2.fromPath == "") && (item2.toPath == ""), "undo on empty item-stack");
 
     // test with 3 pushed items, then undo them in reverse order
     m_stackPtr->push("1", "2");
@@ -105,6 +104,35 @@ void Test_CullendulaUndoStack::slot_Test_Undo()
     //pushing one element shall allow now some undo
     m_stackPtr->push("7", "8");
     QVERIFY(m_stackPtr->canUndo() == true);
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaUndoStack::slot_Test_Redo()
+{
+    // redo on an empty stack should not return something and not fail
+    m_stackPtr->redo();
+    m_stackPtr->redo();
+    m_stackPtr->redo();
+    QVERIFY2(m_stackPtr->canRedo() == false, "can redo on empty stack: ERROR");
+
+    // test that this returns an empty item
+    CullendulaUndoItem const foo = m_stackPtr->redo();
+    // should yield ("","")
+    bool const isEmptyItem = foo.fromPath.isEmpty() && foo.toPath.isEmpty();
+    QVERIFY2(isEmptyItem, "redo on empty stack");
+
+    m_stackPtr->push("a", "b");
+
+    m_stackPtr->undo();
+    // now there should be one item on "redo"
+    CullendulaUndoItem const bar = m_stackPtr->redo();
+    // should yield ("a","b")
+    bool const hasExpectedContent = (bar.fromPath == "a") && (bar.toPath == "b");
+    QVERIFY2(hasExpectedContent, "redo on 1 item-stack");
+
+    CullendulaUndoItem const item2 = m_stackPtr->redo();
+    QVERIFY2((item2.fromPath == "") && (item2.toPath == ""), "undo on empty item-stack");
 }
 
 //----------------------------------------------------------------------------------

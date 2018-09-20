@@ -41,8 +41,12 @@ CullendulaUndoItem CullendulaUndoStack::undo()
     {
         // pop the first item and return it
         CullendulaUndoItem const returnValue = m_undoContainer.last();
+        // remove from this container
         m_undoContainer.removeLast();
-        return returnValue;
+        // .. and add to redo
+        m_redoContainer.append(returnValue);
+
+        return returnValue; // conflicts with "single point of exit" ..
     }
 
     // prevent failure: return a freshly created item
@@ -53,7 +57,19 @@ CullendulaUndoItem CullendulaUndoStack::undo()
 
 CullendulaUndoItem CullendulaUndoStack::redo()
 {
-    //! @todo
+    if(canRedo())
+    {
+        // pop the first item and return it
+        CullendulaUndoItem const returnValue = m_redoContainer.last();
+        // remove from this container
+        m_redoContainer.removeLast();
+        // .. and add to undo
+        m_undoContainer.append(returnValue);
+
+        return returnValue; // conflicts with "single point of exit" ..
+    }
+
+    // prevent failure: return a freshly created item
     return CullendulaUndoItem();
 }
 
@@ -75,9 +91,16 @@ bool CullendulaUndoStack::canRedo()
 
 //----------------------------------------------------------------------------------
 
-long CullendulaUndoStack::getSize()
+long CullendulaUndoStack::getUndoDepth()
 {
     return static_cast<long>(m_undoContainer.size());
+}
+
+//----------------------------------------------------------------------------------
+
+long CullendulaUndoStack::getRedoDepth()
+{
+    return static_cast<long>(m_redoContainer.size());
 }
 
 //----------------------------------------------------------------------------------
