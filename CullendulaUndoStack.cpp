@@ -31,10 +31,6 @@ CullendulaUndoStack::~CullendulaUndoStack()
 void CullendulaUndoStack::push(const QString& from, const QString& to)
 {
     m_undoContainer.append(CullendulaUndoItem(from, to));
-
-//    CullendulaUndoItem newItem(from, to);
-//    qDebug() << "push: push_back the new item"; // todom remove
-//    m_undoContainer.push_back(newItem);
 }
 
 //----------------------------------------------------------------------------------
@@ -48,11 +44,9 @@ CullendulaUndoItem CullendulaUndoStack::undo()
         m_undoContainer.removeLast();
         return returnValue;
     }
-    else // prevent failure
-    {
-        // return a freshly created item
-        return CullendulaUndoItem();
-    }
+
+    // prevent failure: return a freshly created item
+    return CullendulaUndoItem();
 }
 
 //----------------------------------------------------------------------------------
@@ -83,7 +77,6 @@ bool CullendulaUndoStack::canRedo()
 
 long CullendulaUndoStack::getSize()
 {
-    //! todo still needed?
     return static_cast<long>(m_undoContainer.size());
 }
 

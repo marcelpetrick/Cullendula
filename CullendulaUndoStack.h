@@ -63,7 +63,7 @@ public:
     bool canUndo();
     bool canRedo();
 
-    //! Return the current size; amount of items
+    //! Return the current size (= amount of items). Useful for the unit-test.
     long getSize();
 
     // due to concerns while thinking about the API in combination with Redo, reading about the Command/Memento-Pattern is necessary ..
