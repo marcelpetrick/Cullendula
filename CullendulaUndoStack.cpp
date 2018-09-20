@@ -14,18 +14,15 @@
 
 CullendulaUndoStack::CullendulaUndoStack()
 {
+    //! @todo remove and replace with default
     qDebug() << "CullendulaUndoStack::CullendulaUndoStack(): ctor";
-    //m_container.reserve(10); // TODO
-
-    // update and initialize the current position
-    m_currentItem = getSize() - 1;
-    //m_currentItem = static_cast<long>(getSize()) - 1;
 }
 
 //----------------------------------------------------------------------------------
 
 CullendulaUndoStack::~CullendulaUndoStack()
 {
+    //! @todo remove and replace with default
     qDebug() << "CullendulaUndoStack::CullendulaUndoStack(): dtor";
 }
 
@@ -33,45 +30,28 @@ CullendulaUndoStack::~CullendulaUndoStack()
 
 void CullendulaUndoStack::push(const QString& from, const QString& to)
 {
-    // if it does not point to the last element on the stack, then cut off the remaining elements
-    if(m_currentItem > 0 && m_currentItem < (getSize() - 1))
-    {
-        qDebug() << "insert at pos" << m_currentItem << " - remove rest of " << getSize() << "items";
-        int const from = m_currentItem;
-        int const n = getSize() - m_currentItem;
-        m_container.remove(from, n);
-    }
+    m_undoContainer.append(CullendulaUndoItem(from, to));
 
-    //! @todo implement that the container is reset to the position where the "current"-pointer pointed
-//    int compare = static_cast<long>(getSize());
-//    while(compare > m_currentItem + 1)
-//    {
-//        qDebug() << "push: drop one item"; // todom remove
-//        m_container.removeLast();
-//        compare = static_cast<long>(getSize());
-//    }
-
-    CullendulaUndoItem newItem(from, to);
-    qDebug() << "push: push_back the new item"; // todom remove
-    m_container.push_back(newItem);
-
-    // update and initialize the current position
-    m_currentItem = static_cast<long>(getSize()) - 1;
+//    CullendulaUndoItem newItem(from, to);
+//    qDebug() << "push: push_back the new item"; // todom remove
+//    m_undoContainer.push_back(newItem);
 }
 
 //----------------------------------------------------------------------------------
 
 CullendulaUndoItem CullendulaUndoStack::undo()
 {
-    if(getSize() == 0) // prevent failure
+    if(canUndo())
     {
-        return CullendulaUndoItem();
-    }
-    else
-    {
-        CullendulaUndoItem returnValue = m_container.value(m_currentItem);
-        m_currentItem--;
+        // pop the first item and return it
+        CullendulaUndoItem const returnValue = m_undoContainer.last();
+        m_undoContainer.removeLast();
         return returnValue;
+    }
+    else // prevent failure
+    {
+        // return a freshly created item
+        return CullendulaUndoItem();
     }
 }
 
@@ -87,26 +67,24 @@ CullendulaUndoItem CullendulaUndoStack::redo()
 
 bool CullendulaUndoStack::canUndo()
 {
-    // the container has items
-    // and the current item is not the
-    //! todo question: what to do with the very first item on the stack?!?
-    return (!m_container.isEmpty() && m_currentItem >= 0); //! todo fix this
+    // the undo-container has items
+    return !m_undoContainer.isEmpty();
 }
 
 //----------------------------------------------------------------------------------
 
 bool CullendulaUndoStack::canRedo()
 {
-    // the container has items
-    // and the "following" item is not past the amount of items
-    return (!m_container.isEmpty() && m_currentItem+1 <= m_container.size()); //! todo check if this is correct - currently just redo changes
+    // the redo-container has items
+    return !m_redoContainer.isEmpty();
 }
 
 //----------------------------------------------------------------------------------
 
 long CullendulaUndoStack::getSize()
 {
-    return static_cast<long>(m_container.size());
+    //! todo still needed?
+    return static_cast<long>(m_undoContainer.size());
 }
 
 //----------------------------------------------------------------------------------

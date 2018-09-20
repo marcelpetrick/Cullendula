@@ -13,21 +13,14 @@
 //----------------------------------------------------------------------------------
 
 //! @class Helper to store the "source, target"-tuples for the moved files.
-//!         Available operations shall be "undo" and "redo" and "push".
-//!         "canUndo" and "canRedo" tell if the specific operations are available.
-//!         Undo only when at least a non-empty item can be returned.
-//!         TODO: fix this.
-//!
-//! @attention Redo currently not supported.
 class CullendulaUndoItem
 {
-public: //[ctor]
-
-    CullendulaUndoItem()
-    {
-        // nothing else to do :)
-    }
-
+public:
+    //[ctor]
+    CullendulaUndoItem() = default;
+    //[dtor]
+    ~CullendulaUndoItem() = default;
+    //[ctor] - just init from the given value
     CullendulaUndoItem(QString const& from, QString const& to) :
         fromPath(from),
         toPath(to)
@@ -44,13 +37,21 @@ public: //[members]
 
 //----------------------------------------------------------------------------------
 
+//! @class CullendulaUndoStack - helper to encapsulate some undo- and redo-functionality.
+//!         Available operations shall be "undo" and "redo" and "push".
+//!         "canUndo" and "canRedo" tell if the specific operations are available.
+//!         Undo only when at least a non-empty item can be returned.
+//!         TODO: fix this.
+//!
+//! @attention Redo currently not supported.
 class CullendulaUndoStack
 {
 public:
     CullendulaUndoStack();
     ~CullendulaUndoStack();
 
-    // push: insert new pair (from, to); will be converted to CullendulaUndoItem
+    //! Push: insert new pair (from, to); will be converted to CullendulaUndoItem.
+    //! Will fill the undo-stack (first).
     void push(QString const& from, QString const& to);
 
     // will be replaced by "undo and redo" - was: pop: get last transaction
@@ -70,11 +71,9 @@ public:
     // https://en.wikipedia.org/wiki/Memento_pattern
 
 private:
-    //! container: keeps the data
-    QVector<CullendulaUndoItem> m_container;
+    //! container: keeps the data for Undo
+    QVector<CullendulaUndoItem> m_undoContainer;
 
-    //! Keeps track of the pointer. In case of undo it is quite simple just to pop the last item.
-    //! Then redo would be enabled, because the pointer is set back by one.
-    //! Redo walks back the pointer by one
-    long m_currentItem; // initialized in ctor
+    //! container: keeps the data for Redo
+    QVector<CullendulaUndoItem> m_redoContainer;
 };
