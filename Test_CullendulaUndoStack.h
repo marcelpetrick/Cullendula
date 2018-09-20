@@ -53,6 +53,9 @@ private slots:
     //! Add items to undo, then undo, then redo.
     void slot_Test_Redo();
 
+    //! Add three items; do undo; do redo; undo ..
+    void slot_Test_UndoRedoLoop();
+
 private:
     //! contains the used undo-redo-stack
     std::shared_ptr<CullendulaUndoStack> m_stackPtr = nullptr;

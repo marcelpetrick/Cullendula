@@ -15,7 +15,7 @@
 CullendulaUndoStack::CullendulaUndoStack()
 {
     //! @todo remove and replace with default
-    qDebug() << "CullendulaUndoStack::CullendulaUndoStack(): ctor";
+//    qDebug() << "CullendulaUndoStack::CullendulaUndoStack(): ctor";
 }
 
 //----------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ CullendulaUndoStack::CullendulaUndoStack()
 CullendulaUndoStack::~CullendulaUndoStack()
 {
     //! @todo remove and replace with default
-    qDebug() << "CullendulaUndoStack::CullendulaUndoStack(): dtor";
+//    qDebug() << "CullendulaUndoStack::CullendulaUndoStack(): dtor";
 }
 
 //----------------------------------------------------------------------------------

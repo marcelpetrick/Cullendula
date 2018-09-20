@@ -46,6 +46,10 @@ public: //[members]
 //!         "canUndo" and "canRedo" tell if the specific operations are available.
 //!         In case of executing undo/redo when the respective checks would fail,
 //!         an empty, fresh item is returned.
+//! @todo   The big and open question is: should undo flip the items while putting them to redo?
+//!         And redo vice versa? Because this affects how the usage has to be implemented.
+//!         For now: no flipping. (a,b) stays (a,b) at redo.
+//!
 class CullendulaUndoStack
 {
 public:
