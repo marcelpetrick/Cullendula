@@ -28,8 +28,10 @@ namespace {
     unsigned int const c_StatusBarDelay = 5000;
 
     //! prevent pumping window because of scaling. Describes the expected size of the frame.
-    int const c_extraWidthBecauseOfFraming = 2;
+    int const c_extraPixelsBecauseOfFraming = 2;
 }
+
+//----------------------------------------------------------------------------
 
 class CullendulaMainWindow : public QMainWindow
 {
@@ -64,21 +66,21 @@ private:
     void refreshLabel();
 
     //! Handle the state of the buttons.
-    void activateButtons(bool const active = false);
+    void activateButtons(bool const active = false) const;
 
     //! Print the given string to the status-bar.
-    void printStatus(QString const & message);
+    void printStatus(QString const & message) const;
 
-    //! create actions and fitting menues for the "help-menu"
+    //! create actions and fitting menus for the "help-menu"
     void createActions();
     void createMenus();
 
     //! Called after each operation to display Undo/Redo with correct state.
     void updateUndoRedoButtonStatus();
 
-    //! Load, scale and assigne the current photo-file to the center-label.
-    //! (Yes, could be ressource-intensive when the user starts to play around with resizing.)
-    void loadAndScalePhoto(const QString &path);
+    //! Load, scale and assign the current photo-file to the center-label.
+    //! (Yes, could be resource-intensive when the user starts to play around with resizing.)
+    void loadAndScalePhoto(const QString &path) const;
 
 // [members]
     //! the ui

@@ -56,7 +56,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">
     <ClCompile>
-      <AdditionalIncludeDirectories>.;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtWidgets;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtGui;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtANGLE;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtCore;release;.;C:\Qt\Qt5.5.1\5.5\msvc2013_64\mkspecs\win32-msvc2013;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtWidgets;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtGui;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtANGLE;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtTest;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtCore;release;.;C:\Qt\Qt5.5.1\5.5\msvc2013_64\mkspecs\win32-msvc2013;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zc:strictStrings -w34100 -w34189 -w44996 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>release\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -64,7 +64,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>release\</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_TESTLIB_LIB;QT_CORE_LIB;QT_TESTCASE_BUILDDIR=&quot;C:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula&quot;;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName></ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -74,8 +74,8 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\qtmain.lib;shell32.lib;C:/Qt/Qt5.5.1/5.5/msvc2013_64/lib\Qt5Core.lib;C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Widgets.lib;C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Gui.lib;C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib;C:/Qt/Qt5.5.1/5.5/msvc2013_64/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Widgets.lib;C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Gui.lib;C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Test.lib;C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot; %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -83,7 +83,7 @@
       <LinkIncremental>false</LinkIncremental>
       <OutputFile>$(OutDir)\Cullendula.exe</OutputFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Link>
     <Midl>
@@ -92,12 +92,12 @@
       <WarningLevel>0</WarningLevel>
     </Midl>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_TESTLIB_LIB;QT_CORE_LIB;QT_TESTCASE_BUILDDIR=&quot;C:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula&quot;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">
     <ClCompile>
-      <AdditionalIncludeDirectories>.;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtWidgets;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtGui;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtANGLE;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtCore;debug;.;C:\Qt\Qt5.5.1\5.5\msvc2013_64\mkspecs\win32-msvc2013;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtWidgets;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtGui;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtANGLE;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtTest;C:\Qt\Qt5.5.1\5.5\msvc2013_64\include\QtCore;debug;.;C:\Qt\Qt5.5.1\5.5\msvc2013_64\mkspecs\win32-msvc2013;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-w34100 -w34189 -w44996 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>debug\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -105,7 +105,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>debug\</ObjectFileName>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_WIDGETS_LIB;QT_GUI_LIB;QT_TESTLIB_LIB;QT_CORE_LIB;QT_TESTCASE_BUILDDIR=&quot;C:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula&quot;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -114,15 +114,15 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\qtmaind.lib;shell32.lib;C:/Qt/Qt5.5.1/5.5/msvc2013_64/lib\Qt5Cored.lib;C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Widgetsd.lib;C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Guid.lib;C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Cored.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib;C:/Qt/Qt5.5.1/5.5/msvc2013_64/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Widgetsd.lib;C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Guid.lib;C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Testd.lib;C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib\Qt5Cored.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Qt\Qt5.5.1\5.5\msvc2013_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot; %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreImportLibrary>true</IgnoreImportLibrary>
       <OutputFile>$(OutDir)\Cullendula.exe</OutputFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Link>
     <Midl>
@@ -131,34 +131,51 @@
       <WarningLevel>0</WarningLevel>
     </Midl>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_WIDGETS_LIB;QT_GUI_LIB;QT_TESTLIB_LIB;QT_CORE_LIB;QT_TESTCASE_BUILDDIR=&quot;C:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula&quot;;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CullendulaFileSystemHandler.cpp" />
     <ClCompile Include="CullendulaMainWindow.cpp" />
     <ClCompile Include="CullendulaUndoStack.cpp" />
+    <ClCompile Include="Test_CullendulaUndoStack.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CullendulaFileSystemHandler.h" />
     <CustomBuild Include="CullendulaMainWindow.h">
       <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">CullendulaMainWindow.h;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">setlocal&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;C:\Qt\Qt5.5.1\5.5\msvc2013_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/mkspecs/win32-msvc2013 -IC:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtWidgets -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtGui -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtANGLE -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtCore CullendulaMainWindow.h -o release\moc_CullendulaMainWindow.cpp&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;endlocal</Command>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">setlocal&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;C:\Qt\Qt5.5.1\5.5\msvc2013_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_TESTLIB_LIB -DQT_CORE_LIB -DQT_TESTCASE_BUILDDIR=&quot;C:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula&quot; -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/mkspecs/win32-msvc2013 -IC:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtWidgets -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtGui -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtANGLE -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtTest -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtCore CullendulaMainWindow.h -o release\moc_CullendulaMainWindow.cpp&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;endlocal</Command>
       <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">MOC CullendulaMainWindow.h</Message>
       <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\moc_CullendulaMainWindow.cpp;%(Outputs)</Outputs>
       <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">CullendulaMainWindow.h;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">setlocal&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;C:\Qt\Qt5.5.1\5.5\msvc2013_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DQT_DEPRECATED_WARNINGS -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/mkspecs/win32-msvc2013 -IC:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtWidgets -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtGui -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtANGLE -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtCore CullendulaMainWindow.h -o debug\moc_CullendulaMainWindow.cpp&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;endlocal</Command>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">setlocal&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;C:\Qt\Qt5.5.1\5.5\msvc2013_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DQT_DEPRECATED_WARNINGS -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_TESTLIB_LIB -DQT_CORE_LIB -DQT_TESTCASE_BUILDDIR=&quot;C:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula&quot; -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/mkspecs/win32-msvc2013 -IC:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtWidgets -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtGui -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtANGLE -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtTest -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtCore CullendulaMainWindow.h -o debug\moc_CullendulaMainWindow.cpp&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;endlocal</Command>
       <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">MOC CullendulaMainWindow.h</Message>
       <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\moc_CullendulaMainWindow.cpp;%(Outputs)</Outputs>
     </CustomBuild>
     <ClInclude Include="CullendulaUndoStack.h" />
+    <CustomBuild Include="Test_CullendulaUndoStack.h">
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">Test_CullendulaUndoStack.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">setlocal&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;C:\Qt\Qt5.5.1\5.5\msvc2013_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_TESTLIB_LIB -DQT_CORE_LIB -DQT_TESTCASE_BUILDDIR=&quot;C:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula&quot; -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/mkspecs/win32-msvc2013 -IC:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtWidgets -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtGui -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtANGLE -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtTest -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtCore Test_CullendulaUndoStack.h -o release\moc_Test_CullendulaUndoStack.cpp&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;endlocal</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">MOC Test_CullendulaUndoStack.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">release\moc_Test_CullendulaUndoStack.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">Test_CullendulaUndoStack.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">setlocal&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;C:\Qt\Qt5.5.1\5.5\msvc2013_64\bin\moc.exe  -DUNICODE -DWIN32 -DWIN64 -DQT_DEPRECATED_WARNINGS -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_TESTLIB_LIB -DQT_CORE_LIB -DQT_TESTCASE_BUILDDIR=&quot;C:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula&quot; -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/mkspecs/win32-msvc2013 -IC:/Users/mpetrick/Desktop/MarcelsDocuments/CodeSchnipsel/Cullendula -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtWidgets -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtGui -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtANGLE -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtTest -IC:/Qt/Qt5.5.1/5.5/msvc2013_64/include/QtCore Test_CullendulaUndoStack.h -o debug\moc_Test_CullendulaUndoStack.cpp&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;endlocal</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">MOC Test_CullendulaUndoStack.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">debug\moc_Test_CullendulaUndoStack.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="debug\moc_CullendulaMainWindow.cpp">
       <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="release\moc_CullendulaMainWindow.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="debug\moc_Test_CullendulaUndoStack.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|x64&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="release\moc_Test_CullendulaUndoStack.cpp">
       <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="ui_CullendulaMainWindow.h" />
@@ -175,6 +192,9 @@
       <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">UIC CullendulaMainWindow.ui</Message>
       <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|x64&apos;">ui_CullendulaMainWindow.h;%(Outputs)</Outputs>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="cullendula.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

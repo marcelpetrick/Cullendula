@@ -9,7 +9,6 @@
 
 // Qt includes
 #include <QtTest/QtTest>
-#include <QtCore/QDebug>
 
 // std-includes
 #include <memory> // for shared_ptr
@@ -58,5 +57,5 @@ private slots:
 
 private:
     //! contains the used undo-redo-stack
-    std::shared_ptr<CullendulaUndoStack> m_stackPtr = nullptr;
+    std::shared_ptr<CullendulaUndoStack> m_stackPtr = nullptr; //todo make unique_ptr
 };

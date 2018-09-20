@@ -183,15 +183,15 @@ void CullendulaMainWindow::slotButtonTrashTriggered()
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::loadAndScalePhoto(QString const& path)
+void CullendulaMainWindow::loadAndScalePhoto(QString const& path) const
 {
     qDebug() << "CullendulaMainWindow::loadAndScalePhoto(): path=" << path;
 
     QPixmap const pixmap = QPixmap(path);
 
     // scale while keeping the aspect ratio
-    int width = ui->centerLabel->width() - c_extraWidthBecauseOfFraming;
-    int height = ui->centerLabel->height() - c_extraWidthBecauseOfFraming;
+    int width = ui->centerLabel->width() - c_extraPixelsBecauseOfFraming;
+    int height = ui->centerLabel->height() - c_extraPixelsBecauseOfFraming;
     qDebug() << "label-size:" << width << "*" << height;
 
     // prevent upscaling of smaller photos
@@ -250,7 +250,7 @@ void CullendulaMainWindow::refreshLabel()
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::activateButtons(const bool active)
+void CullendulaMainWindow::activateButtons(const bool active) const
 {
     // en-/disable all four buttons
     ui->leftPB->setEnabled(active);
@@ -261,7 +261,7 @@ void CullendulaMainWindow::activateButtons(const bool active)
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::printStatus(const QString & message)
+void CullendulaMainWindow::printStatus(const QString & message) const
 {
     // messages shall disappear after five seconds
     ui->statusBar->showMessage(message, c_StatusBarDelay);
@@ -338,7 +338,7 @@ void CullendulaMainWindow::about()
                         "Should work cross-platform.<br>"
                         "<br>"
                         "Developed by <a href='mail@marcelpetrick.it'>mail@marcelpetrick.it</a><br>"
-                        "Sourcecode can be found inside the repository at <a href='https://github.com/marcelpetrick/Cullendula/'>https://github.com/marcelpetrick/Cullendula</a><br>"
+                        "Source code can be found inside the repository at <a href='https://github.com/marcelpetrick/Cullendula/'>https://github.com/marcelpetrick/Cullendula</a><br>"
                         "Feel free to use and share: GPL v3 :3"));
     mBox.setTextFormat(Qt::RichText);
     mBox.exec();
