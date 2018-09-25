@@ -4,6 +4,8 @@
 // repo: https://github.com/marcelpetrick/Cullendula
 //----------------------------------------------------------------------------------
 
+#pragma once
+
 // own includes
 #include <CullendulaUndoStack.h>
 
@@ -12,8 +14,6 @@
 
 // std-includes
 #include <memory> // for shared_ptr
-
-#pragma once
 
 // to read: http://doc.qt.io/qt-5/qtest-overview.html
 //initTestCase() will be called before the first test function is executed.

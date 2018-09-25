@@ -12,6 +12,17 @@
 #include <QtCore/QFile>
 #include <QtCore/QDebug> //todom maybe remove
 
+//----------------------------------------------------------------------------
+
+// for constants
+namespace {
+	//! Determines the name of the output-folders
+	QString const c_hardcodedOutput = "output";
+	QString const c_hardcodedTrash = "trash";
+}
+
+//----------------------------------------------------------------------------
+
 CullendulaFileSystemHandler::CullendulaFileSystemHandler()
     :
       m_workingPath("")
@@ -53,7 +64,6 @@ QString CullendulaFileSystemHandler::getCurrentImagePath()
         {
             returnValue = path;
         }
-
     }
 
     return returnValue;
@@ -63,7 +73,7 @@ QString CullendulaFileSystemHandler::getCurrentImagePath()
 
 bool CullendulaFileSystemHandler::adjustCurrentPositionBy(int const offset)
 {
-    bool returnValue = checkInternalSanity();
+    bool const returnValue = checkInternalSanity();
 
     if(checkInternalSanity())
     {
@@ -77,7 +87,7 @@ bool CullendulaFileSystemHandler::adjustCurrentPositionBy(int const offset)
 
 bool CullendulaFileSystemHandler::switchCurrentPositionToTheLeft()
 {
-    bool returnValue = adjustCurrentPositionBy(-1);
+    bool const returnValue = adjustCurrentPositionBy(-1);
 
     return returnValue;
 }
@@ -86,7 +96,7 @@ bool CullendulaFileSystemHandler::switchCurrentPositionToTheLeft()
 
 bool CullendulaFileSystemHandler::switchCurrentPositionToTheRight()
 {
-    bool returnValue = adjustCurrentPositionBy(1);
+    bool const returnValue = adjustCurrentPositionBy(1);
 
     return returnValue;
 }
@@ -119,7 +129,7 @@ bool CullendulaFileSystemHandler::trashCurrentFile()
 
 //----------------------------------------------------------------------------
 
-QString CullendulaFileSystemHandler::getCurrentStatus()
+QString CullendulaFileSystemHandler::getCurrentStatus() const
 {
     QString returnValue("showing ");
     returnValue += QString::number(m_positionCurrentFile + 1); //for the regular users indexing starts at 1 ..
@@ -289,7 +299,8 @@ bool CullendulaFileSystemHandler::createOutputFolder(QString const & subdir)
     else
     {
         //create a new output dir
-        m_workingPath.mkdir(subdir);
+        bool const creationSuccess = m_workingPath.mkdir(subdir);
+		//! @todo use the result of the creation success
         if(outputDirTest.exists())
         {
             qDebug() << "output-folder exists after creation!";
@@ -351,7 +362,7 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const 
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::checkInternalSanity()
+bool CullendulaFileSystemHandler::checkInternalSanity() const
 {
     bool returnValue(true);
 

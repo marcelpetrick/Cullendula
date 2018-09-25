@@ -14,12 +14,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
-// for constants
-namespace {
-    //! Determines the name of the output-folders
-    QString const c_hardcodedOutput = "output";
-    QString const c_hardcodedTrash = "trash";
-}
+//----------------------------------------------------------------------------
 
 class CullendulaFileSystemHandler
 {
@@ -46,7 +41,7 @@ public:
     bool trashCurrentFile();
 
     //! Return a string which describes the current position in the file-list.
-    QString getCurrentStatus();
+    QString getCurrentStatus() const;
 
     //! Checks if the option is possible. Useful for the GUI (dis-/enabled).
     //! Hands over the functionality from the CullendulaUndoStack.
@@ -74,7 +69,7 @@ private:
     bool moveCurrentFileToGivenSubfolder(QString const & subdir);
 
     //! Check if the current file-list, position and working-path are valid. Else return false.
-    bool checkInternalSanity();
+    bool checkInternalSanity() const;
 
     //! adjust the current position inside the file list by the given offset.
     //! @returns sanity-check

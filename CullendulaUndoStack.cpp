@@ -7,25 +7,6 @@
 // own includes
 #include "CullendulaUndoStack.h"
 
-// Qt includes
-#include <QtCore/QDebug> //todom maybe remove
-
-//----------------------------------------------------------------------------------
-
-CullendulaUndoStack::CullendulaUndoStack()
-{
-    //! @todo remove and replace with default
-//    qDebug() << "CullendulaUndoStack::CullendulaUndoStack(): ctor";
-}
-
-//----------------------------------------------------------------------------------
-
-CullendulaUndoStack::~CullendulaUndoStack()
-{
-    //! @todo remove and replace with default
-//    qDebug() << "CullendulaUndoStack::CullendulaUndoStack(): dtor";
-}
-
 //----------------------------------------------------------------------------------
 
 void CullendulaUndoStack::push(const QString& from, const QString& to)

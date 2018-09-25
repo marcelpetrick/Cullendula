@@ -16,7 +16,7 @@
 
 //----------------------------------------------------------------------------------
 
-//! @class Helper to store the "source, target"-tuples for the moved files.
+//! @class CullendulaUndoItem - helper to store the "source, target"-tuples for the moved files.
 class CullendulaUndoItem
 {
 public:
@@ -32,7 +32,8 @@ public:
         // nothing else to do :)
     }
 
-public: //[members]
+	//[members]
+
     //! Quite simple: container for a pair of two paths (saved as String).
     //! Right now access is unlimited.
     QString fromPath;
@@ -53,8 +54,8 @@ public: //[members]
 class CullendulaUndoStack
 {
 public:
-    CullendulaUndoStack();
-    ~CullendulaUndoStack();
+	CullendulaUndoStack() = default;
+    ~CullendulaUndoStack() = default;
 
     //! Push: insert new pair (from, to); will be converted to CullendulaUndoItem.
     //! Will fill the undo-stack (first).
