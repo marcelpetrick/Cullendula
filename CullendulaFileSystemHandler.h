@@ -53,6 +53,12 @@ public:
     bool canUndo();
     bool canRedo();
 
+    //! Execute the undo.
+    void undo();
+
+    //! Execute the redo.
+    void redo();
+
 private:
     //! checks the currently set path and gets the file-list. Afterwards triggers loading of the current image.
     bool processNewPath();

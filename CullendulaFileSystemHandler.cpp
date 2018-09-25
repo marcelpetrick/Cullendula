@@ -144,6 +144,40 @@ bool CullendulaFileSystemHandler::canRedo()
 
 //----------------------------------------------------------------------------
 
+void CullendulaFileSystemHandler::undo()
+{
+    if(canUndo())
+    {
+        qDebug() << "CullendulaFileSystemHandler::undo()"; //todom remove
+        //! @todo add code
+        //!
+        CullendulaUndoItem const item = m_undoStack.undo();
+        QString targetPath = item.fromPath; // swap source/target
+        QString const sourcePath = item.toPath;
+        qDebug() << "source: " << sourcePath << "# target: " << targetPath; //todom remove
+        QDir fileHandler;
+        bool const success = fileHandler.rename(sourcePath, targetPath);
+        qDebug() << "rename was: " << (success ? "TRUE" : "ERROR"); //todom remove
+
+        //! @todo @handle error-case (could fail for at least one filesystem)
+
+        //! @todo handle the update of the visual state: present the undone action?
+    }
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaFileSystemHandler::redo()
+{
+    if(canRedo())
+    {
+        qDebug() << "CullendulaFileSystemHandler::redo()"; //todom remove
+        //! @todo add code
+    }
+}
+
+//----------------------------------------------------------------------------
+
 bool CullendulaFileSystemHandler::processNewPath()
 {
     bool returnValue(false);
@@ -286,21 +320,21 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const 
         QDir outputDir(m_workingPath.path() + QDir::separator() + subdir);
         if(outputDir.exists())
         {
-            QString const originalPath(m_currentImages[m_positionCurrentFile].absoluteFilePath()); // TODO this will lead to crash, because index out of bounds
-            qDebug() << "\t path of file to move:" << originalPath;
-            QFileInfo fileInfo(originalPath);
+            QString const sourcePathAndName(m_currentImages[m_positionCurrentFile].absoluteFilePath()); // TODO this will lead to crash, because index out of bounds
+            qDebug() << "\t sourcePathAndName:" << sourcePathAndName;
+            QFileInfo fileInfo(sourcePathAndName);
             QString const fileName (fileInfo.fileName());
-            qDebug() << "fileName:" << fileName;
-            QString const outputFileName(outputDir.path() + QDir::separator() + fileName);
-            qDebug() << "outputFileName:" << outputFileName;
-            bool const successfullyRenamed = outputDir.rename(originalPath, outputFileName); //! this is the MOVE operation!
-            qDebug() << "successfullyRenamed?" << successfullyRenamed;
+            qDebug() << "\t fileName:" << fileName;
+            QString const targetPathAndName(outputDir.path() + QDir::separator() + fileName);
+            qDebug() << "\t targetPathAndName:" << targetPathAndName;
+            bool const successfullyRenamed = outputDir.rename(sourcePathAndName, targetPathAndName); //! this is the MOVE operation!
+            qDebug() << "\t successfullyRenamed?" << successfullyRenamed;
 
             // in case the file was successfully moved (= renamed path), then adjust the internal structures
             if(successfullyRenamed)
             {
-                //! add to the stack!
-                m_undoStack.push(originalPath, outputFileName);
+                //! add to the stack for possible undoing
+                m_undoStack.push(sourcePathAndName, targetPathAndName);
 
                 // go to the next picture by removing the entry from the file-list, but keep the position
                 m_currentImages.removeAt(m_positionCurrentFile);
