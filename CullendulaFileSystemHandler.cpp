@@ -156,10 +156,10 @@ bool CullendulaFileSystemHandler::processNewPath()
     // problem: windows shows as /c:/dir/file.suffix - linux here as /home/dir/file.suffix
     // so cut the first character for win, but don't for linux ..
     QString intermediatePath =
-        #ifdef __linux__
-            m_workingPath.path();
+#ifdef __linux__
+        m_workingPath.path();
 #else
-            m_workingPath.path().remove(0, 1); // remove the leading slash ("/")
+        m_workingPath.path().remove(0, 1); // remove the leading slash ("/")
 #endif
     QFileInfo const fileInfo(intermediatePath);
 
