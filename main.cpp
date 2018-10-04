@@ -14,6 +14,7 @@
 
 // uncomment the following line for the "run-able" program Cullendula. Else the test-suite is executed.
 //#define runtests
+
 #if defined(runtests)
     QTEST_MAIN(Test_CullendulaUndoStack)
 #else

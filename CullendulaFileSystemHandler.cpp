@@ -16,9 +16,9 @@
 
 // for constants
 namespace {
-	//! Determines the name of the output-folders
-	QString const c_hardcodedOutput = "output";
-	QString const c_hardcodedTrash = "trash";
+    //! Determines the name of the output-folders
+    QString const c_hardcodedOutput = "output";
+    QString const c_hardcodedTrash = "trash";
 }
 
 //----------------------------------------------------------------------------
@@ -159,19 +159,20 @@ void CullendulaFileSystemHandler::undo()
     if(canUndo())
     {
         qDebug() << "CullendulaFileSystemHandler::undo()"; //todom remove
-        //! @todo add code
-        //!
         CullendulaUndoItem const item = m_undoStack.undo();
         QString targetPath = item.fromPath; // swap source/target
         QString const sourcePath = item.toPath;
         qDebug() << "source: " << sourcePath << "# target: " << targetPath; //todom remove
         QDir fileHandler;
-        bool const success = fileHandler.rename(sourcePath, targetPath);
-        qDebug() << "rename was: " << (success ? "TRUE" : "ERROR"); //todom remove
+        bool const successfullyRenamed = fileHandler.rename(sourcePath, targetPath);
+        qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR"); //todom remove
 
         //! @todo @handle error-case (could fail for at least one filesystem)
-
-        //! @todo handle the update of the visual state: present the undone action?
+        if(successfullyRenamed)
+        {
+            // update the file-list (means: rescan?)
+            qDebug() << "update the file-list (means: rescan?)"; //todom remove
+        }
     }
 }
 
@@ -182,7 +183,20 @@ void CullendulaFileSystemHandler::redo()
     if(canRedo())
     {
         qDebug() << "CullendulaFileSystemHandler::redo()"; //todom remove
-        //! @todo add code
+        CullendulaUndoItem const item = m_undoStack.redo();
+        QString targetPath = item.fromPath; // swap source/target
+        QString const sourcePath = item.toPath;
+        qDebug() << "source: " << sourcePath << "# target: " << targetPath; //todom remove
+        QDir fileHandler;
+        bool const successfullyRenamed = fileHandler.rename(sourcePath, targetPath);
+        qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR"); //todom remove
+
+        //! @todo @handle error-case (could fail for at least one filesystem)
+        if(successfullyRenamed)
+        {
+            // update the file-list (means: rescan?)
+            qDebug() << "update the file-list (means: rescan?)"; //todom remove
+        }
     }
 }
 
@@ -299,8 +313,9 @@ bool CullendulaFileSystemHandler::createOutputFolder(QString const & subdir)
     else
     {
         //create a new output dir
-        bool const creationSuccess = m_workingPath.mkdir(subdir);
-		//! @todo use the result of the creation success
+        bool const creationSuccessful = m_workingPath.mkdir(subdir);
+        Q_UNUSED(creationSuccessful) // return-value is not evaluated, because the next check test directly for existance of the directory
+
         if(outputDirTest.exists())
         {
             qDebug() << "output-folder exists after creation!";
