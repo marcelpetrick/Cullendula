@@ -72,18 +72,18 @@ void Test_CullendulaUndoStack::slot_Test_Undo()
 
     CullendulaUndoItem const foo = m_stackPtr->undo();
     // should yield ("","")
-    bool const isEmptyItem = foo.fromPath.isEmpty() && foo.toPath.isEmpty();
+    bool const isEmptyItem = foo.targetPath.isEmpty() && foo.targetPath.isEmpty();
     QVERIFY2(isEmptyItem, "undo on empty stack");
 
     m_stackPtr->push("a", "b");
 
     CullendulaUndoItem const bar = m_stackPtr->undo();
     // should yield ("a","b")
-    bool const hasExpectedContent = (bar.fromPath == "a") && (bar.toPath == "b");
+    bool const hasExpectedContent = (bar.targetPath == "a") && (bar.targetPath == "b");
     QVERIFY2(hasExpectedContent, "undo on 1 item-stack");
 
     CullendulaUndoItem const item2 = m_stackPtr->undo();
-    QVERIFY2((item2.fromPath == "") && (item2.toPath == ""), "undo on empty item-stack");
+    QVERIFY2((item2.targetPath == "") && (item2.targetPath == ""), "undo on empty item-stack");
 
     // test with 3 pushed items, then undo them in reverse order
     m_stackPtr->push("1", "2");
@@ -91,13 +91,13 @@ void Test_CullendulaUndoStack::slot_Test_Undo()
     m_stackPtr->push("5", "6");
     QVERIFY(m_stackPtr->canUndo() == true);
     CullendulaUndoItem const item3 = m_stackPtr->undo();
-    QVERIFY2((item3.fromPath == "5") && (item3.toPath == "6"), "undo on 1 item-stack");
+    QVERIFY2((item3.targetPath == "5") && (item3.targetPath == "6"), "undo on 1 item-stack");
     QVERIFY(m_stackPtr->canUndo() == true);
     CullendulaUndoItem const item4 = m_stackPtr->undo();
-    QVERIFY2((item4.fromPath == "3") && (item4.toPath == "4"), "undo on 1 item-stack");
+    QVERIFY2((item4.targetPath == "3") && (item4.targetPath == "4"), "undo on 1 item-stack");
     QVERIFY(m_stackPtr->canUndo() == true);
     CullendulaUndoItem const item5 = m_stackPtr->undo();
-    QVERIFY2((item5.fromPath == "1") && (item5.toPath == "2"), "undo on 1 item-stack");
+    QVERIFY2((item5.targetPath == "1") && (item5.targetPath == "2"), "undo on 1 item-stack");
     QVERIFY(m_stackPtr->canUndo() == false); // should be false
     m_stackPtr->undo();
     QVERIFY(m_stackPtr->canUndo() == false);
@@ -120,7 +120,7 @@ void Test_CullendulaUndoStack::slot_Test_Redo()
     // test that this returns an empty item
     CullendulaUndoItem const foo = m_stackPtr->redo();
     // should yield ("","")
-    bool const isEmptyItem = foo.fromPath.isEmpty() && foo.toPath.isEmpty();
+    bool const isEmptyItem = foo.targetPath.isEmpty() && foo.targetPath.isEmpty();
     QVERIFY2(isEmptyItem, "redo on empty stack");
 
     m_stackPtr->push("a", "b");
@@ -129,11 +129,11 @@ void Test_CullendulaUndoStack::slot_Test_Redo()
     // now there should be one item on "redo"
     CullendulaUndoItem const bar = m_stackPtr->redo();
     // should yield ("a","b")
-    bool const hasExpectedContent = (bar.fromPath == "a") && (bar.toPath == "b");
+    bool const hasExpectedContent = (bar.targetPath == "a") && (bar.targetPath == "b");
     QVERIFY2(hasExpectedContent, "redo on 1 item-stack");
 
     CullendulaUndoItem const item2 = m_stackPtr->redo();
-    QVERIFY2((item2.fromPath == "") && (item2.toPath == ""), "undo on empty item-stack");
+    QVERIFY2((item2.targetPath == "") && (item2.targetPath == ""), "undo on empty item-stack");
 }
 
 //----------------------------------------------------------------------------------
@@ -154,7 +154,7 @@ void Test_CullendulaUndoStack::slot_Test_UndoRedoLoop()
 
     // undo should yield last item (5,6)
     CullendulaUndoItem const foo0 = m_stackPtr->undo();
-    bool const hasExpectedContent0 = (foo0.fromPath == "5") && (foo0.toPath == "6");
+    bool const hasExpectedContent0 = (foo0.targetPath == "5") && (foo0.targetPath == "6");
     QVERIFY(hasExpectedContent0);
 
     // redo should be possible
@@ -162,12 +162,12 @@ void Test_CullendulaUndoStack::slot_Test_UndoRedoLoop()
 
     // redo should yield (5,6)
     CullendulaUndoItem const foo1 = m_stackPtr->redo();
-    bool const hasExpectedContent1 = (foo1.fromPath == "5") && (foo1.toPath == "6");
+    bool const hasExpectedContent1 = (foo1.targetPath == "5") && (foo1.targetPath == "6");
     QVERIFY(hasExpectedContent1);
 
     // --> this means that (5,6) is at undo? check this
     CullendulaUndoItem const foo2 = m_stackPtr->undo();
-    bool const hasExpectedContent2 = (foo2.fromPath == "5") && (foo2.toPath == "6");
+    bool const hasExpectedContent2 = (foo2.targetPath == "5") && (foo2.targetPath == "6");
     QVERIFY(hasExpectedContent2);
 
     // undo again
@@ -175,7 +175,7 @@ void Test_CullendulaUndoStack::slot_Test_UndoRedoLoop()
 
     // check redo for (3,4)
     CullendulaUndoItem const foo3 = m_stackPtr->redo();
-    bool const hasExpectedContent3 = (foo3.fromPath == "3") && (foo3.toPath == "4");
+    bool const hasExpectedContent3 = (foo3.targetPath == "3") && (foo3.targetPath == "4");
     QVERIFY(hasExpectedContent3);
 
     // undo again
@@ -183,7 +183,7 @@ void Test_CullendulaUndoStack::slot_Test_UndoRedoLoop()
 
     // undo: is now (1,2)
     CullendulaUndoItem const foo4 = m_stackPtr->undo();
-    bool const hasExpectedContent4 = (foo4.fromPath == "1") && (foo4.toPath == "2");
+    bool const hasExpectedContent4 = (foo4.targetPath == "1") && (foo4.targetPath == "2");
     QVERIFY(hasExpectedContent4);
 
     // check if canUndo == false

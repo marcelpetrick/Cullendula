@@ -160,14 +160,16 @@ void CullendulaFileSystemHandler::undo()
     {
         qDebug() << "CullendulaFileSystemHandler::undo()"; //todom remove
         CullendulaUndoItem const item = m_undoStack.undo();
-        QString targetPath = item.fromPath; // swap source/target
-        QString const sourcePath = item.toPath;
-        qDebug() << "source: " << sourcePath << "# target: " << targetPath; //todom remove
+        // swap source & target
+        QString const targetPath = item.sourcePath;
+        QString const sourcePath = item.targetPath;
+        qDebug() << "\tsource: " << sourcePath; //todom remove
+        qDebug() << "\ttarget: " << targetPath; //todom remove
         QDir fileHandler;
         bool const successfullyRenamed = fileHandler.rename(sourcePath, targetPath);
         qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR"); //todom remove
 
-        //! @todo @handle error-case (could fail for at least one filesystem)
+        // handle error-case (could fail for at least one filesystem)
         if(successfullyRenamed)
         {
             // update the file-list (means: rescan?)
@@ -184,14 +186,16 @@ void CullendulaFileSystemHandler::redo()
     {
         qDebug() << "CullendulaFileSystemHandler::redo()"; //todom remove
         CullendulaUndoItem const item = m_undoStack.redo();
-        QString targetPath = item.fromPath; // swap source/target
-        QString const sourcePath = item.toPath;
-        qDebug() << "source: " << sourcePath << "# target: " << targetPath; //todom remove
+        // swap source & target
+        QString const targetPath = item.sourcePath;
+        QString const sourcePath = item.targetPath;
+        qDebug() << "\tsource: " << sourcePath; //todom remove
+        qDebug() << "\ttarget: " << targetPath; //todom remove
         QDir fileHandler;
         bool const successfullyRenamed = fileHandler.rename(sourcePath, targetPath);
         qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR"); //todom remove
 
-        //! @todo @handle error-case (could fail for at least one filesystem)
+        // handle error-case (could fail for at least one filesystem)
         if(successfullyRenamed)
         {
             // update the file-list (means: rescan?)
@@ -349,8 +353,8 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const 
             QString const sourcePathAndName(m_currentImages[m_positionCurrentFile].absoluteFilePath()); // TODO this will lead to crash, because index out of bounds
             qDebug() << "\t sourcePathAndName:" << sourcePathAndName;
             QFileInfo fileInfo(sourcePathAndName);
-            QString const fileName (fileInfo.fileName());
-            qDebug() << "\t fileName:" << fileName;
+            QString const fileName(fileInfo.fileName());
+            //qDebug() << "\t fileName:" << fileName;
             QString const targetPathAndName(outputDir.path() + QDir::separator() + fileName);
             qDebug() << "\t targetPathAndName:" << targetPathAndName;
             bool const successfullyRenamed = outputDir.rename(sourcePathAndName, targetPathAndName); //! this is the MOVE operation!

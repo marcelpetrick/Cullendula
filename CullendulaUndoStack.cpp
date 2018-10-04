@@ -24,8 +24,8 @@ CullendulaUndoItem CullendulaUndoStack::undo()
         CullendulaUndoItem const returnValue = m_undoContainer.last();
         // remove from this container
         m_undoContainer.removeLast();
-        // .. and add to redo
-        m_redoContainer.append(returnValue);
+        // .. and add to redo: swap order
+        m_redoContainer.append(CullendulaUndoItem(returnValue.targetPath, returnValue.sourcePath));
 
         return returnValue; // conflicts with "single point of exit" ..
     }
@@ -44,8 +44,8 @@ CullendulaUndoItem CullendulaUndoStack::redo()
         CullendulaUndoItem const returnValue = m_redoContainer.last();
         // remove from this container
         m_redoContainer.removeLast();
-        // .. and add to undo
-        m_undoContainer.append(returnValue);
+        // .. and add to undo: swap order
+        m_undoContainer.append(CullendulaUndoItem(returnValue.targetPath, returnValue.sourcePath));
 
         return returnValue; // conflicts with "single point of exit" ..
     }

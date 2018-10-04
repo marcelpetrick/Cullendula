@@ -26,18 +26,18 @@ public:
     ~CullendulaUndoItem() = default;
     //[ctor] - just init from the given value
     CullendulaUndoItem(QString const& from, QString const& to) :
-        fromPath(from),
-        toPath(to)
+        sourcePath(from),
+        targetPath(to)
     {
         // nothing else to do :)
     }
 
-	//[members]
+    //[members]
 
     //! Quite simple: container for a pair of two paths (saved as String).
     //! Right now access is unlimited.
-    QString fromPath;
-    QString toPath;
+    QString sourcePath;
+    QString targetPath;
 };
 
 //----------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ public:
 class CullendulaUndoStack
 {
 public:
-	CullendulaUndoStack() = default;
+    CullendulaUndoStack() = default;
     ~CullendulaUndoStack() = default;
 
     //! Push: insert new pair (from, to); will be converted to CullendulaUndoItem.
