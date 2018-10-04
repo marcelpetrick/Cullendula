@@ -56,9 +56,9 @@ QString CullendulaFileSystemHandler::getCurrentImagePath()
     // some defensive checks
     if(checkInternalSanity())
     {
-        // TODO check for existence
+        // check for existence
         QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath());
-        qDebug() << "\t" << path;
+        qDebug() << "\tpath:" << path;
         QFile const tempFile(path);
         if(tempFile.exists()/* && tempFile.isReadable()*/) // latter is not the case with Ext4 here ..
         {
@@ -133,7 +133,8 @@ QString CullendulaFileSystemHandler::getCurrentStatus() const
 {
     QString returnValue("showing ");
     returnValue += QString::number(m_positionCurrentFile + 1); //for the regular users indexing starts at 1 ..
-    returnValue += " of " + QString::number(m_currentImages.size());
+    returnValue += " of ";
+    returnValue += QString::number(m_currentImages.size());
 
     return returnValue;
 }
@@ -174,6 +175,8 @@ void CullendulaFileSystemHandler::undo()
         {
             // update the file-list (means: rescan?)
             qDebug() << "update the file-list (means: rescan?)"; //todom remove
+
+            //! @todo something like createImageFileList() has to be called, but without modiyfing the current position and re-initialisation of the filter ..
         }
     }
 }
@@ -200,6 +203,8 @@ void CullendulaFileSystemHandler::redo()
         {
             // update the file-list (means: rescan?)
             qDebug() << "update the file-list (means: rescan?)"; //todom remove
+
+            //! @todo something like createImageFileList() has to be called, but without modiyfing the current position and re-initialisation of the filter ..
         }
     }
 }
@@ -269,7 +274,7 @@ bool CullendulaFileSystemHandler::createImageFileList()
     qDebug() << "CullendulaFileSystemHandler::createImageFileList():";
 
     // apply the wanted filters
-    QStringList filters; // TODO make configurable for the user
+    QStringList filters; //! @TODO make the filter configurable for the user
     filters << "*.jpg" << "*.jpeg";
     m_workingPath.setNameFilters(filters);
 
@@ -277,6 +282,7 @@ bool CullendulaFileSystemHandler::createImageFileList()
 
     if(!availableImages.isEmpty())
     {
+        // just for debugging: could be removed
         qDebug() << "found the following JPGs:";
         for(auto const& file : availableImages)
         {
@@ -287,8 +293,6 @@ bool CullendulaFileSystemHandler::createImageFileList()
         m_currentImages = availableImages.toVector();
         m_positionCurrentFile = 0;
 
-        // trigger the initial loading
-        //refreshLabel(); // TODO originally before
         returnValue = true; // everything ok
     }
     else
