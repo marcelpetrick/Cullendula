@@ -16,7 +16,7 @@
 
 //----------------------------------------------------------------------------------
 
-//! @class CullendulaUndoItem - helper to store the "source, target"-tuples for the moved files.
+//! @class CullendulaUndoItem Helper to store the "source, target"-tuples for the moved files.
 class CullendulaUndoItem
 {
 public:
@@ -42,7 +42,7 @@ public:
 
 //----------------------------------------------------------------------------------
 
-//! @class CullendulaUndoStack - helper to encapsulate some undo- and redo-functionality.
+//! @class CullendulaUndoStack Helper to encapsulate some undo- and redo-functionality.
 //!         Available operations shall be "undo" and "redo" and "push".
 //!         "canUndo" and "canRedo" tell if the specific operations are available.
 //!         In case of executing undo/redo when the respective checks would fail,
