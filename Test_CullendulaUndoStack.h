@@ -13,7 +13,7 @@
 #include <QtTest/QtTest>
 
 // std-includes
-#include <memory> // for shared_ptr
+#include <memory> // for unique_ptr
 
 // to read: http://doc.qt.io/qt-5/qtest-overview.html
 //initTestCase() will be called before the first test function is executed.
@@ -57,5 +57,5 @@ private slots:
 
 private:
     //! contains the used undo-redo-stack
-    std::shared_ptr<CullendulaUndoStack> m_stackPtr = nullptr; //todo make unique_ptr
+    std::unique_ptr<CullendulaUndoStack> m_stackPtr = nullptr; //todo make unique_ptr
 };
