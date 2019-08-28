@@ -1,9 +1,12 @@
 #----------------------------------------------------------------------------------
 # pro file for the application "Cullendula"
 #
-# description: Cullendula - small GUI-app to pick the best shots from a session
+# description: Cullendula - small GUI-app to pick quickly the best shots from a session
 # author: mail@marcelpetrick.it
 # repo: https://github.com/marcelpetrick/Cullendula
+#
+# requires: Qt5
+#
 #----------------------------------------------------------------------------------
 
 QT += \
@@ -11,8 +14,6 @@ QT += \
     gui \
     widgets \
     testlib
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Cullendula
 TEMPLATE = app
