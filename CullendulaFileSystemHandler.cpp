@@ -10,7 +10,7 @@
 // Qt includes
 #include <QtCore/QList>
 #include <QtCore/QFile>
-#include <QtCore/QDebug> //todom maybe remove
+#include <QtCore/QDebug>
 
 //----------------------------------------------------------------------------
 
@@ -322,7 +322,7 @@ bool CullendulaFileSystemHandler::createOutputFolder(QString const & subdir)
     {
         //create a new output dir
         bool const creationSuccessful = m_workingPath.mkdir(subdir);
-        Q_UNUSED(creationSuccessful) // return-value is not evaluated, because the next check test directly for existance of the directory
+        Q_UNUSED(creationSuccessful) // return-value is not evaluated, because the next check test directly for existence of the directory
 
         if(outputDirTest.exists())
         {

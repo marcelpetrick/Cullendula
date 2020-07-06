@@ -57,5 +57,5 @@ private slots:
 
 private:
     //! contains the used undo-redo-stack
-    std::unique_ptr<CullendulaUndoStack> m_stackPtr = nullptr; //todo make unique_ptr
+    std::unique_ptr<CullendulaUndoStack> m_stackPtr = nullptr;
 };

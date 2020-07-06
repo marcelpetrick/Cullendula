@@ -6,6 +6,7 @@
 
 // own includes
 #include "Test_CullendulaUndoStack.h"
+#include <memory>
 
 //----------------------------------------------------------------------------------
 
@@ -26,8 +27,7 @@ void Test_CullendulaUndoStack::cleanupTestCase()
 void Test_CullendulaUndoStack::init()
 {
     // reset with a totally fresh item
-    //m_stackPtr = std::make_unique<CullendulaUndoStack>(); // not liked by Linux
-    m_stackPtr.reset(new CullendulaUndoStack);
+    m_stackPtr = std::make_unique<CullendulaUndoStack>();
 }
 
 //----------------------------------------------------------------------------------
