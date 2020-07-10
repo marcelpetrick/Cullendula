@@ -8,9 +8,9 @@
 #include "CullendulaFileSystemHandler.h"
 
 // Qt includes
-#include <QtCore/QList>
-#include <QtCore/QFile>
 #include <QtCore/QDebug>
+#include <QtCore/QFile>
+#include <QtCore/QList>
 
 //----------------------------------------------------------------------------
 

@@ -9,11 +9,11 @@
 #include "ui_CullendulaMainWindow.h"
 
 // Qt includes
+#include <QtCore/QDebug> //todom maybe remove
+#include <QtCore/QMimeData>
 #include <QtGui/QDropEvent>
 #include <QtGui/QPixmap>
 #include <QtWidgets/QMessageBox>
-#include <QtCore/QMimeData>
-#include <QtCore/QDebug> //todom maybe remove
 
 //----------------------------------------------------------------------------
 
