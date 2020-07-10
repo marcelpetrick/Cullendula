@@ -28,6 +28,6 @@
         CullendulaMainWindow mainWindow;
         mainWindow.show();
 
-        return a.exec();
+        return QApplication::exec();
     }
 #endif
