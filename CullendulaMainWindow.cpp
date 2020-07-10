@@ -30,7 +30,7 @@ namespace {
 
     //! prevent pumping window because of scaling. Describes the expected size of the frame.
     int const c_extraPixelsBecauseOfFraming = 2;
-}
+} // namespace
 
 //----------------------------------------------------------------------------
 
