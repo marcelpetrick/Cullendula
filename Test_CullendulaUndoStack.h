@@ -12,7 +12,7 @@
 // Qt includes
 #include <QtTest/QtTest>
 
-// std-includes
+// std includes
 #include <memory> // for unique_ptr
 
 // to read: http://doc.qt.io/qt-5/qtest-overview.html
@@ -25,7 +25,7 @@ class Test_CullendulaUndoStack: public QObject
 {
     Q_OBJECT
 
-private slots:
+private Q_SLOTS:
     //! -- slots from QTest --
 
     //initTestCase() will be called before the first test function is executed.

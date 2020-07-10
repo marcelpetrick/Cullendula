@@ -34,7 +34,7 @@ protected:
     //! Reimplemented to make the label with the current photo stretch accordingly.
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 
-private slots:
+private Q_SLOTS:
     //! shift left and right (for- and backward) through the image-file-list (current directory)
     void slotButtonLeftTriggered();
     void slotButtonRightTriggered();

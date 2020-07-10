@@ -131,10 +131,9 @@ bool CullendulaFileSystemHandler::trashCurrentFile()
 
 QString CullendulaFileSystemHandler::getCurrentStatus() const
 {
-    QString returnValue("showing ");
-    returnValue += QString::number(m_positionCurrentFile + 1); //for the regular users indexing starts at 1 ..
-    returnValue += " of ";
-    returnValue += QString::number(m_currentImages.size());
+    auto returnValue = QString("showing %1 of %2").arg(
+                QString::number(m_positionCurrentFile + 1), //for the regular users indexing starts at 1 ..
+                QString::number(m_currentImages.size()));
 
     return returnValue;
 }
