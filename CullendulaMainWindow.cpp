@@ -23,7 +23,7 @@ namespace {
     //! v0.2 improved useability and stability; more features (move to trash!); refactored code-base; improved code-quality
     //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
     //! v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
-    QString const c_versionString = " - v0.4.3";
+    QString const c_versionString = " - v0.4.4";
 
     //! Determines how long the status message is visible. After timer runs out, it is removed.
     unsigned int const c_StatusBarDelay = 5000;
@@ -291,23 +291,23 @@ void CullendulaMainWindow::createActions()
     // edit menu
     m_undoAction = new QAction(tr("Undo"), this);
     m_undoAction->setStatusTip(tr("Revert the last file-move-operation"));
-    m_undoAction->setShortcut(Qt::CTRL + Qt::Key_Y);
+    m_undoAction->setShortcut(Qt::CTRL | Qt::Key_Y);
     connect(m_undoAction, &QAction::triggered, this, [=] () { qDebug("pressed Undo"); m_fileSystemHandler.undo(); updateUndoRedoButtonStatus(); });
 
     m_redoQtAction = new QAction(tr("Redo"), this);
     m_redoQtAction->setStatusTip(tr("Redo the last file-move-operation (means: undo undo)"));
-    m_redoQtAction->setShortcut(Qt::CTRL + Qt::Key_Z);
+    m_redoQtAction->setShortcut(Qt::CTRL | Qt::Key_Z);
     connect(m_redoQtAction, &QAction::triggered, this, [=] () { qDebug("pressed Redo"); m_fileSystemHandler.redo(); updateUndoRedoButtonStatus(); });
 
     // help menu
     m_aboutAction = new QAction(tr("About Cullendula"), this);
     m_aboutAction->setStatusTip(tr("Show the application's About box"));
-    m_aboutAction->setShortcut(Qt::CTRL + Qt::Key_A);
+    m_aboutAction->setShortcut(Qt::CTRL | Qt::Key_A);
     connect(m_aboutAction, &QAction::triggered, this, &CullendulaMainWindow::about);
 
     m_aboutQtAction = new QAction(tr("About Qt"), this);
     m_aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
-    m_aboutQtAction->setShortcut(Qt::CTRL + Qt::Key_Q);
+    m_aboutQtAction->setShortcut(Qt::CTRL | Qt::Key_Q);
     connect(m_aboutQtAction, &QAction::triggered, qApp, &QApplication::aboutQt);
     //connect(aboutQtAct, &QAction::triggered, this, &CullendulaMainWindow::aboutQt);
     connect(m_aboutQtAction, &QAction::triggered, this, [=] () { printStatus(tr("Invoked Help|About Qt")); }); // replaced the slot-call with a lambda :)
