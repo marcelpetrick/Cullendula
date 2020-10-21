@@ -6,6 +6,7 @@
 # repo: https://github.com/marcelpetrick/Cullendula
 #
 # requires: Qt5
+# tested with Qt 5.12.5, 5.15.1 and 6.0 beta
 #
 #----------------------------------------------------------------------------------
 
@@ -25,20 +26,20 @@ TEMPLATE = app
 DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
-    CullendulaMainWindow.cpp \
-    CullendulaFileSystemHandler.cpp \
-    CullendulaUndoStack.cpp \
-    Test_CullendulaUndoStack.cpp \
-    main.cpp
+    src/CullendulaMainWindow.cpp \
+    src/CullendulaFileSystemHandler.cpp \
+    src/CullendulaUndoStack.cpp \
+    src/Test_CullendulaUndoStack.cpp \
+    src/main.cpp
 
 HEADERS += \
-    CullendulaMainWindow.h \
-    CullendulaFileSystemHandler.h \
-    CullendulaUndoStack.h \
-    Test_CullendulaUndoStack.h
+    src/CullendulaMainWindow.h \
+    src/CullendulaFileSystemHandler.h \
+    src/CullendulaUndoStack.h \
+    src/Test_CullendulaUndoStack.h
 
 FORMS += \
-    CullendulaMainWindow.ui
+    src/CullendulaMainWindow.ui
 
 RC_FILE += \
-    cullendula.rc
+    media\cullendula.rc
