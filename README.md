@@ -2,8 +2,7 @@
 Small program to pick out the best shots of the vast amount of taken pictures per session (excursion).
 The name itself is a wordplay of the plant Calendula and the activity "to cull" (slang for sorting the photos).
 
-
-# How to use?
+## How to use?
 Start it and then drag&drop a folder with the pictures or an example picture to the central area of the app. Cullendula figures out itself which path to use.
 It also creates automatically a new folder named "output" inside the given path.
 The first picture of the files is loaded automatically too.
@@ -12,20 +11,19 @@ The button "save" (or UP arrow-key) moves the current image to the output-folder
 The button "trash" (or DOWN arrow-key) moves the current image to the trash-folder.
 When you are done, then close the app. The result (the best photos) are inside the output-folder :)
 
-This is version 0.2.
+## Build information
+This is version 0.4.4
 
-Builds and runs with: Linux, Gcc, Qt 5.10 and QtCreator 4.6-beta
+Builds and runs with:
+* Linux, GCC, Qt 5.10 and QtCreator 4.6-beta (todo: test)
+* Windows 7, Qt 5.5 and QtCreator 4.6 (todo: test)
+* Win 10, Qt 5.15.1 and Qt 6.0 beta with MinGW 8.1 and QtCreator 4.13.2
 
-Builds and runs with: Windows 7, Qt 5.5 and QtCreator 4.6
-
-
-nota bene: if you don't like, THEN don't use OR help to fix and expand it :)
-
-# History
+## History
 v0.1 was the basic release; working, but ugly
 v0.2 improved useability and stability; more features (move to trash!); refactored code-base; improved code-quality
 
-# Open tasks
+## Open tasks
 - show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
 - show position and amount: like: "3/234 output: 7 trash: 10" - maybe in the status-bar? - refine this
 - add an icon for the program
