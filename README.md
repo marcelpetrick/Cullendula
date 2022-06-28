@@ -15,7 +15,7 @@ When you are done, then close the app. The result (the best photos) are inside t
 This is version 0.4.4  
 
 Builds and runs with:
-* Linux, GCC, Qt 5.10 and QtCreator 4.6-beta (todo: test)  
+* Linux, GCC, Qt 5.15.2 and QtCreator 7.0.2
 * Windows 7, Qt 5.5 and QtCreator 4.6 (todo: test)  
 * Win 10, Qt 5.15.1 and Qt 6.0 beta with MinGW 8.1 and QtCreator 4.13.2  
 
