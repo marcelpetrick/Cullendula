@@ -2,50 +2,19 @@
 # pro file for the application "Cullendula"
 #
 # description: Cullendula - small GUI-app to pick quickly the best shots from a session
+#              The name is a wordplay on "to cull" and a local plant (Calendula).
+#
 # author: mail@marcelpetrick.it
 # repo: https://github.com/marcelpetrick/Cullendula
 #
 # requires: Qt5
-# tested with Qt 5.12.5, 5.15.1 and 6.0 beta
+# tested with Qt 5.12.5, 5.15.1, 5.15.2 (last FOSS LTS) and 6.0 beta
 #
 #----------------------------------------------------------------------------------
 
-QT += \
-    core \
-    gui \
-    widgets \
-    testlib
+TEMPLATE = subdirs
+CONFIG += ordered
 
-TARGET = Cullendula
-TEMPLATE = app
-
-# The following define makes your compiler emit warnings if you use
-# any feature of Qt which has been marked as deprecated (the exact warnings
-# depend on your compiler). Please consult the documentation of the
-# deprecated API in order to know how to port your code away from it.
-DEFINES += QT_DEPRECATED_WARNINGS
-
-SOURCES += \
-    src/CullendulaMainWindow.cpp \
-    src/CullendulaFileSystemHandler.cpp \
-    src/CullendulaUndoStack.cpp \
-    src/main.cpp
-
-HEADERS += \
-    src/CullendulaMainWindow.h \
-    src/CullendulaFileSystemHandler.h \
-    src/CullendulaUndoStack.h
-
-FORMS += \
-    src/CullendulaMainWindow.ui
-
-RC_FILE += \
-    media\cullendula.rc
-
-# whether to build tests
-CONFIG+=with_tests
-with_tests {
-    message(Build will include tests)
-    SUBDIRS += src/tests
-    tests.depends = Cullendula
-}
+SUBDIRS += \
+    src \
+    tests
