@@ -1,10 +1,7 @@
 QT += core testlib
 QT -= gui
 
-# maybe change to 14
-CONFIG += c++11
-
-TARGET = MainCodeUnitTests
+TARGET = tests
 CONFIG += console testcase
 CONFIG -= app_bundle
 
@@ -31,4 +28,4 @@ SOURCES += \
 # For the unit tests, we need to be able to include anything in the main code
 INCLUDEPATH += ../src
 
-include( ../src/Cullendula.pro )
+include( ../src/src.pro )

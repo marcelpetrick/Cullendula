@@ -18,3 +18,5 @@ CONFIG += ordered
 SUBDIRS += \
     src \
     tests
+
+CONFIG += c++17
