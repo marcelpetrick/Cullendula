@@ -29,17 +29,23 @@ SOURCES += \
     src/CullendulaMainWindow.cpp \
     src/CullendulaFileSystemHandler.cpp \
     src/CullendulaUndoStack.cpp \
-    src/Test_CullendulaUndoStack.cpp \
     src/main.cpp
 
 HEADERS += \
     src/CullendulaMainWindow.h \
     src/CullendulaFileSystemHandler.h \
-    src/CullendulaUndoStack.h \
-    src/Test_CullendulaUndoStack.h
+    src/CullendulaUndoStack.h
 
 FORMS += \
     src/CullendulaMainWindow.ui
 
 RC_FILE += \
     media\cullendula.rc
+
+# whether to build tests
+CONFIG+=with_tests
+with_tests {
+    message(Build will include tests)
+    SUBDIRS += src/tests
+    tests.depends = Cullendula
+}
