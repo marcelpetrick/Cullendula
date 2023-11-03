@@ -1,5 +1,5 @@
 # Cullendula
-Small program to pick out the best shots of the vast amount of taken pictures per session (excursion).  
+A program to pick out the best shots of the vast amount of taken pictures per photo session.
 The name itself is a wordplay of the plant Calendula and the activity "to cull" (slang for sorting the photos).
 
 ## How to use?
