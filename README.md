@@ -1,6 +1,6 @@
 # Cullendula
 A program to pick out the best shots of the vast amount of taken pictures per photo session.
-The name itself is a wordplay of the plant Calendula and the activity "to cull" (slang for sorting the photos).
+The name itself is a wordplay of the plant `Calendula` and the activity "to cull" (slang for sorting the photos).
 
 ## How to use?
 Start it and then drag&drop a folder with the pictures or an example picture to the central area of the app. Cullendula figures out itself which path to use.  
@@ -14,14 +14,14 @@ When you are done, then close the app. The result (the best photos) are inside t
 ## Build information
 This is version 0.4.4  
 
-Builds and runs with:
+### Builds and runs with:
 * Linux, GCC, Qt 5.15.2 and QtCreator 7.0.2
 * Windows 7, Qt 5.5 and QtCreator 4.6 (todo: test)  
 * Win 10, Qt 5.15.1 and Qt 6.0 beta with MinGW 8.1 and QtCreator 4.13.2  
 
 ## History
-v0.1 was the basic release; working, but ugly  
-v0.2 improved useability and stability; more features (move to trash!); refactored code-base; improved code-quality  
+* v0.1 was the basic release; working, but ugly
+* v0.2 improved useability and stability; more features (move to trash!); refactored code-base; improved code-quality
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
