@@ -56,3 +56,4 @@ Cullendula
 *.cdproj
 /CppDependOut1/
 *.aps
+/build/
