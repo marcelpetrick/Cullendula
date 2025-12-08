@@ -57,3 +57,4 @@ Cullendula
 /CppDependOut1/
 *.aps
 /build/
+/llm_compat_output.md
