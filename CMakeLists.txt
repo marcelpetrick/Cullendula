@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 project(Cullendula
-    VERSION 0.5.0
+    VERSION 0.5.1
     LANGUAGES CXX
 )
 
@@ -28,3 +28,5 @@ add_subdirectory(src)
 # Enable testing
 enable_testing()
 add_subdirectory(tests)
+
+set(QT_CREATOR_SKIP_MAINTENANCE_TOOL_PROVIDER ON)

@@ -35,7 +35,7 @@ Total Test time (real) =   0.01 sec
 ```
 
 ## Build information
-This is version 0.5.0.
+This is version 0.5.1.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 5.15.17 (and QtCreator 17)
