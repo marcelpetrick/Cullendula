@@ -11,6 +11,8 @@ The button "save" (or UP arrow-key) moves the current image to the output-folder
 The button "trash" (or DOWN arrow-key) moves the current image to the trash-folder.  
 When you are done, then close the app. The result (the best photos) are inside the output-folder :)  
 
+![](Cullendula_current_state.png)
+
 ## Build
 ```
 mkdir build
@@ -55,7 +57,7 @@ This is version 0.5.3.
 * show position and amount: like: "3/234 output: 7 trash: 10" - maybe in the status-bar? - refine this
 * add an icon for the program
 * make the used image-file-suffixes configureable
-* add some version/help menu-entry
+* DONE: add some version/help menu-entry
 * important: add a file-existance_check before loading to QPixmap
 * show the name + path of the current file
 * add possibility to open the current file directly
