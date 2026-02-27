@@ -5,7 +5,8 @@
 
 int main(int argc, char *argv[])
 {
-    Test_CullendulaUndoStack test;
+    QCoreApplication app(argc, argv);
 
-    QTest::qExec(&test);
+    Test_CullendulaUndoStack test;
+    return QTest::qExec(&test, argc, argv);
 }
