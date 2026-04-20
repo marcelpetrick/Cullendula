@@ -26,6 +26,7 @@ class Test_CullendulaMainWindow : public QObject {
 
     void slot_Test_InitialState();
     void slot_Test_ExtensionsMenu_DefaultsToAllChecked();
+    void slot_Test_ExtensionsMenu_AllUncheckedBlocksNextDrop();
     void slot_Test_ResizeWithoutLoadedImages_ShowsFallbackText();
     void slot_Test_DragEnterAndDropValidDirectory_LoadsImages();
     void slot_Test_ExtensionsMenu_AffectsNextDroppedDirectory();

@@ -7,6 +7,7 @@
 #include "Test_CullendulaMainWindow.h"
 
 #include <QtCore/QMimeData>
+#include <QtCore/QRegularExpression>
 #include <QtCore/QTimer>
 #include <QtGui/QAction>
 #include <QtGui/QDragEnterEvent>
@@ -113,7 +114,7 @@ void Test_CullendulaMainWindow::cleanup() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.4"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.5"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -144,6 +145,30 @@ void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_DefaultsToAllChecked() 
     QVERIFY(pngAction->isChecked());
     QVERIFY(jpgAction->isChecked());
     QVERIFY(webpAction->isChecked());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_AllUncheckedBlocksNextDrop() {
+    createImage("alpha.jpg", Qt::red);
+    createImage("beta.png", Qt::blue);
+
+    QList<QAction*> const extensionActions = m_window->findChildren<QAction*>(QRegularExpression("^extensionAction_"));
+    QVERIFY(!extensionActions.isEmpty());
+
+    for (QAction* action : extensionActions) {
+        QVERIFY(action->isChecked());
+        action->setChecked(false);
+    }
+
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
+
+    QVERIFY(!findButton("leftPB")->isEnabled());
+    QVERIFY(!findButton("rightPB")->isEnabled());
+    QVERIFY(!findButton("savePB")->isEnabled());
+    QVERIFY(!findButton("trashPB")->isEnabled());
+    QVERIFY(findCenterLabel()->text().contains("no more valid images found"));
+    QCOMPARE(findStatusBar()->currentMessage(), QString("no more files"));
 }
 
 //----------------------------------------------------------------------------------

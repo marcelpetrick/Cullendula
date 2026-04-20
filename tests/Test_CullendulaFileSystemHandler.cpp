@@ -96,6 +96,15 @@ void Test_CullendulaFileSystemHandler::slot_Test_GetSuggestedImageExtensions_IsN
 
 //----------------------------------------------------------------------------------
 
+void Test_CullendulaFileSystemHandler::slot_Test_SetAllowedImageExtensions_NormalizesAndDropsUnsupportedValues() {
+    m_handler->setAllowedImageExtensions({" PNG ", "jpg", "JPG", "not-an-image-format", ""});
+
+    QStringList const allowedExtensions = m_handler->getAllowedImageExtensions();
+    QCOMPARE(allowedExtensions, QStringList({"jpg", "png"}));
+}
+
+//----------------------------------------------------------------------------------
+
 void Test_CullendulaFileSystemHandler::slot_Test_SetAllowedImageExtensions_FiltersFiles() {
     createFile("alpha.jpg");
     createFile("beta.png");

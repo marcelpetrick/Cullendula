@@ -21,6 +21,7 @@ class Test_CullendulaFileSystemHandler : public QObject {
     void slot_Test_SetWorkingPath_FromDirectory();
     void slot_Test_SetWorkingPath_FromImageFile();
     void slot_Test_GetSuggestedImageExtensions_IsNormalizedAndBounded();
+    void slot_Test_SetAllowedImageExtensions_NormalizesAndDropsUnsupportedValues();
     void slot_Test_SetAllowedImageExtensions_FiltersFiles();
     void slot_Test_SetWorkingPath_FindsPngAndUppercaseSuffixes();
     void slot_Test_SetWorkingPath_InvalidPath();

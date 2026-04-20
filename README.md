@@ -101,7 +101,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.4.
+This is version 0.6.5.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -122,6 +122,7 @@ This is version 0.6.4.
 * v0.6.2 adds a configurable `Main -> Extensions` menu for choosing which image suffixes are loaded
 * v0.6.3 adds a repository-local clang-format configuration based on the default Google C++ style
 * v0.6.4 closes the stale-session reload gap with explicit regression coverage when switching to an empty folder
+* v0.6.5 strengthens the test suite around extension-filter normalization and the all-filters-disabled UI case
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
