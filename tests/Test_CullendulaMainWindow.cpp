@@ -8,11 +8,11 @@
 
 #include <QtCore/QMimeData>
 #include <QtCore/QTimer>
+#include <QtGui/QAction>
 #include <QtGui/QDragEnterEvent>
 #include <QtGui/QDropEvent>
 #include <QtGui/QImage>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QAction>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
@@ -127,7 +127,7 @@ void Test_CullendulaMainWindow::cleanup()
 
 void Test_CullendulaMainWindow::slot_Test_InitialState()
 {
-    QVERIFY(m_window->windowTitle().contains("v0.5.6"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.0"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());

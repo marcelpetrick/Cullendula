@@ -14,9 +14,9 @@ add_library(CullendulaLib
 )
 
 target_link_libraries(CullendulaLib
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Widgets
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
 )
 
 # 🔴 NEW: expose src/ as public include dir for anything linking CullendulaLib

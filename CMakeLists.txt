@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.28)
 set(QT_CREATOR_SKIP_MAINTENANCE_TOOL_PROVIDER ON)
 
 project(Cullendula
-    VERSION 0.5.6
+    VERSION 0.6.0
     LANGUAGES CXX
 )
 
@@ -34,15 +34,15 @@ if(CULLENDULA_ENABLE_COVERAGE)
     endif()
 endif()
 
-# Find Qt 5.15
-find_package(Qt5 5.15 REQUIRED COMPONENTS
+# Find Qt 6.10
+find_package(Qt6 6.10 REQUIRED COMPONENTS
     Core
     Gui
     Widgets
 )
 
 if(CULLENDULA_BUILD_TESTS)
-    find_package(Qt5 5.15 REQUIRED COMPONENTS Test)
+    find_package(Qt6 6.10 REQUIRED COMPONENTS Test)
 endif()
 
 # Build the application code

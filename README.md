@@ -22,12 +22,11 @@ cmake --build build
 
 ## Run the tests after building
 
-The unit tests cover the `CullendulaUndoStack` behavior from the command line. They verify:
+The unit tests cover the core CLI and GUI behavior from the command line. They verify:
 
-* initial empty stack state
-* push/undo/redo semantics
-* returned source/target path pairs
-* clearing redo-history after a new push
+* `CullendulaUndoStack` push/undo/redo semantics
+* `CullendulaFileSystemHandler` path parsing, navigation, file moves, and undo/redo integration
+* `CullendulaMainWindow` drag and drop, button flows, menu actions, and basic widget state
 
 You can run them in three supported CLI ways:
 
@@ -62,9 +61,11 @@ This produces:
 
 Because `gcov` also reports inlined code from headers, the coverage output includes relevant Qt and standard-library headers alongside the project source file.
 
-The current coverage target reports on the production code exercised by the existing unit tests. Right now that is:
+The current coverage target reports on the production code exercised by the existing unit tests. Right now that includes:
 
 * `src/CullendulaUndoStack.cpp`
+* `src/CullendulaFileSystemHandler.cpp`
+* `src/CullendulaMainWindow.cpp`
 
 ## HTML coverage
 
@@ -90,10 +91,10 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.5.6.
+This is version 0.6.0.
 
 ### Builds and runs with:
-* Linux, cmake 4.1, GCC 15.2.1, Qt 5.15.17 (and QtCreator 17)
+* Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
 * not supported nor tested anymore:
   * Windows 7, Qt 5.5 and QtCreator 4.6 (todo: test)  
   * Win 10, Qt 5.15.1 and Qt 6.0 beta with MinGW 8.1 and QtCreator 4.13.2  
@@ -106,6 +107,7 @@ This is version 0.5.6.
 * v0.5 moved the buildsystem to cmake (from qmake)
 * v0.5.4 fixed the undo-stack unit tests, clarified the CLI test workflow, and corrected the README
 * v0.5.6 expanded coverage with deterministic MainWindow tests and documented the HTML coverage workflow
+* v0.6.0 ports the project build and test setup to Qt 6.10
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

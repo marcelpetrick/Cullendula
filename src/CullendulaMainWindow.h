@@ -28,11 +28,11 @@ public:
 
 protected:
     //! Need to be reimplemented to make the drag&drop possible ... to get the path for the dropped file/folder
-    void dragEnterEvent(QDragEnterEvent* event) Q_DECL_OVERRIDE;
-    void dropEvent(QDropEvent* event) Q_DECL_OVERRIDE;
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
 
     //! Reimplemented to make the label with the current photo stretch accordingly.
-    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    void resizeEvent(QResizeEvent *event) override;
 
 private Q_SLOTS:
     //! shift left and right (for- and backward) through the image-file-list (current directory)

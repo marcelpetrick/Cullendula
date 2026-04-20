@@ -20,10 +20,10 @@ add_executable(CullendulaTests ${TEST_SOURCES})
 # Link against QtTest + the library containing the app code
 #
 target_link_libraries(CullendulaTests
-    Qt5::Core
-    Qt5::Gui          # needed because UndoStack uses Qt GUI types
-    Qt5::Test
-    Qt5::Widgets
+    Qt6::Core
+    Qt6::Gui          # needed because UndoStack uses Qt GUI types
+    Qt6::Test
+    Qt6::Widgets
     CullendulaLib
 )
 
