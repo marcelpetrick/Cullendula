@@ -88,6 +88,42 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FromImageFile()
 
 //----------------------------------------------------------------------------------
 
+void Test_CullendulaFileSystemHandler::slot_Test_GetSuggestedImageExtensions_IsNormalizedAndBounded()
+{
+    QStringList const suggestedExtensions = CullendulaFileSystemHandler::getSuggestedImageExtensions();
+
+    QVERIFY(!suggestedExtensions.isEmpty());
+    QVERIFY(suggestedExtensions.size() <= 10);
+
+    QSet<QString> seenExtensions;
+    for(QString const& extension : suggestedExtensions)
+    {
+        QCOMPARE(extension, extension.toLower());
+        QVERIFY(!seenExtensions.contains(extension));
+        seenExtensions.insert(extension);
+    }
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_SetAllowedImageExtensions_FiltersFiles()
+{
+    createFile("alpha.jpg");
+    createFile("beta.png");
+    createFile("gamma.jpeg");
+
+    m_handler->setAllowedImageExtensions({"png"});
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.png"));
+
+    m_handler->setAllowedImageExtensions({"JPG", "JPEG"});
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("alpha.jpg"));
+    QCOMPARE(m_handler->getCurrentStatus(), QString("showing 1 of 2"));
+}
+
+//----------------------------------------------------------------------------------
+
 void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FindsPngAndUppercaseSuffixes()
 {
     createFile("alpha.JPG");

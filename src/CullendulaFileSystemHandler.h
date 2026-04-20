@@ -13,6 +13,8 @@
 #include <QtCore/QVector>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
+#include <QtCore/QStringList>
+#include <QtCore/QSet>
 
 //----------------------------------------------------------------------------
 
@@ -20,6 +22,15 @@ class CullendulaFileSystemHandler
 {
 public:
     CullendulaFileSystemHandler();
+
+    //! Returns up to ten common image extensions supported by the active Qt image plugins.
+    static QStringList getSuggestedImageExtensions();
+
+    //! Configure which suffixes are accepted when the next directory is loaded.
+    void setAllowedImageExtensions(QStringList const& extensions);
+
+    //! Return the currently active suffix filter.
+    QStringList getAllowedImageExtensions() const;
 
     //! Allows to configure the current path for the search for the album.
     bool setWorkingPath(QString const & urlPath);
@@ -88,4 +99,7 @@ private:
 
     //! Stores the last actions for Undo/Redo
     CullendulaUndoStack m_undoStack;
+
+    //! Active set of allowed image suffixes, normalized to lowercase.
+    QSet<QString> m_allowedImageExtensions;
 };

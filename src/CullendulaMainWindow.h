@@ -10,6 +10,8 @@
 #include "CullendulaFileSystemHandler.h"
 
 // Qt includes
+#include <QtCore/QMap>
+#include <QtCore/QStringList>
 #include <QtWidgets/QMainWindow>
 
 namespace Ui {
@@ -47,6 +49,9 @@ private Q_SLOTS:
     void about();
 
 private:
+    //! Synchronize the selected extension menu entries into the file system handler.
+    void syncAllowedExtensionsToFileSystemHandler();
+
     //! Refresh the label: if file available, then show as image - else reset to the initial text
     void refreshLabel();
 
@@ -74,7 +79,10 @@ private:
     //! handles all the path- and file-related operations
     CullendulaFileSystemHandler m_fileSystemHandler;
 
-    //! members for the "edit"- menu
+    //! members for the "main"- and "edit"- menus
+    QMenu* m_mainMenu = nullptr;
+    QMenu* m_extensionsMenu = nullptr;
+    QMap<QString, QAction*> m_extensionActions;
     QMenu* m_editMenu = nullptr;
     QAction* m_undoAction = nullptr;
     QAction* m_redoQtAction = nullptr;

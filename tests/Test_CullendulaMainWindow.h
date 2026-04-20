@@ -27,8 +27,10 @@ private Q_SLOTS:
     void cleanup();
 
     void slot_Test_InitialState();
+    void slot_Test_ExtensionsMenu_DefaultsToAllChecked();
     void slot_Test_ResizeWithoutLoadedImages_ShowsFallbackText();
     void slot_Test_DragEnterAndDropValidDirectory_LoadsImages();
+    void slot_Test_ExtensionsMenu_AffectsNextDroppedDirectory();
     void slot_Test_DropInvalidPayload_ShowsErrorStatus();
     void slot_Test_ButtonNavigationAndSaveFlow();
     void slot_Test_ButtonTrashFlow();
@@ -39,6 +41,7 @@ private:
     QString createImage(QString const& relativePath, QColor const& color = Qt::red);
     void sendDropWithUrls(QList<QUrl> const& urls);
     QAction* findAction(QString const& text) const;
+    QAction* findExtensionAction(QString const& extension) const;
     QPushButton* findButton(char const* name) const;
     QLabel* findCenterLabel() const;
     QStatusBar* findStatusBar() const;

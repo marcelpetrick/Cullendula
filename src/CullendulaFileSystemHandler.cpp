@@ -20,6 +20,7 @@ namespace {
     //! Determines the name of the output-folders
     QString const c_hardcodedOutput = "output";
     QString const c_hardcodedTrash = "trash";
+    int const c_maxSuggestedExtensions = 10;
 
     QSet<QString> getSupportedImageSuffixes()
     {
@@ -33,6 +34,25 @@ namespace {
 
         return suffixes;
     }
+
+    QStringList normalizeExtensions(QStringList const& extensions)
+    {
+        QSet<QString> const supportedSuffixes = getSupportedImageSuffixes();
+        QStringList normalizedExtensions;
+
+        for(QString const& extension : extensions)
+        {
+            QString const normalizedExtension = extension.trimmed().toLower();
+            if(!normalizedExtension.isEmpty() &&
+               supportedSuffixes.contains(normalizedExtension) &&
+               !normalizedExtensions.contains(normalizedExtension))
+            {
+                normalizedExtensions.append(normalizedExtension);
+            }
+        }
+
+        return normalizedExtensions;
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -41,7 +61,67 @@ CullendulaFileSystemHandler::CullendulaFileSystemHandler()
     :
       m_workingPath("")
 {
+    setAllowedImageExtensions(getSuggestedImageExtensions());
     qDebug() << "CullendulaFileSystemHandler::CullendulaFileSystemHandler()";
+}
+
+//----------------------------------------------------------------------------
+
+QStringList CullendulaFileSystemHandler::getSuggestedImageExtensions()
+{
+    QStringList const preferredExtensions = {
+        "png",
+        "jpg",
+        "jpeg",
+        "webp",
+        "gif",
+        "bmp",
+        "tif",
+        "tiff",
+        "svg",
+        "ico"
+    };
+
+    QStringList suggestedExtensions = normalizeExtensions(preferredExtensions);
+    if(suggestedExtensions.size() >= c_maxSuggestedExtensions)
+    {
+        suggestedExtensions.resize(c_maxSuggestedExtensions);
+        return suggestedExtensions;
+    }
+
+    QStringList additionalExtensions = getSupportedImageSuffixes().values();
+    std::sort(additionalExtensions.begin(), additionalExtensions.end());
+
+    for(QString const& extension : additionalExtensions)
+    {
+        if(!suggestedExtensions.contains(extension))
+        {
+            suggestedExtensions.append(extension);
+            if(suggestedExtensions.size() >= c_maxSuggestedExtensions)
+            {
+                break;
+            }
+        }
+    }
+
+    return suggestedExtensions;
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaFileSystemHandler::setAllowedImageExtensions(QStringList const& extensions)
+{
+    QStringList const normalizedExtensions = normalizeExtensions(extensions);
+    m_allowedImageExtensions = QSet<QString>(normalizedExtensions.cbegin(), normalizedExtensions.cend());
+}
+
+//----------------------------------------------------------------------------
+
+QStringList CullendulaFileSystemHandler::getAllowedImageExtensions() const
+{
+    QStringList extensions = m_allowedImageExtensions.values();
+    std::sort(extensions.begin(), extensions.end());
+    return extensions;
 }
 
 //----------------------------------------------------------------------------
@@ -305,7 +385,8 @@ bool CullendulaFileSystemHandler::createImageFileList()
 
     for(QFileInfo const& file : availableFiles)
     {
-        if(supportedImageSuffixes.contains(file.suffix().toLower()))
+        QString const suffix = file.suffix().toLower();
+        if(supportedImageSuffixes.contains(suffix) && m_allowedImageExtensions.contains(suffix))
         {
             availableImages.append(file);
         }

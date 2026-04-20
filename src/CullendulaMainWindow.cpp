@@ -25,7 +25,7 @@ namespace {
     //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
     //! v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
     //! v0.5 moved the buildsystem to cmake (from qmake)
-    QString const c_versionString = " - v0.6.1";
+    QString const c_versionString = " - v0.6.2";
 
     //! Determines how long the status message is visible. After timer runs out, it is removed.
     unsigned int const c_StatusBarDelay = 5000;
@@ -61,6 +61,7 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
     // create the menu
     createActions();
     createMenus();
+    syncAllowedExtensionsToFileSystemHandler();
 
     // set undo/redo correctly
     updateUndoRedoButtonStatus();
@@ -106,9 +107,11 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event)
         if(!urlList.isEmpty())
         {
             bool const success = m_fileSystemHandler.setWorkingPath(urlList.first().path());
-            if(success)
+            refreshLabel();
+            updateUndoRedoButtonStatus();
+            if(!success)
             {
-                refreshLabel();
+                qDebug() << "\tNo matching image files found for the current filter";
             }
         }
     }
@@ -290,6 +293,18 @@ void CullendulaMainWindow::printStatus(const QString & message) const
 
 void CullendulaMainWindow::createActions()
 {
+    QStringList const suggestedExtensions = CullendulaFileSystemHandler::getSuggestedImageExtensions();
+    for(QString const& extension : suggestedExtensions)
+    {
+        QAction* extensionAction = new QAction(extension.toUpper(), this);
+        extensionAction->setCheckable(true);
+        extensionAction->setChecked(true);
+        extensionAction->setObjectName("extensionAction_" + extension);
+        extensionAction->setStatusTip(tr("Enable loading of *.%1 files when opening the next directory").arg(extension));
+        connect(extensionAction, &QAction::toggled, this, [this]() { syncAllowedExtensionsToFileSystemHandler(); });
+        m_extensionActions.insert(extension, extensionAction);
+    }
+
     // edit menu
     m_undoAction = new QAction(tr("Undo"), this);
     m_undoAction->setStatusTip(tr("Revert the last file-move-operation"));
@@ -318,6 +333,14 @@ void CullendulaMainWindow::createActions()
 
 void CullendulaMainWindow::createMenus()
 {
+    // main menu
+    m_mainMenu = menuBar()->addMenu(tr("Main"));
+    m_extensionsMenu = m_mainMenu->addMenu(tr("Extensions"));
+    for(QAction* extensionAction : m_extensionActions)
+    {
+        m_extensionsMenu->addAction(extensionAction);
+    }
+
     // edit menu
     m_editMenu = menuBar()->addMenu(tr("Edit"));
     m_editMenu->addAction(m_undoAction);
@@ -327,6 +350,22 @@ void CullendulaMainWindow::createMenus()
     m_helpMenu = menuBar()->addMenu(tr("Help"));
     m_helpMenu->addAction(m_aboutAction);
     m_helpMenu->addAction(m_aboutQtAction);
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::syncAllowedExtensionsToFileSystemHandler()
+{
+    QStringList enabledExtensions;
+    for(auto it = m_extensionActions.cbegin(); it != m_extensionActions.cend(); ++it)
+    {
+        if(it.value()->isChecked())
+        {
+            enabledExtensions.append(it.key());
+        }
+    }
+
+    m_fileSystemHandler.setAllowedImageExtensions(enabledExtensions);
 }
 
 //----------------------------------------------------------------------------

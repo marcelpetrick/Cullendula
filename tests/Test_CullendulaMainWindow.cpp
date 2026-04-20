@@ -83,6 +83,13 @@ QAction* Test_CullendulaMainWindow::findAction(QString const& text) const
 
 //----------------------------------------------------------------------------------
 
+QAction* Test_CullendulaMainWindow::findExtensionAction(QString const& extension) const
+{
+    return m_window->findChild<QAction*>("extensionAction_" + extension.toLower());
+}
+
+//----------------------------------------------------------------------------------
+
 QPushButton* Test_CullendulaMainWindow::findButton(char const* name) const
 {
     return m_window->findChild<QPushButton*>(name);
@@ -127,7 +134,7 @@ void Test_CullendulaMainWindow::cleanup()
 
 void Test_CullendulaMainWindow::slot_Test_InitialState()
 {
-    QVERIFY(m_window->windowTitle().contains("v0.6.1"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.2"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -140,6 +147,25 @@ void Test_CullendulaMainWindow::slot_Test_InitialState()
     QVERIFY(!findAction("Redo")->isEnabled());
     QVERIFY(findCenterLabel()->text().contains("no more valid images found"));
     QCOMPARE(findStatusBar()->currentMessage(), QString("no more files"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_DefaultsToAllChecked()
+{
+    QAction* pngAction = findExtensionAction("png");
+    QAction* jpgAction = findExtensionAction("jpg");
+    QAction* webpAction = findExtensionAction("webp");
+
+    QVERIFY(pngAction != nullptr);
+    QVERIFY(jpgAction != nullptr);
+    QVERIFY(webpAction != nullptr);
+    QVERIFY(pngAction->isCheckable());
+    QVERIFY(jpgAction->isCheckable());
+    QVERIFY(webpAction->isCheckable());
+    QVERIFY(pngAction->isChecked());
+    QVERIFY(jpgAction->isChecked());
+    QVERIFY(webpAction->isChecked());
 }
 
 //----------------------------------------------------------------------------------
@@ -169,6 +195,36 @@ void Test_CullendulaMainWindow::slot_Test_DragEnterAndDropValidDirectory_LoadsIm
     QVERIFY(!findCenterLabel()->pixmap(Qt::ReturnByValue).isNull());
     QVERIFY(findStatusBar()->currentMessage().contains("showing 1 of 2"));
     QVERIFY(findStatusBar()->currentMessage().contains("alpha.jpg"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_AffectsNextDroppedDirectory()
+{
+    createImage("dir1/alpha.jpg", Qt::red);
+    createImage("dir1/beta.png", Qt::blue);
+    createImage("dir2/alpha.jpg", Qt::green);
+    createImage("dir2/beta.png", Qt::yellow);
+
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "dir1")});
+    QVERIFY(findStatusBar()->currentMessage().contains("alpha.jpg"));
+
+    QAction* jpgAction = findExtensionAction("jpg");
+    QAction* jpegAction = findExtensionAction("jpeg");
+    QAction* pngAction = findExtensionAction("png");
+    QVERIFY(jpgAction != nullptr);
+    QVERIFY(jpegAction != nullptr);
+    QVERIFY(pngAction != nullptr);
+
+    jpgAction->setChecked(false);
+    jpegAction->setChecked(false);
+    QVERIFY(pngAction->isChecked());
+
+    QVERIFY(findStatusBar()->currentMessage().contains("alpha.jpg"));
+
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "dir2")});
+    QVERIFY(findStatusBar()->currentMessage().contains("showing 1 of 1"));
+    QVERIFY(findStatusBar()->currentMessage().contains("beta.png"));
 }
 
 //----------------------------------------------------------------------------------
