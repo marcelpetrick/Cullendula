@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>../media/cullendula_icon.png</file>
+    </qresource>
+</RCC>
