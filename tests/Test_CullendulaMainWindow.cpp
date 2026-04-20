@@ -8,12 +8,13 @@
 
 #include <QtCore/QMimeData>
 #include <QtCore/QRegularExpression>
-#include <QtCore/QTimer>
 #include <QtGui/QAction>
 #include <QtGui/QDragEnterEvent>
 #include <QtGui/QDropEvent>
 #include <QtGui/QImage>
+#include <QtGui/QPalette>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QDialog>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
@@ -88,6 +89,23 @@ QAction* Test_CullendulaMainWindow::findThemeAction(QString const& themeName) co
 
 //----------------------------------------------------------------------------------
 
+QDialog* Test_CullendulaMainWindow::findOpenDialog() const {
+    QList<QWidget*> const topLevelWidgets = QApplication::topLevelWidgets();
+    for (QWidget* widget : topLevelWidgets) {
+        if (widget == m_window.get()) {
+            continue;
+        }
+
+        if (auto* dialog = qobject_cast<QDialog*>(widget); dialog != nullptr && dialog->isVisible()) {
+            return dialog;
+        }
+    }
+
+    return nullptr;
+}
+
+//----------------------------------------------------------------------------------
+
 QPushButton* Test_CullendulaMainWindow::findButton(char const* name) const { return m_window->findChild<QPushButton*>(name); }
 
 //----------------------------------------------------------------------------------
@@ -120,7 +138,7 @@ void Test_CullendulaMainWindow::cleanup() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.9"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.10"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -148,7 +166,9 @@ void Test_CullendulaMainWindow::slot_Test_LightTheme_IsDefault() {
     QVERIFY(lightThemeAction->isChecked());
     QVERIFY(!darkThemeAction->isChecked());
     QCOMPARE(m_window->getThemeMode(), CullendulaMainWindow::ThemeMode::Light);
-    QVERIFY(m_window->styleSheet().contains("#f6f3ee"));
+    QVERIFY(qApp->styleSheet().contains("#f6f3ee"));
+    QCOMPARE(qApp->palette().color(QPalette::Window), QColor("#f6f3ee"));
+    QCOMPARE(qApp->palette().color(QPalette::Button), QColor("#efe2cc"));
 }
 
 //----------------------------------------------------------------------------------
@@ -165,8 +185,10 @@ void Test_CullendulaMainWindow::slot_Test_ThemeMenu_SwitchesToDarkMode() {
     QVERIFY(!lightThemeAction->isChecked());
     QVERIFY(darkThemeAction->isChecked());
     QCOMPARE(m_window->getThemeMode(), CullendulaMainWindow::ThemeMode::Dark);
-    QVERIFY(m_window->styleSheet().contains("#0b0f14"));
-    QVERIFY(m_window->styleSheet().contains("#74b9ff"));
+    QVERIFY(qApp->styleSheet().contains("#0b0f14"));
+    QVERIFY(qApp->styleSheet().contains("#79c0ff"));
+    QCOMPARE(qApp->palette().color(QPalette::Window), QColor("#0b0f14"));
+    QCOMPARE(qApp->palette().color(QPalette::Button), QColor("#16324b"));
 }
 
 //----------------------------------------------------------------------------------
@@ -381,17 +403,37 @@ void Test_CullendulaMainWindow::slot_Test_UndoRedoActions_MoveFilesOnDisk() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_AboutAction_ShowsDialogAndStatus() {
-    QTimer::singleShot(0, []() {
-        for (QWidget* widget : QApplication::topLevelWidgets()) {
-            if (auto* messageBox = qobject_cast<QMessageBox*>(widget)) {
-                messageBox->accept();
-                return;
-            }
-        }
-    });
+    findThemeAction("dark")->trigger();
+    QApplication::processEvents();
 
     findAction("About Cullendula")->trigger();
     QApplication::processEvents();
 
+    QDialog* dialog = findOpenDialog();
+    QVERIFY(dialog != nullptr);
+    QCOMPARE(dialog->palette().color(QPalette::Window), qApp->palette().color(QPalette::Window));
+    QVERIFY(qApp->styleSheet().contains("QMessageBox QLabel"));
+    dialog->accept();
+    QApplication::processEvents();
+
     QCOMPARE(findStatusBar()->currentMessage(), QString("Invoked Help|About"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_AboutQtAction_ShowsDialogAndStatus() {
+    findThemeAction("dark")->trigger();
+    QApplication::processEvents();
+
+    findAction("About Qt")->trigger();
+    QApplication::processEvents();
+
+    QDialog* dialog = findOpenDialog();
+    QVERIFY(dialog != nullptr);
+    QCOMPARE(dialog->palette().color(QPalette::Window), qApp->palette().color(QPalette::Window));
+    QVERIFY(qApp->styleSheet().contains("QMessageBox QLabel"));
+    dialog->accept();
+    QApplication::processEvents();
+
+    QCOMPARE(findStatusBar()->currentMessage(), QString("Invoked Help|About Qt"));
 }

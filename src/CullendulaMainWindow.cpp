@@ -11,12 +11,16 @@
 
 // Qt includes
 #include <QtCore/QDebug>  //todom maybe remove
+#include <QtCore/QLibraryInfo>
 #include <QtCore/QMimeData>
 #include <QtGui/QAction>
+#include <QtGui/QColor>
 #include <QtGui/QDropEvent>
+#include <QtGui/QPalette>
 #include <QtGui/QPixmap>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QStyleFactory>
 
 //----------------------------------------------------------------------------
 
@@ -27,7 +31,7 @@ namespace {
 //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
 //! v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
 //! v0.5 moved the buildsystem to cmake (from qmake)
-QString const c_versionString = " - v0.6.9";
+QString const c_versionString = " - v0.6.10";
 
 //! Determines how long the status message is visible. After timer runs out, it is removed.
 unsigned int const c_StatusBarDelay = 5000;
@@ -35,106 +39,135 @@ unsigned int const c_StatusBarDelay = 5000;
 //! prevent pumping window because of scaling. Describes the expected size of the frame.
 int const c_extraPixelsBecauseOfFraming = 2;
 
-QString getLightThemeStyleSheet() {
-    return QStringLiteral(
-        "QMainWindow {"
-        "    background-color: #f6f3ee;"
-        "    color: #1f252d;"
-        "}"
-        "QMenuBar {"
-        "    background-color: #ece6dc;"
-        "    color: #1f252d;"
-        "}"
-        "QMenuBar::item:selected {"
-        "    background-color: #d7c9b4;"
-        "}"
-        "QMenu {"
-        "    background-color: #fffaf2;"
-        "    color: #1f252d;"
-        "    border: 1px solid #c9bba8;"
-        "}"
-        "QMenu::item:selected {"
-        "    background-color: #d7c9b4;"
-        "}"
-        "QLabel#centerLabel {"
-        "    background-color: #fffaf2;"
-        "    color: #25303b;"
-        "    border: 2px solid #c5b59e;"
-        "    padding: 18px;"
-        "}"
-        "QPushButton {"
-        "    background-color: #efe2cc;"
-        "    color: #1f252d;"
-        "    border: 1px solid #b79d7f;"
-        "    border-radius: 6px;"
-        "    padding: 8px 14px;"
-        "}"
-        "QPushButton:hover:!disabled {"
-        "    background-color: #e3d1b5;"
-        "}"
-        "QPushButton:pressed:!disabled {"
-        "    background-color: #d3bd9d;"
-        "}"
-        "QPushButton:disabled {"
-        "    background-color: #ddd7ce;"
-        "    color: #7a7f86;"
-        "    border-color: #c8c0b5;"
-        "}"
-        "QStatusBar {"
-        "    background-color: #ece6dc;"
-        "    color: #1f252d;"
-        "}");
+struct ThemeDefinition {
+    QColor windowColor;
+    QColor surfaceColor;
+    QColor menuSurfaceColor;
+    QColor textColor;
+    QColor mutedTextColor;
+    QColor borderColor;
+    QColor buttonColor;
+    QColor buttonHoverColor;
+    QColor buttonPressedColor;
+    QColor disabledButtonColor;
+    QColor disabledBorderColor;
+    QColor accentColor;
+    QColor accentHoverColor;
+    QColor accentPressedColor;
+    QColor highlightColor;
+    QColor tooltipBaseColor;
+    QColor tooltipTextColor;
+};
+
+ThemeDefinition getLightThemeDefinition() {
+    return {QColor("#f6f3ee"), QColor("#fffaf2"), QColor("#ece6dc"), QColor("#1f252d"), QColor("#7a7f86"), QColor("#c9bba8"),
+            QColor("#efe2cc"), QColor("#e3d1b5"), QColor("#d3bd9d"), QColor("#ddd7ce"), QColor("#c8c0b5"), QColor("#b79d7f"),
+            QColor("#d7c9b4"), QColor("#c8b08b"), QColor("#d7c9b4"), QColor("#fff6df"), QColor("#1f252d")};
 }
 
-QString getDarkThemeStyleSheet() {
+ThemeDefinition getDarkThemeDefinition() {
+    return {QColor("#0b0f14"), QColor("#131c26"), QColor("#111821"), QColor("#f4f7fb"), QColor("#7a8795"), QColor("#3e5875"),
+            QColor("#16324b"), QColor("#1d4668"), QColor("#24567f"), QColor("#1b2128"), QColor("#39424d"), QColor("#79c0ff"),
+            QColor("#24415f"), QColor("#2f5d87"), QColor("#24415f"), QColor("#182634"), QColor("#f4f7fb")};
+}
+
+QPalette createThemePalette(ThemeDefinition const& theme) {
+    QPalette palette;
+
+    palette.setColor(QPalette::Window, theme.windowColor);
+    palette.setColor(QPalette::WindowText, theme.textColor);
+    palette.setColor(QPalette::Base, theme.surfaceColor);
+    palette.setColor(QPalette::AlternateBase, theme.menuSurfaceColor);
+    palette.setColor(QPalette::ToolTipBase, theme.tooltipBaseColor);
+    palette.setColor(QPalette::ToolTipText, theme.tooltipTextColor);
+    palette.setColor(QPalette::Text, theme.textColor);
+    palette.setColor(QPalette::Button, theme.buttonColor);
+    palette.setColor(QPalette::ButtonText, theme.textColor);
+    palette.setColor(QPalette::BrightText, Qt::white);
+    palette.setColor(QPalette::Link, theme.accentColor);
+    palette.setColor(QPalette::Highlight, theme.highlightColor);
+    palette.setColor(QPalette::HighlightedText, theme.textColor);
+    palette.setColor(QPalette::PlaceholderText, theme.mutedTextColor);
+
+    palette.setColor(QPalette::Disabled, QPalette::WindowText, theme.mutedTextColor);
+    palette.setColor(QPalette::Disabled, QPalette::Text, theme.mutedTextColor);
+    palette.setColor(QPalette::Disabled, QPalette::ButtonText, theme.mutedTextColor);
+    palette.setColor(QPalette::Disabled, QPalette::Button, theme.disabledButtonColor);
+    palette.setColor(QPalette::Disabled, QPalette::Highlight, theme.disabledBorderColor);
+
+    return palette;
+}
+
+QString getThemeStyleSheet(ThemeDefinition const& theme) {
     return QStringLiteral(
-        "QMainWindow {"
-        "    background-color: #0b0f14;"
-        "    color: #f4f7fb;"
-        "}"
-        "QMenuBar {"
-        "    background-color: #111821;"
-        "    color: #f4f7fb;"
-        "}"
-        "QMenuBar::item:selected {"
-        "    background-color: #1f3147;"
-        "}"
-        "QMenu {"
-        "    background-color: #131c26;"
-        "    color: #f4f7fb;"
-        "    border: 1px solid #3e5875;"
-        "}"
-        "QMenu::item:selected {"
-        "    background-color: #24415f;"
-        "}"
-        "QLabel#centerLabel {"
-        "    background-color: #0f141b;"
-        "    color: #f8fbff;"
-        "    border: 2px solid #74b9ff;"
-        "    padding: 18px;"
-        "}"
-        "QPushButton {"
-        "    background-color: #16324b;"
-        "    color: #f8fbff;"
-        "    border: 1px solid #79c0ff;"
-        "    border-radius: 6px;"
-        "    padding: 8px 14px;"
-        "}"
-        "QPushButton:hover:!disabled {"
-        "    background-color: #1d4668;"
-        "}"
-        "QPushButton:pressed:!disabled {"
-        "    background-color: #24567f;"
-        "}"
-        "QPushButton:disabled {"
-        "    background-color: #1b2128;"
-        "    color: #7a8795;"
-        "    border-color: #39424d;"
-        "}"
-        "QStatusBar {"
-        "    background-color: #111821;"
-        "    color: #f4f7fb;"
-        "}");
+               "QMainWindow, QDialog, QMessageBox {"
+               "    background-color: %1;"
+               "    color: %2;"
+               "}"
+               "QWidget#centralWidget {"
+               "    background-color: %1;"
+               "    color: %2;"
+               "}"
+               "QMenuBar {"
+               "    background-color: %3;"
+               "    color: %2;"
+               "}"
+               "QMenuBar::item:selected {"
+               "    background-color: %4;"
+               "}"
+               "QMenu {"
+               "    background-color: %5;"
+               "    color: %2;"
+               "    border: 1px solid %6;"
+               "}"
+               "QMenu::item:selected {"
+               "    background-color: %4;"
+               "}"
+               "QToolTip {"
+               "    background-color: %5;"
+               "    color: %7;"
+               "    border: 1px solid %6;"
+               "}"
+               "QLabel#centerLabel {"
+               "    background-color: %5;"
+               "    color: %2;"
+               "    border: 2px solid %8;"
+               "    padding: 18px;"
+               "}"
+               "QLabel {"
+               "    color: %2;"
+               "}"
+               "QMessageBox QLabel {"
+               "    color: %2;"
+               "}"
+               "QPushButton {"
+               "    background-color: %9;"
+               "    color: %2;"
+               "    border: 1px solid %8;"
+               "    border-radius: 6px;"
+               "    padding: 8px 14px;"
+               "}"
+               "QPushButton:hover:!disabled {"
+               "    background-color: %10;"
+               "}"
+               "QPushButton:pressed:!disabled {"
+               "    background-color: %11;"
+               "}"
+               "QPushButton:disabled {"
+               "    background-color: %12;"
+               "    color: %13;"
+               "    border-color: %14;"
+               "}"
+               "QStatusBar {"
+               "    background-color: %3;"
+               "    color: %2;"
+               "}"
+               "QStatusBar::item {"
+               "    border: none;"
+               "}")
+        .arg(theme.windowColor.name(), theme.textColor.name(), theme.menuSurfaceColor.name(), theme.highlightColor.name(), theme.surfaceColor.name(),
+             theme.borderColor.name(), theme.tooltipTextColor.name(), theme.accentColor.name(), theme.buttonColor.name(), theme.buttonHoverColor.name(),
+             theme.buttonPressedColor.name(), theme.disabledButtonColor.name(), theme.mutedTextColor.name(), theme.disabledBorderColor.name());
 }
 }  // namespace
 
@@ -418,8 +451,7 @@ void CullendulaMainWindow::createActions() {
     m_aboutQtAction = new QAction(tr("About Qt"), this);
     m_aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
     m_aboutQtAction->setShortcut(Qt::CTRL | Qt::Key_Q);
-    connect(m_aboutQtAction, &QAction::triggered, qApp, &QApplication::aboutQt);
-    connect(m_aboutQtAction, &QAction::triggered, this, [=]() { printStatus(tr("Invoked Help|About Qt")); });  // replaced the slot-call with a lambda :)
+    connect(m_aboutQtAction, &QAction::triggered, this, &CullendulaMainWindow::aboutQt);
 }
 
 //----------------------------------------------------------------------------
@@ -463,6 +495,13 @@ void CullendulaMainWindow::syncAllowedExtensionsToFileSystemHandler() {
 
 void CullendulaMainWindow::applyTheme(ThemeMode themeMode) {
     m_themeMode = themeMode;
+    ThemeDefinition const theme = (themeMode == ThemeMode::Dark) ? getDarkThemeDefinition() : getLightThemeDefinition();
+
+    if (qApp != nullptr) {
+        qApp->setStyle(QStyleFactory::create("Fusion"));
+        qApp->setPalette(createThemePalette(theme));
+        qApp->setStyleSheet(getThemeStyleSheet(theme));
+    }
 
     if (m_lightThemeAction != nullptr) {
         m_lightThemeAction->setChecked(themeMode == ThemeMode::Light);
@@ -470,12 +509,6 @@ void CullendulaMainWindow::applyTheme(ThemeMode themeMode) {
 
     if (m_darkThemeAction != nullptr) {
         m_darkThemeAction->setChecked(themeMode == ThemeMode::Dark);
-    }
-
-    if (themeMode == ThemeMode::Dark) {
-        setStyleSheet(getDarkThemeStyleSheet());
-    } else {
-        setStyleSheet(getLightThemeStyleSheet());
     }
 }
 
@@ -495,16 +528,34 @@ void CullendulaMainWindow::updateUndoRedoButtonStatus() {
 
 void CullendulaMainWindow::about() {
     printStatus(tr("Invoked Help|About"));
-    QMessageBox mBox(QMessageBox::Information, tr("About Cullendula"),
-                     tr("Helper program to sort out (\"cull\") a collection of pictures in a directory after a nice photo-walk or event.<br>"
-                        "Should work cross-platform.<br>"
-                        "<br>"
-                        "Developed by <a href='mail@marcelpetrick.it'>mail@marcelpetrick.it</a><br>"
-                        "Source code can be found inside the repository at <a "
-                        "href='https://github.com/marcelpetrick/Cullendula/'>https://github.com/marcelpetrick/Cullendula</a><br>"
-                        "Feel free to use and share: GPL v3 :3"));
-    mBox.setTextFormat(Qt::RichText);
-    mBox.exec();
+    showInformationDialog(tr("About Cullendula"),
+                          tr("Helper program to sort out (\"cull\") a collection of pictures in a directory after a nice photo-walk or event.<br>"
+                             "Should work cross-platform.<br>"
+                             "<br>"
+                             "Developed by <a href='mail@marcelpetrick.it'>mail@marcelpetrick.it</a><br>"
+                             "Source code can be found inside the repository at <a "
+                             "href='https://github.com/marcelpetrick/Cullendula/'>https://github.com/marcelpetrick/Cullendula</a><br>"
+                             "Feel free to use and share: GPL v3 :3"));
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::aboutQt() {
+    printStatus(tr("Invoked Help|About Qt"));
+    showInformationDialog(tr("About Qt"), tr("This application currently runs with Qt %1.<br>"
+                                             "Qt installation prefix: %2<br>"
+                                             "<br>"
+                                             "Qt is a cross-platform application framework for building desktop and embedded applications.")
+                                              .arg(QString::fromLatin1(qVersion()), QLibraryInfo::path(QLibraryInfo::PrefixPath)));
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::showInformationDialog(QString const& title, QString const& text) {
+    auto* messageBox = new QMessageBox(QMessageBox::Information, title, text, QMessageBox::Ok, this);
+    messageBox->setAttribute(Qt::WA_DeleteOnClose, true);
+    messageBox->setTextFormat(Qt::RichText);
+    messageBox->open();
 }
 
 //----------------------------------------------------------------------------

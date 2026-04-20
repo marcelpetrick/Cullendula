@@ -51,8 +51,12 @@ class CullendulaMainWindow : public QMainWindow {
 
     //! Slot for the help-menu-entries
     void about();
+    void aboutQt();
 
    private:
+    //! Show a parented, themed information dialog that follows the active application palette.
+    void showInformationDialog(QString const& title, QString const& text);
+
     //! Synchronize the selected extension menu entries into the file system handler.
     void syncAllowedExtensionsToFileSystemHandler();
 

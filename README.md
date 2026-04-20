@@ -7,7 +7,7 @@ Start it and then drag&drop a folder with the pictures or an example picture to 
 It also creates automatically a new folder named "output" inside the given path.  
 The first picture of the files is loaded automatically too.  
 Cullendula scans the dropped directory for the image file extensions currently enabled in `Main -> Extensions`. The menu offers up to ten common Qt-supported formats such as `jpg`, `jpeg`, `png`, and `webp`, and all entries are enabled by default.  
-The widget-based UI also provides `Main -> Style` with `Light` and `Dark` themes. Light mode is the default, and dark mode uses a strong high-contrast palette.  
+The widget-based UI also provides `Main -> Style` with `Light` and `Dark` themes. Light mode is the default, and dark mode uses a strong high-contrast palette. The theme is applied application-wide so Qt dialogs follow the selected mode as well.  
 Switch between the images via the buttons at the botton of the app or use the arrow-keys (LEFT and RIGHT).  
 The button "save" (or UP arrow-key) moves the current image to the output-folder.  
 The button "trash" (or DOWN arrow-key) moves the current image to the trash-folder.  
@@ -120,7 +120,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.9.
+This is version 0.6.10.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -145,6 +145,7 @@ This is version 0.6.9.
 * v0.6.6 adds switchable light and dark widget themes under `Main -> Style`
 * v0.6.8 fixes the remaining Doxygen warnings and keeps the generated warning log clean
 * v0.6.9 keeps undo/redo synchronized across the filesystem state, in-memory image list, and visible main view
+* v0.6.10 applies the selected light or dark theme across the application palette and Qt dialogs
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

@@ -13,6 +13,7 @@
 #include "CullendulaMainWindow.h"
 
 class QAction;
+class QDialog;
 class QLabel;
 class QPushButton;
 class QStatusBar;
@@ -38,6 +39,7 @@ class Test_CullendulaMainWindow : public QObject {
     void slot_Test_ButtonTrashFlow();
     void slot_Test_UndoRedoActions_MoveFilesOnDisk();
     void slot_Test_AboutAction_ShowsDialogAndStatus();
+    void slot_Test_AboutQtAction_ShowsDialogAndStatus();
 
    private:
     QString createImage(QString const& relativePath, QColor const& color = Qt::red);
@@ -45,6 +47,7 @@ class Test_CullendulaMainWindow : public QObject {
     QAction* findAction(QString const& text) const;
     QAction* findExtensionAction(QString const& extension) const;
     QAction* findThemeAction(QString const& themeName) const;
+    QDialog* findOpenDialog() const;
     QPushButton* findButton(char const* name) const;
     QLabel* findCenterLabel() const;
     QStatusBar* findStatusBar() const;
