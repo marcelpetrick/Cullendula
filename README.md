@@ -44,7 +44,7 @@ At the moment the test suite contains one test executable registered with CTest:
 * `CullendulaUndoStackTest`
 
 ## Build information
-This is version 0.5.4.
+This is version 0.5.5.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 5.15.17 (and QtCreator 17)
@@ -59,6 +59,7 @@ This is version 0.5.4.
 * v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
 * v0.5 moved the buildsystem to cmake (from qmake)
 * v0.5.4 fixed the undo-stack unit tests, clarified the CLI test workflow, and corrected the README
+* v0.5.5 wired the existing icon into the Qt app runtime and platform-specific build hooks
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
