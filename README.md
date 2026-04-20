@@ -43,8 +43,54 @@ At the moment the test suite contains one test executable registered with CTest:
 
 * `CullendulaUndoStackTest`
 
+## Compute coverage
+
+Coverage is opt-in and uses `gcov`. The default build is unchanged.
+
+Build, run the tests, and generate the text coverage report:
+
+```
+cmake -S . -B build-coverage -DCULLENDULA_ENABLE_COVERAGE=ON
+cmake --build build-coverage
+cmake --build build-coverage --target coverage
+```
+
+This produces:
+
+* `build-coverage/coverage/coverage.txt` as a text summary
+* `build-coverage/coverage/gcov/*.gcov` as the detailed per-file gcov output
+
+Because `gcov` also reports inlined code from headers, the coverage output includes relevant Qt and standard-library headers alongside the project source file.
+
+The current coverage target reports on the production code exercised by the existing unit tests. Right now that is:
+
+* `src/CullendulaUndoStack.cpp`
+
+## HTML coverage
+
+HTML coverage is only available if one of these standard tools is installed before configuring CMake:
+
+* `gcovr`
+* `lcov` together with `genhtml`
+
+Install the tool first, then reconfigure and run:
+
+```
+cmake -S . -B build-coverage -DCULLENDULA_ENABLE_COVERAGE=ON
+cmake --build build-coverage --target coverage-html
+```
+
+If the tool is missing, CMake disables the `coverage-html` target and prints a status message during configure.
+
+This writes:
+
+* `build-coverage/coverage/html/index.html`
+
+### Current state of the coverage report (bad):
+![](media/coverage_report.png)
+
 ## Build information
-This is version 0.5.4.
+This is version 0.5.5.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 5.15.17 (and QtCreator 17)
@@ -59,6 +105,7 @@ This is version 0.5.4.
 * v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
 * v0.5 moved the buildsystem to cmake (from qmake)
 * v0.5.4 fixed the undo-stack unit tests, clarified the CLI test workflow, and corrected the README
+* v0.5.5 added an opt-in gcov coverage target and documented the coverage workflow
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
