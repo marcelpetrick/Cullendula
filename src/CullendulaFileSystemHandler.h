@@ -10,17 +10,16 @@
 #include "CullendulaUndoStack.h"
 
 // Qt includes
-#include <QtCore/QVector>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include <QtCore/QStringList>
 #include <QtCore/QSet>
+#include <QtCore/QStringList>
+#include <QtCore/QVector>
 
 //----------------------------------------------------------------------------
 
-class CullendulaFileSystemHandler
-{
-public:
+class CullendulaFileSystemHandler {
+   public:
     CullendulaFileSystemHandler();
 
     //! Returns up to ten common image extensions supported by the active Qt image plugins.
@@ -33,7 +32,7 @@ public:
     QStringList getAllowedImageExtensions() const;
 
     //! Allows to configure the current path for the search for the album.
-    bool setWorkingPath(QString const & urlPath);
+    bool setWorkingPath(QString const& urlPath);
 
     //! Return the path to the current item.
     //! In case no path is valid: return empty QString.
@@ -65,7 +64,7 @@ public:
     //! Execute the redo.
     void redo();
 
-private:
+   private:
     //! Reset the handler state before loading a new working path.
     void resetCurrentState();
 
@@ -77,10 +76,10 @@ private:
 
     //! Create and check if an output-folder exists.
     //! Initially: just create sub-dir "output".
-    bool createOutputFolder(QString const & subdir);
+    bool createOutputFolder(QString const& subdir);
 
     //! Unified functionality to move the current file. Called by save/trash.
-    bool moveCurrentFileToGivenSubfolder(QString const & subdir);
+    bool moveCurrentFileToGivenSubfolder(QString const& subdir);
 
     //! Check if the current file-list, position and working-path are valid. Else return false.
     bool checkInternalSanity() const;

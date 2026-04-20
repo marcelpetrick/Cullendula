@@ -6,17 +6,15 @@
 
 #pragma once
 
-#include "CullendulaFileSystemHandler.h"
-
 #include <QtTest/QtTest>
-
 #include <memory>
 
-class Test_CullendulaFileSystemHandler : public QObject
-{
+#include "CullendulaFileSystemHandler.h"
+
+class Test_CullendulaFileSystemHandler : public QObject {
     Q_OBJECT
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void init();
     void cleanup();
 
@@ -34,7 +32,7 @@ private Q_SLOTS:
     void slot_Test_UndoRedo_MoveFilesOnDisk();
     void slot_Test_SaveCurrentFile_FailsOnNameCollision();
 
-private:
+   private:
     QString createFile(QString const& relativePath);
     void createImageSet();
 

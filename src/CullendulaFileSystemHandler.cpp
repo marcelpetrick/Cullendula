@@ -4,7 +4,7 @@
 // repo: https://github.com/marcelpetrick/Cullendula
 //----------------------------------------------------------------------------------
 
-//own includes
+// own includes
 #include "CullendulaFileSystemHandler.h"
 
 // Qt includes
@@ -17,74 +17,51 @@
 
 // for constants
 namespace {
-    //! Determines the name of the output-folders
-    QString const c_hardcodedOutput = "output";
-    QString const c_hardcodedTrash = "trash";
-    int const c_maxSuggestedExtensions = 10;
+//! Determines the name of the output-folders
+QString const c_hardcodedOutput = "output";
+QString const c_hardcodedTrash = "trash";
+int const c_maxSuggestedExtensions = 10;
 
-    QSet<QString> getSupportedImageSuffixes()
-    {
-        QSet<QString> suffixes;
+QSet<QString> getSupportedImageSuffixes() {
+    QSet<QString> suffixes;
 
-        QList<QByteArray> const supportedFormats = QImageReader::supportedImageFormats();
-        for(QByteArray const& format : supportedFormats)
-        {
-            suffixes.insert(QString::fromLatin1(format).toLower());
-        }
-
-        return suffixes;
+    QList<QByteArray> const supportedFormats = QImageReader::supportedImageFormats();
+    for (QByteArray const& format : supportedFormats) {
+        suffixes.insert(QString::fromLatin1(format).toLower());
     }
 
-    QStringList normalizeExtensions(QStringList const& extensions)
-    {
-        QSet<QString> const supportedSuffixes = getSupportedImageSuffixes();
-        QStringList normalizedExtensions;
-
-        for(QString const& extension : extensions)
-        {
-            QString const normalizedExtension = extension.trimmed().toLower();
-            if(!normalizedExtension.isEmpty() &&
-               supportedSuffixes.contains(normalizedExtension) &&
-               !normalizedExtensions.contains(normalizedExtension))
-            {
-                normalizedExtensions.append(normalizedExtension);
-            }
-        }
-
-        return normalizedExtensions;
-    }
+    return suffixes;
 }
+
+QStringList normalizeExtensions(QStringList const& extensions) {
+    QSet<QString> const supportedSuffixes = getSupportedImageSuffixes();
+    QStringList normalizedExtensions;
+
+    for (QString const& extension : extensions) {
+        QString const normalizedExtension = extension.trimmed().toLower();
+        if (!normalizedExtension.isEmpty() && supportedSuffixes.contains(normalizedExtension) && !normalizedExtensions.contains(normalizedExtension)) {
+            normalizedExtensions.append(normalizedExtension);
+        }
+    }
+
+    return normalizedExtensions;
+}
+}  // namespace
 
 //----------------------------------------------------------------------------
 
-CullendulaFileSystemHandler::CullendulaFileSystemHandler()
-    :
-      m_workingPath("")
-{
+CullendulaFileSystemHandler::CullendulaFileSystemHandler() : m_workingPath("") {
     setAllowedImageExtensions(getSuggestedImageExtensions());
     qDebug() << "CullendulaFileSystemHandler::CullendulaFileSystemHandler()";
 }
 
 //----------------------------------------------------------------------------
 
-QStringList CullendulaFileSystemHandler::getSuggestedImageExtensions()
-{
-    QStringList const preferredExtensions = {
-        "png",
-        "jpg",
-        "jpeg",
-        "webp",
-        "gif",
-        "bmp",
-        "tif",
-        "tiff",
-        "svg",
-        "ico"
-    };
+QStringList CullendulaFileSystemHandler::getSuggestedImageExtensions() {
+    QStringList const preferredExtensions = {"png", "jpg", "jpeg", "webp", "gif", "bmp", "tif", "tiff", "svg", "ico"};
 
     QStringList suggestedExtensions = normalizeExtensions(preferredExtensions);
-    if(suggestedExtensions.size() >= c_maxSuggestedExtensions)
-    {
+    if (suggestedExtensions.size() >= c_maxSuggestedExtensions) {
         suggestedExtensions.resize(c_maxSuggestedExtensions);
         return suggestedExtensions;
     }
@@ -92,13 +69,10 @@ QStringList CullendulaFileSystemHandler::getSuggestedImageExtensions()
     QStringList additionalExtensions = getSupportedImageSuffixes().values();
     std::sort(additionalExtensions.begin(), additionalExtensions.end());
 
-    for(QString const& extension : additionalExtensions)
-    {
-        if(!suggestedExtensions.contains(extension))
-        {
+    for (QString const& extension : additionalExtensions) {
+        if (!suggestedExtensions.contains(extension)) {
             suggestedExtensions.append(extension);
-            if(suggestedExtensions.size() >= c_maxSuggestedExtensions)
-            {
+            if (suggestedExtensions.size() >= c_maxSuggestedExtensions) {
                 break;
             }
         }
@@ -109,16 +83,14 @@ QStringList CullendulaFileSystemHandler::getSuggestedImageExtensions()
 
 //----------------------------------------------------------------------------
 
-void CullendulaFileSystemHandler::setAllowedImageExtensions(QStringList const& extensions)
-{
+void CullendulaFileSystemHandler::setAllowedImageExtensions(QStringList const& extensions) {
     QStringList const normalizedExtensions = normalizeExtensions(extensions);
     m_allowedImageExtensions = QSet<QString>(normalizedExtensions.cbegin(), normalizedExtensions.cend());
 }
 
 //----------------------------------------------------------------------------
 
-QStringList CullendulaFileSystemHandler::getAllowedImageExtensions() const
-{
+QStringList CullendulaFileSystemHandler::getAllowedImageExtensions() const {
     QStringList extensions = m_allowedImageExtensions.values();
     std::sort(extensions.begin(), extensions.end());
     return extensions;
@@ -126,8 +98,7 @@ QStringList CullendulaFileSystemHandler::getAllowedImageExtensions() const
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::setWorkingPath(const QString & urlPath)
-{
+bool CullendulaFileSystemHandler::setWorkingPath(const QString& urlPath) {
     bool returnValue(false);
 
     qDebug() << "CullendulaFileSystemHandler::setWorkingPath(): urlPath=" << urlPath;
@@ -143,8 +114,7 @@ bool CullendulaFileSystemHandler::setWorkingPath(const QString & urlPath)
 
 //----------------------------------------------------------------------------
 
-void CullendulaFileSystemHandler::resetCurrentState()
-{
+void CullendulaFileSystemHandler::resetCurrentState() {
     m_currentImages.clear();
     m_positionCurrentFile = -1;
     m_undoStack = CullendulaUndoStack();
@@ -152,19 +122,17 @@ void CullendulaFileSystemHandler::resetCurrentState()
 
 //----------------------------------------------------------------------------
 
-QString CullendulaFileSystemHandler::getCurrentImagePath()
-{
+QString CullendulaFileSystemHandler::getCurrentImagePath() {
     QString returnValue;
     qDebug() << "CullendulaFileSystemHandler::getCurrentImagePath():";
 
     // some defensive checks
-    if(checkInternalSanity())
-    {
+    if (checkInternalSanity()) {
         // check for existence
         QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath());
         qDebug() << "\tpath:" << path;
         QFile const tempFile(path);
-        if(tempFile.exists()/* && tempFile.isReadable()*/) // latter is not the case with Ext4 here ..
+        if (tempFile.exists() /* && tempFile.isReadable()*/)  // latter is not the case with Ext4 here ..
         {
             returnValue = path;
         }
@@ -175,12 +143,10 @@ QString CullendulaFileSystemHandler::getCurrentImagePath()
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::adjustCurrentPositionBy(int const offset)
-{
+bool CullendulaFileSystemHandler::adjustCurrentPositionBy(int const offset) {
     bool const returnValue = checkInternalSanity();
 
-    if(checkInternalSanity())
-    {
+    if (checkInternalSanity()) {
         m_positionCurrentFile = (m_positionCurrentFile + m_currentImages.size() + offset) % m_currentImages.size();
     }
 
@@ -189,8 +155,7 @@ bool CullendulaFileSystemHandler::adjustCurrentPositionBy(int const offset)
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::switchCurrentPositionToTheLeft()
-{
+bool CullendulaFileSystemHandler::switchCurrentPositionToTheLeft() {
     bool const returnValue = adjustCurrentPositionBy(-1);
 
     return returnValue;
@@ -198,8 +163,7 @@ bool CullendulaFileSystemHandler::switchCurrentPositionToTheLeft()
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::switchCurrentPositionToTheRight()
-{
+bool CullendulaFileSystemHandler::switchCurrentPositionToTheRight() {
     bool const returnValue = adjustCurrentPositionBy(1);
 
     return returnValue;
@@ -207,12 +171,11 @@ bool CullendulaFileSystemHandler::switchCurrentPositionToTheRight()
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::saveCurrentFile()
-{
+bool CullendulaFileSystemHandler::saveCurrentFile() {
     bool returnValue(false);
     qDebug() << "CullendulaFileSystemHandler::saveCurrentFile():";
 
-    //TODO check the returnValue!
+    // TODO check the returnValue!
     returnValue = moveCurrentFileToGivenSubfolder(c_hardcodedOutput);
 
     return returnValue;
@@ -220,12 +183,11 @@ bool CullendulaFileSystemHandler::saveCurrentFile()
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::trashCurrentFile()
-{
+bool CullendulaFileSystemHandler::trashCurrentFile() {
     bool returnValue(false);
     qDebug() << "CullendulaFileSystemHandler::trashCurrentFile():";
 
-    //TODO check the returnValue!
+    // TODO check the returnValue!
     returnValue = moveCurrentFileToGivenSubfolder(c_hardcodedTrash);
 
     return returnValue;
@@ -233,51 +195,41 @@ bool CullendulaFileSystemHandler::trashCurrentFile()
 
 //----------------------------------------------------------------------------
 
-QString CullendulaFileSystemHandler::getCurrentStatus() const
-{
-    auto returnValue = QString("showing %1 of %2").arg(
-                QString::number(m_positionCurrentFile + 1), //for the regular users indexing starts at 1 ..
-                QString::number(m_currentImages.size()));
+QString CullendulaFileSystemHandler::getCurrentStatus() const {
+    auto returnValue = QString("showing %1 of %2")
+                           .arg(QString::number(m_positionCurrentFile + 1),  // for the regular users indexing starts at 1 ..
+                                QString::number(m_currentImages.size()));
 
     return returnValue;
 }
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::canUndo()
-{
-    return m_undoStack.canUndo();
-}
+bool CullendulaFileSystemHandler::canUndo() { return m_undoStack.canUndo(); }
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::canRedo()
-{
-    return m_undoStack.canRedo();
-}
+bool CullendulaFileSystemHandler::canRedo() { return m_undoStack.canRedo(); }
 
 //----------------------------------------------------------------------------
 
-void CullendulaFileSystemHandler::undo()
-{
-    if(canUndo())
-    {
-        qDebug() << "CullendulaFileSystemHandler::undo()"; //todom remove
+void CullendulaFileSystemHandler::undo() {
+    if (canUndo()) {
+        qDebug() << "CullendulaFileSystemHandler::undo()";  // todom remove
         CullendulaUndoItem const item = m_undoStack.undo();
         // swap source & target
         QString const targetPath = item.sourcePath;
         QString const sourcePath = item.targetPath;
-        qDebug() << "\tsource: " << sourcePath; //todom remove
-        qDebug() << "\ttarget: " << targetPath; //todom remove
+        qDebug() << "\tsource: " << sourcePath;  // todom remove
+        qDebug() << "\ttarget: " << targetPath;  // todom remove
         QDir fileHandler;
         bool const successfullyRenamed = fileHandler.rename(sourcePath, targetPath);
-        qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR"); //todom remove
+        qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR");  // todom remove
 
         // handle error-case (could fail for at least one filesystem)
-        if(successfullyRenamed)
-        {
+        if (successfullyRenamed) {
             // update the file-list (means: rescan?)
-            qDebug() << "update the file-list (means: rescan?)"; //todom remove
+            qDebug() << "update the file-list (means: rescan?)";  // todom remove
 
             //! @todo something like createImageFileList() has to be called, but without modiyfing the current position and re-initialisation of the filter ..
         }
@@ -286,26 +238,23 @@ void CullendulaFileSystemHandler::undo()
 
 //----------------------------------------------------------------------------
 
-void CullendulaFileSystemHandler::redo()
-{
-    if(canRedo())
-    {
-        qDebug() << "CullendulaFileSystemHandler::redo()"; //todom remove
+void CullendulaFileSystemHandler::redo() {
+    if (canRedo()) {
+        qDebug() << "CullendulaFileSystemHandler::redo()";  // todom remove
         CullendulaUndoItem const item = m_undoStack.redo();
         // swap source & target
         QString const targetPath = item.sourcePath;
         QString const sourcePath = item.targetPath;
-        qDebug() << "\tsource: " << sourcePath; //todom remove
-        qDebug() << "\ttarget: " << targetPath; //todom remove
+        qDebug() << "\tsource: " << sourcePath;  // todom remove
+        qDebug() << "\ttarget: " << targetPath;  // todom remove
         QDir fileHandler;
         bool const successfullyRenamed = fileHandler.rename(sourcePath, targetPath);
-        qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR"); //todom remove
+        qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR");  // todom remove
 
         // handle error-case (could fail for at least one filesystem)
-        if(successfullyRenamed)
-        {
+        if (successfullyRenamed) {
             // update the file-list (means: rescan?)
-            qDebug() << "update the file-list (means: rescan?)"; //todom remove
+            qDebug() << "update the file-list (means: rescan?)";  // todom remove
 
             //! @todo something like createImageFileList() has to be called, but without modiyfing the current position and re-initialisation of the filter ..
         }
@@ -314,8 +263,7 @@ void CullendulaFileSystemHandler::redo()
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::processNewPath()
-{
+bool CullendulaFileSystemHandler::processNewPath() {
     bool returnValue(false);
 
     qDebug() << "CullendulaFileSystemHandler::processNewPath():";
@@ -329,7 +277,7 @@ bool CullendulaFileSystemHandler::processNewPath()
 #ifdef __linux__
         m_workingPath.path();
 #else
-        m_workingPath.path().remove(0, 1); // remove the leading slash ("/")
+        m_workingPath.path().remove(0, 1);  // remove the leading slash ("/")
 #endif
     QFileInfo const fileInfo(intermediatePath);
 
@@ -349,8 +297,7 @@ bool CullendulaFileSystemHandler::processNewPath()
     qDebug() << "\t resulting directory:" << tempDir.path();
 
     // additionally check if the directory is usable
-    if(tempDir.exists())
-    {
+    if (tempDir.exists()) {
         m_workingPath.setPath(tempDir.path());
 
         // trigger now the creation of the parsing
@@ -359,9 +306,7 @@ bool CullendulaFileSystemHandler::processNewPath()
         // create now the output-folders
         returnValue &= createOutputFolder(c_hardcodedOutput);
         returnValue &= createOutputFolder(c_hardcodedTrash);
-    }
-    else
-    {
+    } else {
         qDebug() << "ERROR: given directory does not exist";
     }
 
@@ -370,8 +315,7 @@ bool CullendulaFileSystemHandler::processNewPath()
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::createImageFileList()
-{
+bool CullendulaFileSystemHandler::createImageFileList() {
     bool returnValue(false);
 
     qDebug() << "CullendulaFileSystemHandler::createImageFileList():";
@@ -383,20 +327,16 @@ bool CullendulaFileSystemHandler::createImageFileList()
     QFileInfoList const availableFiles = m_workingPath.entryInfoList(QDir::Files, QDir::Name);
     QFileInfoList availableImages;
 
-    for(QFileInfo const& file : availableFiles)
-    {
+    for (QFileInfo const& file : availableFiles) {
         QString const suffix = file.suffix().toLower();
-        if(supportedImageSuffixes.contains(suffix) && m_allowedImageExtensions.contains(suffix))
-        {
+        if (supportedImageSuffixes.contains(suffix) && m_allowedImageExtensions.contains(suffix)) {
             availableImages.append(file);
         }
     }
 
-    if(!availableImages.isEmpty())
-    {
+    if (!availableImages.isEmpty()) {
         qDebug() << "found the following image files:";
-        for(auto const& file : availableImages)
-        {
+        for (auto const& file : availableImages) {
             qDebug() << "\t" << file.absoluteFilePath();
         }
 
@@ -404,10 +344,8 @@ bool CullendulaFileSystemHandler::createImageFileList()
         m_currentImages = availableImages.toVector();
         m_positionCurrentFile = 0;
 
-        returnValue = true; // everything ok
-    }
-    else
-    {
+        returnValue = true;  // everything ok
+    } else {
         qDebug() << "no nice files found :(";
     }
 
@@ -416,32 +354,25 @@ bool CullendulaFileSystemHandler::createImageFileList()
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::createOutputFolder(QString const & subdir)
-{
+bool CullendulaFileSystemHandler::createOutputFolder(QString const& subdir) {
     bool returnValue(false);
 
     qDebug() << "CullendulaFileSystemHandler::createOutputFolder():" << subdir;
 
     QDir outputDirTest(m_workingPath.path() + QDir::separator() + subdir);
 
-    if(outputDirTest.exists())
-    {
+    if (outputDirTest.exists()) {
         qDebug() << "output-folder exists already :) - nothing to do";
         returnValue = true;
-    }
-    else
-    {
-        //create a new output dir
+    } else {
+        // create a new output dir
         bool const creationSuccessful = m_workingPath.mkdir(subdir);
-        Q_UNUSED(creationSuccessful) // return-value is not evaluated, because the next check test directly for existence of the directory
+        Q_UNUSED(creationSuccessful)  // return-value is not evaluated, because the next check test directly for existence of the directory
 
-        if(outputDirTest.exists())
-        {
+        if (outputDirTest.exists()) {
             qDebug() << "output-folder exists after creation!";
             returnValue = true;
-        }
-        else
-        {
+        } else {
             qDebug() << "very severe error - could not create output-dir :(";
         }
     }
@@ -452,38 +383,35 @@ bool CullendulaFileSystemHandler::createOutputFolder(QString const & subdir)
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const & subdir)
-{
+bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const& subdir) {
     bool returnValue(false);
     qDebug() << "CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder():";
 
     bool const saneInternalState = checkInternalSanity();
 
-    if(saneInternalState)
-    {
+    if (saneInternalState) {
         // move the current file to the output-folder
         QDir outputDir(m_workingPath.path() + QDir::separator() + subdir);
-        if(outputDir.exists())
-        {
-            QString const sourcePathAndName(m_currentImages[m_positionCurrentFile].absoluteFilePath()); // TODO this will lead to crash, because index out of bounds
+        if (outputDir.exists()) {
+            QString const sourcePathAndName(
+                m_currentImages[m_positionCurrentFile].absoluteFilePath());  // TODO this will lead to crash, because index out of bounds
             qDebug() << "\t sourcePathAndName:" << sourcePathAndName;
             QFileInfo fileInfo(sourcePathAndName);
             QString const fileName(fileInfo.fileName());
-            //qDebug() << "\t fileName:" << fileName;
+            // qDebug() << "\t fileName:" << fileName;
             QString const targetPathAndName(outputDir.path() + QDir::separator() + fileName);
             qDebug() << "\t targetPathAndName:" << targetPathAndName;
-            bool const successfullyRenamed = outputDir.rename(sourcePathAndName, targetPathAndName); //! this is the MOVE operation!
+            bool const successfullyRenamed = outputDir.rename(sourcePathAndName, targetPathAndName);  //! this is the MOVE operation!
             qDebug() << "\t successfullyRenamed?" << successfullyRenamed;
 
             // in case the file was successfully moved (= renamed path), then adjust the internal structures
-            if(successfullyRenamed)
-            {
+            if (successfullyRenamed) {
                 //! add to the stack for possible undoing
                 m_undoStack.push(sourcePathAndName, targetPathAndName);
 
                 // go to the next picture by removing the entry from the file-list, but keep the position
                 m_currentImages.removeAt(m_positionCurrentFile);
-                //if this was the last item of the list (like pos 2 at list of 3; which has now just 2 elements), then modulo
+                // if this was the last item of the list (like pos 2 at list of 3; which has now just 2 elements), then modulo
                 int const listSize = m_currentImages.size();
                 m_positionCurrentFile = (listSize > 0) ? (m_positionCurrentFile % listSize) : -1;
                 returnValue = true;
@@ -496,34 +424,28 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const 
 
 //----------------------------------------------------------------------------
 
-bool CullendulaFileSystemHandler::checkInternalSanity() const
-{
+bool CullendulaFileSystemHandler::checkInternalSanity() const {
     bool returnValue(true);
 
     QDir const outputDir(m_workingPath.path());
-    if(!outputDir.exists())
-    {
+    if (!outputDir.exists()) {
         qDebug() << "CullendulaFileSystemHandler::checkInternalSanity(): ERROR: workingPath not valid!";
         returnValue = false;
     }
 
-    if(m_currentImages.empty())
-    {
+    if (m_currentImages.empty()) {
         qDebug() << "CullendulaFileSystemHandler::checkInternalSanity(): ERROR: list of current images is empty!";
         returnValue = false;
     }
 
-    if(m_positionCurrentFile < 0)
-    {
-        qDebug() << "CullendulaFileSystemHandler::checkInternalSanity(): ERROR: position"
-                 << QString::number(m_positionCurrentFile) << "is a negative number!";
+    if (m_positionCurrentFile < 0) {
+        qDebug() << "CullendulaFileSystemHandler::checkInternalSanity(): ERROR: position" << QString::number(m_positionCurrentFile) << "is a negative number!";
         returnValue = false;
     }
 
-    if(m_positionCurrentFile >= m_currentImages.size())
-    {
-        qDebug() << "CullendulaFileSystemHandler::checkInternalSanity(): ERROR: position"
-                 << QString::number(m_positionCurrentFile) << " is out of range of the image-list with size" << QString::number(m_currentImages.size());
+    if (m_positionCurrentFile >= m_currentImages.size()) {
+        qDebug() << "CullendulaFileSystemHandler::checkInternalSanity(): ERROR: position" << QString::number(m_positionCurrentFile)
+                 << " is out of range of the image-list with size" << QString::number(m_currentImages.size());
         returnValue = false;
     }
 

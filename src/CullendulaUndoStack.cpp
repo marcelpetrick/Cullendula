@@ -9,8 +9,7 @@
 
 //----------------------------------------------------------------------------------
 
-void CullendulaUndoStack::push(const QString& from, const QString& to)
-{
+void CullendulaUndoStack::push(const QString& from, const QString& to) {
     // A new operation invalidates any redo history from an older branch.
     m_redoContainer.clear();
     m_undoContainer.append(CullendulaUndoItem(from, to));
@@ -18,10 +17,8 @@ void CullendulaUndoStack::push(const QString& from, const QString& to)
 
 //----------------------------------------------------------------------------------
 
-CullendulaUndoItem CullendulaUndoStack::undo()
-{
-    if(canUndo())
-    {
+CullendulaUndoItem CullendulaUndoStack::undo() {
+    if (canUndo()) {
         // pop the first item and return it
         CullendulaUndoItem const returnValue = m_undoContainer.last();
         // remove from this container
@@ -29,7 +26,7 @@ CullendulaUndoItem CullendulaUndoStack::undo()
         // .. and add to redo: swap order
         m_redoContainer.append(CullendulaUndoItem(returnValue.targetPath, returnValue.sourcePath));
 
-        return returnValue; // conflicts with "single point of exit" ..
+        return returnValue;  // conflicts with "single point of exit" ..
     }
 
     // prevent failure: return a freshly created item
@@ -38,10 +35,8 @@ CullendulaUndoItem CullendulaUndoStack::undo()
 
 //----------------------------------------------------------------------------------
 
-CullendulaUndoItem CullendulaUndoStack::redo()
-{
-    if(canRedo())
-    {
+CullendulaUndoItem CullendulaUndoStack::redo() {
+    if (canRedo()) {
         // pop the first item and return it
         CullendulaUndoItem const returnValue = m_redoContainer.last();
         // remove from this container
@@ -49,7 +44,7 @@ CullendulaUndoItem CullendulaUndoStack::redo()
         // .. and add to undo: swap order
         m_undoContainer.append(CullendulaUndoItem(returnValue.targetPath, returnValue.sourcePath));
 
-        return returnValue; // conflicts with "single point of exit" ..
+        return returnValue;  // conflicts with "single point of exit" ..
     }
 
     // prevent failure: return a freshly created item
@@ -58,32 +53,24 @@ CullendulaUndoItem CullendulaUndoStack::redo()
 
 //----------------------------------------------------------------------------------
 
-bool CullendulaUndoStack::canUndo()
-{
+bool CullendulaUndoStack::canUndo() {
     // the undo-container has items
     return !m_undoContainer.isEmpty();
 }
 
 //----------------------------------------------------------------------------------
 
-bool CullendulaUndoStack::canRedo()
-{
+bool CullendulaUndoStack::canRedo() {
     // the redo-container has items
     return !m_redoContainer.isEmpty();
 }
 
 //----------------------------------------------------------------------------------
 
-long CullendulaUndoStack::getUndoDepth()
-{
-    return static_cast<long>(m_undoContainer.size());
-}
+long CullendulaUndoStack::getUndoDepth() { return static_cast<long>(m_undoContainer.size()); }
 
 //----------------------------------------------------------------------------------
 
-long CullendulaUndoStack::getRedoDepth()
-{
-    return static_cast<long>(m_redoContainer.size());
-}
+long CullendulaUndoStack::getRedoDepth() { return static_cast<long>(m_redoContainer.size()); }
 
 //----------------------------------------------------------------------------------

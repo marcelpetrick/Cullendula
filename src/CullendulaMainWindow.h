@@ -15,28 +15,27 @@
 #include <QtWidgets/QMainWindow>
 
 namespace Ui {
-    class CullendulaMainWindow;
+class CullendulaMainWindow;
 }
 
 //----------------------------------------------------------------------------
 
-class CullendulaMainWindow : public QMainWindow
-{
+class CullendulaMainWindow : public QMainWindow {
     Q_OBJECT
 
-public:
+   public:
     explicit CullendulaMainWindow(QWidget* parent = nullptr);
     ~CullendulaMainWindow() override;
 
-protected:
+   protected:
     //! Need to be reimplemented to make the drag&drop possible ... to get the path for the dropped file/folder
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
 
     //! Reimplemented to make the label with the current photo stretch accordingly.
-    void resizeEvent(QResizeEvent *event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
-private Q_SLOTS:
+   private Q_SLOTS:
     //! shift left and right (for- and backward) through the image-file-list (current directory)
     void slotButtonLeftTriggered();
     void slotButtonRightTriggered();
@@ -48,7 +47,7 @@ private Q_SLOTS:
     //! Slot for the help-menu-entries
     void about();
 
-private:
+   private:
     //! Synchronize the selected extension menu entries into the file system handler.
     void syncAllowedExtensionsToFileSystemHandler();
 
@@ -59,7 +58,7 @@ private:
     void activateButtons(bool const active = false) const;
 
     //! Print the given string to the status-bar.
-    void printStatus(QString const & message) const;
+    void printStatus(QString const& message) const;
 
     //! create actions and fitting menus for the "help-menu"
     void createActions();
@@ -70,9 +69,9 @@ private:
 
     //! Load, scale and assign the current photo-file to the center-label.
     //! (Yes, could be resource-intensive when the user starts to play around with resizing.)
-    void loadAndScalePhoto(const QString &path) const;
+    void loadAndScalePhoto(const QString& path) const;
 
-// [members]
+    // [members]
     //! the ui
     Ui::CullendulaMainWindow* ui;
 

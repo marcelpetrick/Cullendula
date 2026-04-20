@@ -6,10 +6,11 @@
 
 // own includes
 #include "CullendulaMainWindow.h"
+
 #include "ui_CullendulaMainWindow.h"
 
 // Qt includes
-#include <QtCore/QDebug> //todom maybe remove
+#include <QtCore/QDebug>  //todom maybe remove
 #include <QtCore/QMimeData>
 #include <QtGui/QAction>
 #include <QtGui/QDropEvent>
@@ -20,26 +21,23 @@
 
 // for constants
 namespace {
-    //! v0.1 was the basic release; working, but ugly
-    //! v0.2 improved useability and stability; more features (move to trash!); refactored code-base; improved code-quality
-    //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
-    //! v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
-    //! v0.5 moved the buildsystem to cmake (from qmake)
-    QString const c_versionString = " - v0.6.3";
+//! v0.1 was the basic release; working, but ugly
+//! v0.2 improved useability and stability; more features (move to trash!); refactored code-base; improved code-quality
+//! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
+//! v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
+//! v0.5 moved the buildsystem to cmake (from qmake)
+QString const c_versionString = " - v0.6.3";
 
-    //! Determines how long the status message is visible. After timer runs out, it is removed.
-    unsigned int const c_StatusBarDelay = 5000;
+//! Determines how long the status message is visible. After timer runs out, it is removed.
+unsigned int const c_StatusBarDelay = 5000;
 
-    //! prevent pumping window because of scaling. Describes the expected size of the frame.
-    int const c_extraPixelsBecauseOfFraming = 2;
-} // namespace
+//! prevent pumping window because of scaling. Describes the expected size of the frame.
+int const c_extraPixelsBecauseOfFraming = 2;
+}  // namespace
 
 //----------------------------------------------------------------------------
 
-CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
-    QMainWindow(parent),
-    ui(new Ui::CullendulaMainWindow)
-{
+CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::CullendulaMainWindow) {
     setAcceptDrops(true);
     ui->setupUi(this);
 
@@ -71,15 +69,11 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) :
 
 //----------------------------------------------------------------------------
 
-CullendulaMainWindow::~CullendulaMainWindow()
-{
-    delete ui;
-}
+CullendulaMainWindow::~CullendulaMainWindow() { delete ui; }
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::dragEnterEvent(QDragEnterEvent *event)
-{
+void CullendulaMainWindow::dragEnterEvent(QDragEnterEvent* event) {
     event->accept();
 
     printStatus("drop current load and let's see what you dragged?");
@@ -87,36 +81,29 @@ void CullendulaMainWindow::dragEnterEvent(QDragEnterEvent *event)
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::dropEvent(QDropEvent* event)
-{
+void CullendulaMainWindow::dropEvent(QDropEvent* event) {
     const QMimeData* mimeData = event->mimeData();
 
     // check for our needed mime type, here a file or a list of files
-    if (mimeData->hasUrls())
-    {
+    if (mimeData->hasUrls()) {
         const QList<QUrl> urlList = mimeData->urls();
 
         // extract the local paths of the files: print all of them; can be removed laters
         qDebug() << "new drop:";
-        for (auto const& url : urlList)
-        {
+        for (auto const& url : urlList) {
             qDebug() << "\tdropped: " << url;
         }
 
         // just use the very first one ..
-        if(!urlList.isEmpty())
-        {
+        if (!urlList.isEmpty()) {
             bool const success = m_fileSystemHandler.setWorkingPath(urlList.first().path());
             refreshLabel();
             updateUndoRedoButtonStatus();
-            if(!success)
-            {
+            if (!success) {
                 qDebug() << "\tNo matching image files found for the current filter";
             }
         }
-    }
-    else
-    {
+    } else {
         printStatus("The load was not usable! :(");
     }
 
@@ -125,8 +112,7 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event)
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::resizeEvent(QResizeEvent* event)
-{
+void CullendulaMainWindow::resizeEvent(QResizeEvent* event) {
     qDebug() << "CullendulaMainWindow::resizeEvent()";
 
     QMainWindow::resizeEvent(event);
@@ -137,76 +123,63 @@ void CullendulaMainWindow::resizeEvent(QResizeEvent* event)
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::slotButtonLeftTriggered()
-{
+void CullendulaMainWindow::slotButtonLeftTriggered() {
     qDebug() << "CullendulaMainWindow::slotButtonLeftTriggered()";
 
     bool const success = m_fileSystemHandler.switchCurrentPositionToTheLeft();
     // check if that was successful and then refresh
-    if(success)
-    {
+    if (success) {
         refreshLabel();
     }
 }
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::slotButtonRightTriggered()
-{
+void CullendulaMainWindow::slotButtonRightTriggered() {
     qDebug() << "CullendulaMainWindow::slotButtonRightTriggered()";
 
     bool const success = m_fileSystemHandler.switchCurrentPositionToTheRight();
     // check if that was successful and then refresh
-    if(success)
-    {
+    if (success) {
         refreshLabel();
     }
 }
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::slotButtonSaveTriggered()
-{
+void CullendulaMainWindow::slotButtonSaveTriggered() {
     qDebug() << "CullendulaMainWindow::slotButtonSaveTriggered()";
 
     // move the current file to the output-folder
     bool const success = m_fileSystemHandler.saveCurrentFile();
-    if(success)
-    {
+    if (success) {
         refreshLabel();
         // set undo/redo correctly
         updateUndoRedoButtonStatus();
-    }
-    else
-    {
+    } else {
         qDebug() << "\tERROR: moving file did not succeed";
     }
 }
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::slotButtonTrashTriggered()
-{
+void CullendulaMainWindow::slotButtonTrashTriggered() {
     qDebug() << "CullendulaMainWindow::slotButtonTrashTriggered()";
 
     // move the current file to the output-folder
     bool const success = m_fileSystemHandler.trashCurrentFile();
-    if(success)
-    {
+    if (success) {
         refreshLabel();
         // set undo/redo correctly
         updateUndoRedoButtonStatus();
-    }
-    else
-    {
+    } else {
         qDebug() << "\tERROR: moving file did not succeed";
     }
 }
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::loadAndScalePhoto(QString const& path) const
-{
+void CullendulaMainWindow::loadAndScalePhoto(QString const& path) const {
     qDebug() << "CullendulaMainWindow::loadAndScalePhoto(): path=" << path;
 
     QPixmap const pixmap = QPixmap(path);
@@ -217,13 +190,11 @@ void CullendulaMainWindow::loadAndScalePhoto(QString const& path) const
     qDebug() << "label-size:" << width << "*" << height;
 
     // prevent upscaling of smaller photos
-    if(pixmap.width() < width)
-    {
+    if (pixmap.width() < width) {
         width = pixmap.width();
     }
 
-    if(pixmap.height() < height)
-    {
+    if (pixmap.height() < height) {
         height = pixmap.height();
     }
 
@@ -237,23 +208,19 @@ void CullendulaMainWindow::loadAndScalePhoto(QString const& path) const
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::refreshLabel()
-{
+void CullendulaMainWindow::refreshLabel() {
     qDebug() << "CullendulaMainWindow::refreshLabel():";
 
     QString const path = m_fileSystemHandler.getCurrentImagePath();
-    if(path.isEmpty()) // just the case if no valid images found
+    if (path.isEmpty())  // just the case if no valid images found
     {
         ui->centerLabel->setText("no more valid images found: work maybe finished? :)\ndrag&drop the next folder or files if you want!");
 
         activateButtons(false);
 
         printStatus("no more files");
-    }
-    else
-    {
-        if(QFile::exists(path))
-        {
+    } else {
+        if (QFile::exists(path)) {
             // load the file
             loadAndScalePhoto(path);
 
@@ -262,9 +229,7 @@ void CullendulaMainWindow::refreshLabel()
             // print the current file-path as user-notification
             QString const message = m_fileSystemHandler.getCurrentStatus() + ": " + path;
             printStatus(message);
-        }
-        else
-        {
+        } else {
             qDebug() << "CullendulaMainWindow::refreshLabel(): given path did not exist: " << path;
         }
     }
@@ -272,8 +237,7 @@ void CullendulaMainWindow::refreshLabel()
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::activateButtons(const bool active) const
-{
+void CullendulaMainWindow::activateButtons(const bool active) const {
     // en-/disable all four buttons
     ui->leftPB->setEnabled(active);
     ui->rightPB->setEnabled(active);
@@ -283,19 +247,16 @@ void CullendulaMainWindow::activateButtons(const bool active) const
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::printStatus(const QString & message) const
-{
+void CullendulaMainWindow::printStatus(const QString& message) const {
     // messages shall disappear after five seconds
     ui->statusBar->showMessage(message, c_StatusBarDelay);
 }
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::createActions()
-{
+void CullendulaMainWindow::createActions() {
     QStringList const suggestedExtensions = CullendulaFileSystemHandler::getSuggestedImageExtensions();
-    for(QString const& extension : suggestedExtensions)
-    {
+    for (QString const& extension : suggestedExtensions) {
         QAction* extensionAction = new QAction(extension.toUpper(), this);
         extensionAction->setCheckable(true);
         extensionAction->setChecked(true);
@@ -309,12 +270,20 @@ void CullendulaMainWindow::createActions()
     m_undoAction = new QAction(tr("Undo"), this);
     m_undoAction->setStatusTip(tr("Revert the last file-move-operation"));
     m_undoAction->setShortcut(Qt::CTRL | Qt::Key_Y);
-    connect(m_undoAction, &QAction::triggered, this, [=] () { qDebug("pressed Undo"); m_fileSystemHandler.undo(); updateUndoRedoButtonStatus(); });
+    connect(m_undoAction, &QAction::triggered, this, [=]() {
+        qDebug("pressed Undo");
+        m_fileSystemHandler.undo();
+        updateUndoRedoButtonStatus();
+    });
 
     m_redoQtAction = new QAction(tr("Redo"), this);
     m_redoQtAction->setStatusTip(tr("Redo the last file-move-operation (means: undo undo)"));
     m_redoQtAction->setShortcut(Qt::CTRL | Qt::Key_Z);
-    connect(m_redoQtAction, &QAction::triggered, this, [=] () { qDebug("pressed Redo"); m_fileSystemHandler.redo(); updateUndoRedoButtonStatus(); });
+    connect(m_redoQtAction, &QAction::triggered, this, [=]() {
+        qDebug("pressed Redo");
+        m_fileSystemHandler.redo();
+        updateUndoRedoButtonStatus();
+    });
 
     // help menu
     m_aboutAction = new QAction(tr("About Cullendula"), this);
@@ -326,18 +295,16 @@ void CullendulaMainWindow::createActions()
     m_aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
     m_aboutQtAction->setShortcut(Qt::CTRL | Qt::Key_Q);
     connect(m_aboutQtAction, &QAction::triggered, qApp, &QApplication::aboutQt);
-    connect(m_aboutQtAction, &QAction::triggered, this, [=] () { printStatus(tr("Invoked Help|About Qt")); }); // replaced the slot-call with a lambda :)
+    connect(m_aboutQtAction, &QAction::triggered, this, [=]() { printStatus(tr("Invoked Help|About Qt")); });  // replaced the slot-call with a lambda :)
 }
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::createMenus()
-{
+void CullendulaMainWindow::createMenus() {
     // main menu
     m_mainMenu = menuBar()->addMenu(tr("Main"));
     m_extensionsMenu = m_mainMenu->addMenu(tr("Extensions"));
-    for(QAction* extensionAction : m_extensionActions)
-    {
+    for (QAction* extensionAction : m_extensionActions) {
         m_extensionsMenu->addAction(extensionAction);
     }
 
@@ -354,13 +321,10 @@ void CullendulaMainWindow::createMenus()
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::syncAllowedExtensionsToFileSystemHandler()
-{
+void CullendulaMainWindow::syncAllowedExtensionsToFileSystemHandler() {
     QStringList enabledExtensions;
-    for(auto it = m_extensionActions.cbegin(); it != m_extensionActions.cend(); ++it)
-    {
-        if(it.value()->isChecked())
-        {
+    for (auto it = m_extensionActions.cbegin(); it != m_extensionActions.cend(); ++it) {
+        if (it.value()->isChecked()) {
             enabledExtensions.append(it.key());
         }
     }
@@ -370,30 +334,27 @@ void CullendulaMainWindow::syncAllowedExtensionsToFileSystemHandler()
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::updateUndoRedoButtonStatus()
-{
-    if(m_undoAction != nullptr)
-    {
-       m_undoAction->setEnabled(m_fileSystemHandler.canUndo());
+void CullendulaMainWindow::updateUndoRedoButtonStatus() {
+    if (m_undoAction != nullptr) {
+        m_undoAction->setEnabled(m_fileSystemHandler.canUndo());
     }
 
-    if(m_redoQtAction != nullptr)
-    {
-       m_redoQtAction->setEnabled(m_fileSystemHandler.canRedo());
+    if (m_redoQtAction != nullptr) {
+        m_redoQtAction->setEnabled(m_fileSystemHandler.canRedo());
     }
 }
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::about()
-{
+void CullendulaMainWindow::about() {
     printStatus(tr("Invoked Help|About"));
     QMessageBox mBox(QMessageBox::Information, tr("About Cullendula"),
                      tr("Helper program to sort out (\"cull\") a collection of pictures in a directory after a nice photo-walk or event.<br>"
                         "Should work cross-platform.<br>"
                         "<br>"
                         "Developed by <a href='mail@marcelpetrick.it'>mail@marcelpetrick.it</a><br>"
-                        "Source code can be found inside the repository at <a href='https://github.com/marcelpetrick/Cullendula/'>https://github.com/marcelpetrick/Cullendula</a><br>"
+                        "Source code can be found inside the repository at <a "
+                        "href='https://github.com/marcelpetrick/Cullendula/'>https://github.com/marcelpetrick/Cullendula</a><br>"
                         "Feel free to use and share: GPL v3 :3"));
     mBox.setTextFormat(Qt::RichText);
     mBox.exec();

@@ -13,31 +13,30 @@
 #include <QtTest/QtTest>
 
 // std includes
-#include <memory> // for unique_ptr
+#include <memory>  // for unique_ptr
 
 // to read: http://doc.qt.io/qt-5/qtest-overview.html
-//initTestCase() will be called before the first test function is executed.
-//cleanupTestCase() will be called after the last test function was executed.
-//init() will be called before each test function is executed.
-//cleanup() will be called after every test function.
+// initTestCase() will be called before the first test function is executed.
+// cleanupTestCase() will be called after the last test function was executed.
+// init() will be called before each test function is executed.
+// cleanup() will be called after every test function.
 
-class Test_CullendulaUndoStack: public QObject
-{
+class Test_CullendulaUndoStack : public QObject {
     Q_OBJECT
 
-private Q_SLOTS:
+   private Q_SLOTS:
     //! -- slots from QTest --
 
-    //initTestCase() will be called before the first test function is executed.
+    // initTestCase() will be called before the first test function is executed.
     void initTestCase();
 
-    //cleanupTestCase() will be called after the last test function was executed.
+    // cleanupTestCase() will be called after the last test function was executed.
     void cleanupTestCase();
 
-    //init() will be called before each test function is executed.
+    // init() will be called before each test function is executed.
     void init();
 
-    //cleanup() will be called after every test function.
+    // cleanup() will be called after every test function.
     void cleanup();
 
     //! -- end of: slots from QTest --
@@ -55,7 +54,7 @@ private Q_SLOTS:
     //! Add three items; do undo; do redo; undo ..
     void slot_Test_UndoRedoLoop();
 
-private:
+   private:
     void verifyUndoItem(CullendulaUndoItem const& item, QString const& expectedSource, QString const& expectedTarget);
 
     //! contains the used undo-redo-stack

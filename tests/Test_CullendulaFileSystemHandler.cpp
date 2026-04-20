@@ -12,8 +12,7 @@
 
 //----------------------------------------------------------------------------------
 
-QString Test_CullendulaFileSystemHandler::createFile(QString const& relativePath)
-{
+QString Test_CullendulaFileSystemHandler::createFile(QString const& relativePath) {
     QString const absolutePath = m_tempDir->path() + QDir::separator() + relativePath;
 
     QFileInfo const fileInfo(absolutePath);
@@ -21,8 +20,7 @@ QString Test_CullendulaFileSystemHandler::createFile(QString const& relativePath
 
     QFile file(absolutePath);
     bool const opened = file.open(QIODevice::WriteOnly);
-    if(!opened)
-    {
+    if (!opened) {
         QTest::qFail("Could not create test file", __FILE__, __LINE__);
         return {};
     }
@@ -34,8 +32,7 @@ QString Test_CullendulaFileSystemHandler::createFile(QString const& relativePath
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::createImageSet()
-{
+void Test_CullendulaFileSystemHandler::createImageSet() {
     createFile("alpha.jpg");
     createFile("beta.jpeg");
     createFile("notes.txt");
@@ -43,8 +40,7 @@ void Test_CullendulaFileSystemHandler::createImageSet()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::init()
-{
+void Test_CullendulaFileSystemHandler::init() {
     m_tempDir = std::make_unique<QTemporaryDir>();
     QVERIFY(m_tempDir->isValid());
     m_handler = std::make_unique<CullendulaFileSystemHandler>();
@@ -52,16 +48,14 @@ void Test_CullendulaFileSystemHandler::init()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::cleanup()
-{
+void Test_CullendulaFileSystemHandler::cleanup() {
     m_handler.reset();
     m_tempDir.reset();
 }
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FromDirectory()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FromDirectory() {
     createImageSet();
 
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
@@ -73,14 +67,12 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FromDirectory()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FromImageFile()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FromImageFile() {
     QString const imagePath = createFile("subdir/alpha.jpg");
     createFile("subdir/beta.jpeg");
 
     QVERIFY(m_handler->setWorkingPath(imagePath));
-    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).absolutePath(),
-             QFileInfo(imagePath).absolutePath());
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).absolutePath(), QFileInfo(imagePath).absolutePath());
     QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("alpha.jpg"));
     QVERIFY(QDir(QFileInfo(imagePath).absolutePath() + QDir::separator() + "output").exists());
     QVERIFY(QDir(QFileInfo(imagePath).absolutePath() + QDir::separator() + "trash").exists());
@@ -88,16 +80,14 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FromImageFile()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_GetSuggestedImageExtensions_IsNormalizedAndBounded()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_GetSuggestedImageExtensions_IsNormalizedAndBounded() {
     QStringList const suggestedExtensions = CullendulaFileSystemHandler::getSuggestedImageExtensions();
 
     QVERIFY(!suggestedExtensions.isEmpty());
     QVERIFY(suggestedExtensions.size() <= 10);
 
     QSet<QString> seenExtensions;
-    for(QString const& extension : suggestedExtensions)
-    {
+    for (QString const& extension : suggestedExtensions) {
         QCOMPARE(extension, extension.toLower());
         QVERIFY(!seenExtensions.contains(extension));
         seenExtensions.insert(extension);
@@ -106,8 +96,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_GetSuggestedImageExtensions_IsN
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_SetAllowedImageExtensions_FiltersFiles()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_SetAllowedImageExtensions_FiltersFiles() {
     createFile("alpha.jpg");
     createFile("beta.png");
     createFile("gamma.jpeg");
@@ -124,8 +113,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetAllowedImageExtensions_Filte
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FindsPngAndUppercaseSuffixes()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FindsPngAndUppercaseSuffixes() {
     createFile("alpha.JPG");
     createFile("beta.png");
     createFile("notes.txt");
@@ -137,16 +125,14 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FindsPngAndUpper
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_InvalidPath()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_InvalidPath() {
     QVERIFY(!m_handler->setWorkingPath(m_tempDir->path() + QDir::separator() + "missing"));
     QVERIFY(m_handler->getCurrentImagePath().isEmpty());
 }
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_NoImages()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_NoImages() {
     createFile("notes.txt");
 
     QVERIFY(!m_handler->setWorkingPath(m_tempDir->path()));
@@ -157,8 +143,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_NoImages()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_ClearsStateOnReloadFailure()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_ClearsStateOnReloadFailure() {
     createImageSet();
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
     QVERIFY(m_handler->saveCurrentFile());
@@ -176,8 +161,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_ClearsStateOnRel
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_NavigationWrapsAround()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_NavigationWrapsAround() {
     createImageSet();
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
 
@@ -192,8 +176,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_NavigationWrapsAround()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_MovesFileAndUpdatesState()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_MovesFileAndUpdatesState() {
     createImageSet();
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
 
@@ -210,8 +193,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_MovesFileAndUpd
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_TrashCurrentFile_MovesFileAndUpdatesState()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_TrashCurrentFile_MovesFileAndUpdatesState() {
     createImageSet();
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
 
@@ -225,8 +207,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_TrashCurrentFile_MovesFileAndUp
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_UndoRedo_MoveFilesOnDisk()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_UndoRedo_MoveFilesOnDisk() {
     createImageSet();
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
 
@@ -249,8 +230,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_UndoRedo_MoveFilesOnDisk()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_FailsOnNameCollision()
-{
+void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_FailsOnNameCollision() {
     createImageSet();
     createFile("output/alpha.jpg");
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));

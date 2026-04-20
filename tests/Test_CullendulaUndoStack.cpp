@@ -9,54 +9,47 @@
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaUndoStack::verifyUndoItem(CullendulaUndoItem const& item, QString const& expectedSource, QString const& expectedTarget)
-{
+void Test_CullendulaUndoStack::verifyUndoItem(CullendulaUndoItem const& item, QString const& expectedSource, QString const& expectedTarget) {
     QCOMPARE(item.sourcePath, expectedSource);
     QCOMPARE(item.targetPath, expectedTarget);
 }
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaUndoStack::initTestCase()
-{
-    //qDebug() << "Test_CullendulaUndoStack::initTestCase(): called before everything else";
+void Test_CullendulaUndoStack::initTestCase() {
+    // qDebug() << "Test_CullendulaUndoStack::initTestCase(): called before everything else";
 }
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaUndoStack::cleanupTestCase()
-{
-    //qDebug("Test_CullendulaUndoStack::cleanupTestCase(): called after myFirstTest and mySecondTest");
+void Test_CullendulaUndoStack::cleanupTestCase() {
+    // qDebug("Test_CullendulaUndoStack::cleanupTestCase(): called after myFirstTest and mySecondTest");
 }
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaUndoStack::init()
-{
+void Test_CullendulaUndoStack::init() {
     // reset with a totally fresh item
     m_stackPtr = std::make_unique<CullendulaUndoStack>();
 }
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaUndoStack::cleanup()
-{
+void Test_CullendulaUndoStack::cleanup() {
     // reset with no new item
     m_stackPtr.reset();
 }
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaUndoStack::slot_Test_Create_CullendulaUndoStack()
-{
+void Test_CullendulaUndoStack::slot_Test_Create_CullendulaUndoStack() {
     QVERIFY2(m_stackPtr->getUndoDepth() == 0, "CullendulaUndoStack was initialized and is empty");
     QVERIFY2(m_stackPtr->getRedoDepth() == 0, "CullendulaUndoStack was initialized and is empty");
 }
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaUndoStack::slot_Test_Push()
-{
+void Test_CullendulaUndoStack::slot_Test_Push() {
     QVERIFY(m_stackPtr->canUndo() == false);
     QVERIFY(m_stackPtr->canRedo() == false);
 
@@ -82,8 +75,7 @@ void Test_CullendulaUndoStack::slot_Test_Push()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaUndoStack::slot_Test_Undo()
-{
+void Test_CullendulaUndoStack::slot_Test_Undo() {
     // undo on an empty stack should not return something and not fail
     m_stackPtr->undo();
     m_stackPtr->undo();
@@ -115,19 +107,18 @@ void Test_CullendulaUndoStack::slot_Test_Undo()
     QVERIFY(m_stackPtr->canUndo() == true);
     CullendulaUndoItem const item5 = m_stackPtr->undo();
     verifyUndoItem(item5, "1", "2");
-    QVERIFY(m_stackPtr->canUndo() == false); // should be false
+    QVERIFY(m_stackPtr->canUndo() == false);  // should be false
     m_stackPtr->undo();
     QVERIFY(m_stackPtr->canUndo() == false);
 
-    //pushing one element shall allow now some undo
+    // pushing one element shall allow now some undo
     m_stackPtr->push("7", "8");
     QVERIFY(m_stackPtr->canUndo() == true);
 }
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaUndoStack::slot_Test_Redo()
-{
+void Test_CullendulaUndoStack::slot_Test_Redo() {
     // redo on an empty stack should not return something and not fail
     m_stackPtr->redo();
     m_stackPtr->redo();
@@ -153,8 +144,7 @@ void Test_CullendulaUndoStack::slot_Test_Redo()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaUndoStack::slot_Test_UndoRedoLoop()
-{
+void Test_CullendulaUndoStack::slot_Test_UndoRedoLoop() {
     // testplan:
     // push three items
     m_stackPtr->push("1", "2");
@@ -208,4 +198,4 @@ void Test_CullendulaUndoStack::slot_Test_UndoRedoLoop()
 
 // uncomment the following line to make the unit-test runnable
 //! @attention Moved to main.cpp
-//QTEST_MAIN(Test_CullendulaUndoStack)
+// QTEST_MAIN(Test_CullendulaUndoStack)

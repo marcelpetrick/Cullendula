@@ -11,24 +11,20 @@
 #pragma once
 
 // Qt includes
-#include <QtCore/QVector>
 #include <QtCore/QString>
+#include <QtCore/QVector>
 
 //----------------------------------------------------------------------------------
 
 //! @class CullendulaUndoItem Helper to store the "source, target"-tuples for the moved files.
-class CullendulaUndoItem
-{
-public:
+class CullendulaUndoItem {
+   public:
     //[ctor]
     CullendulaUndoItem() = default;
     //[dtor]
     ~CullendulaUndoItem() = default;
     //[ctor] - just init from the given value
-    CullendulaUndoItem(QString const& from, QString const& to) :
-        sourcePath(from),
-        targetPath(to)
-    {
+    CullendulaUndoItem(QString const& from, QString const& to) : sourcePath(from), targetPath(to) {
         // nothing else to do :)
     }
 
@@ -51,9 +47,8 @@ public:
 //!         And redo vice versa? Because this affects how the usage has to be implemented.
 //!         For now: no flipping. (a,b) stays (a,b) at redo.
 //!
-class CullendulaUndoStack
-{
-public:
+class CullendulaUndoStack {
+   public:
     CullendulaUndoStack() = default;
     ~CullendulaUndoStack() = default;
 
@@ -78,7 +73,7 @@ public:
     long getUndoDepth();
     long getRedoDepth();
 
-private:
+   private:
     //! container: keeps the data for Undo
     QVector<CullendulaUndoItem> m_undoContainer;
 

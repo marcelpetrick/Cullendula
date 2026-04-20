@@ -6,23 +6,21 @@
 
 #pragma once
 
-#include "CullendulaMainWindow.h"
-
 #include <QtCore/QTemporaryDir>
 #include <QtTest/QtTest>
-
 #include <memory>
+
+#include "CullendulaMainWindow.h"
 
 class QAction;
 class QLabel;
 class QPushButton;
 class QStatusBar;
 
-class Test_CullendulaMainWindow : public QObject
-{
+class Test_CullendulaMainWindow : public QObject {
     Q_OBJECT
 
-private Q_SLOTS:
+   private Q_SLOTS:
     void init();
     void cleanup();
 
@@ -37,7 +35,7 @@ private Q_SLOTS:
     void slot_Test_UndoRedoActions_MoveFilesOnDisk();
     void slot_Test_AboutAction_ShowsDialogAndStatus();
 
-private:
+   private:
     QString createImage(QString const& relativePath, QColor const& color = Qt::red);
     void sendDropWithUrls(QList<QUrl> const& urls);
     QAction* findAction(QString const& text) const;

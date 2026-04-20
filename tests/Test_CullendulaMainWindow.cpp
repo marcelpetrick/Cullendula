@@ -20,29 +20,25 @@
 
 //----------------------------------------------------------------------------------
 
-namespace
-{
-class TestableCullendulaMainWindow : public CullendulaMainWindow
-{
-public:
+namespace {
+class TestableCullendulaMainWindow : public CullendulaMainWindow {
+   public:
     using CullendulaMainWindow::CullendulaMainWindow;
     using CullendulaMainWindow::dragEnterEvent;
     using CullendulaMainWindow::dropEvent;
 };
-}
+}  // namespace
 
 //----------------------------------------------------------------------------------
 
-QString Test_CullendulaMainWindow::createImage(QString const& relativePath, QColor const& color)
-{
+QString Test_CullendulaMainWindow::createImage(QString const& relativePath, QColor const& color) {
     QString const absolutePath = m_tempDir->path() + QDir::separator() + relativePath;
     QFileInfo const fileInfo(absolutePath);
     QDir().mkpath(fileInfo.absolutePath());
 
     QImage image(24, 24, QImage::Format_RGB32);
     image.fill(color);
-    if(!image.save(absolutePath))
-    {
+    if (!image.save(absolutePath)) {
         QTest::qFail("Could not create test image", __FILE__, __LINE__);
         return {};
     }
@@ -52,8 +48,7 @@ QString Test_CullendulaMainWindow::createImage(QString const& relativePath, QCol
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::sendDropWithUrls(QList<QUrl> const& urls)
-{
+void Test_CullendulaMainWindow::sendDropWithUrls(QList<QUrl> const& urls) {
     QMimeData mimeData;
     mimeData.setUrls(urls);
 
@@ -67,13 +62,10 @@ void Test_CullendulaMainWindow::sendDropWithUrls(QList<QUrl> const& urls)
 
 //----------------------------------------------------------------------------------
 
-QAction* Test_CullendulaMainWindow::findAction(QString const& text) const
-{
+QAction* Test_CullendulaMainWindow::findAction(QString const& text) const {
     QList<QAction*> const actions = m_window->findChildren<QAction*>();
-    for(QAction* action : actions)
-    {
-        if(action->text() == text)
-        {
+    for (QAction* action : actions) {
+        if (action->text() == text) {
             return action;
         }
     }
@@ -83,36 +75,25 @@ QAction* Test_CullendulaMainWindow::findAction(QString const& text) const
 
 //----------------------------------------------------------------------------------
 
-QAction* Test_CullendulaMainWindow::findExtensionAction(QString const& extension) const
-{
+QAction* Test_CullendulaMainWindow::findExtensionAction(QString const& extension) const {
     return m_window->findChild<QAction*>("extensionAction_" + extension.toLower());
 }
 
 //----------------------------------------------------------------------------------
 
-QPushButton* Test_CullendulaMainWindow::findButton(char const* name) const
-{
-    return m_window->findChild<QPushButton*>(name);
-}
+QPushButton* Test_CullendulaMainWindow::findButton(char const* name) const { return m_window->findChild<QPushButton*>(name); }
 
 //----------------------------------------------------------------------------------
 
-QLabel* Test_CullendulaMainWindow::findCenterLabel() const
-{
-    return m_window->findChild<QLabel*>("centerLabel");
-}
+QLabel* Test_CullendulaMainWindow::findCenterLabel() const { return m_window->findChild<QLabel*>("centerLabel"); }
 
 //----------------------------------------------------------------------------------
 
-QStatusBar* Test_CullendulaMainWindow::findStatusBar() const
-{
-    return m_window->findChild<QStatusBar*>("statusBar");
-}
+QStatusBar* Test_CullendulaMainWindow::findStatusBar() const { return m_window->findChild<QStatusBar*>("statusBar"); }
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::init()
-{
+void Test_CullendulaMainWindow::init() {
     m_tempDir = std::make_unique<QTemporaryDir>();
     QVERIFY(m_tempDir->isValid());
 
@@ -124,16 +105,14 @@ void Test_CullendulaMainWindow::init()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::cleanup()
-{
+void Test_CullendulaMainWindow::cleanup() {
     m_window.reset();
     m_tempDir.reset();
 }
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::slot_Test_InitialState()
-{
+void Test_CullendulaMainWindow::slot_Test_InitialState() {
     QVERIFY(m_window->windowTitle().contains("v0.6.3"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
@@ -151,8 +130,7 @@ void Test_CullendulaMainWindow::slot_Test_InitialState()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_DefaultsToAllChecked()
-{
+void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_DefaultsToAllChecked() {
     QAction* pngAction = findExtensionAction("png");
     QAction* jpgAction = findExtensionAction("jpg");
     QAction* webpAction = findExtensionAction("webp");
@@ -170,8 +148,7 @@ void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_DefaultsToAllChecked()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::slot_Test_ResizeWithoutLoadedImages_ShowsFallbackText()
-{
+void Test_CullendulaMainWindow::slot_Test_ResizeWithoutLoadedImages_ShowsFallbackText() {
     m_window->resize(800, 520);
     QApplication::processEvents();
 
@@ -181,8 +158,7 @@ void Test_CullendulaMainWindow::slot_Test_ResizeWithoutLoadedImages_ShowsFallbac
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::slot_Test_DragEnterAndDropValidDirectory_LoadsImages()
-{
+void Test_CullendulaMainWindow::slot_Test_DragEnterAndDropValidDirectory_LoadsImages() {
     createImage("alpha.jpg", Qt::red);
     createImage("beta.jpeg", Qt::blue);
 
@@ -199,8 +175,7 @@ void Test_CullendulaMainWindow::slot_Test_DragEnterAndDropValidDirectory_LoadsIm
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_AffectsNextDroppedDirectory()
-{
+void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_AffectsNextDroppedDirectory() {
     createImage("dir1/alpha.jpg", Qt::red);
     createImage("dir1/beta.png", Qt::blue);
     createImage("dir2/alpha.jpg", Qt::green);
@@ -229,8 +204,7 @@ void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_AffectsNextDroppedDirec
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::slot_Test_DropInvalidPayload_ShowsErrorStatus()
-{
+void Test_CullendulaMainWindow::slot_Test_DropInvalidPayload_ShowsErrorStatus() {
     QMimeData mimeData;
     mimeData.setText("not a file");
     QDragEnterEvent dragEnterEvent(QPoint(10, 10), Qt::CopyAction, &mimeData, Qt::LeftButton, Qt::NoModifier);
@@ -246,8 +220,7 @@ void Test_CullendulaMainWindow::slot_Test_DropInvalidPayload_ShowsErrorStatus()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::slot_Test_ButtonNavigationAndSaveFlow()
-{
+void Test_CullendulaMainWindow::slot_Test_ButtonNavigationAndSaveFlow() {
     createImage("alpha.jpg", Qt::red);
     createImage("beta.jpeg", Qt::blue);
     sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
@@ -265,8 +238,7 @@ void Test_CullendulaMainWindow::slot_Test_ButtonNavigationAndSaveFlow()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::slot_Test_ButtonTrashFlow()
-{
+void Test_CullendulaMainWindow::slot_Test_ButtonTrashFlow() {
     createImage("alpha.jpg", Qt::red);
     createImage("beta.jpeg", Qt::blue);
     sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
@@ -282,8 +254,7 @@ void Test_CullendulaMainWindow::slot_Test_ButtonTrashFlow()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::slot_Test_UndoRedoActions_MoveFilesOnDisk()
-{
+void Test_CullendulaMainWindow::slot_Test_UndoRedoActions_MoveFilesOnDisk() {
     createImage("alpha.jpg", Qt::red);
     createImage("beta.jpeg", Qt::blue);
     sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
@@ -312,13 +283,10 @@ void Test_CullendulaMainWindow::slot_Test_UndoRedoActions_MoveFilesOnDisk()
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaMainWindow::slot_Test_AboutAction_ShowsDialogAndStatus()
-{
+void Test_CullendulaMainWindow::slot_Test_AboutAction_ShowsDialogAndStatus() {
     QTimer::singleShot(0, []() {
-        for(QWidget* widget : QApplication::topLevelWidgets())
-        {
-            if(auto* messageBox = qobject_cast<QMessageBox*>(widget))
-            {
+        for (QWidget* widget : QApplication::topLevelWidgets()) {
+            if (auto* messageBox = qobject_cast<QMessageBox*>(widget)) {
                 messageBox->accept();
                 return;
             }
