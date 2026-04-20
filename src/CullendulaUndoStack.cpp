@@ -11,6 +11,8 @@
 
 void CullendulaUndoStack::push(const QString& from, const QString& to)
 {
+    // A new operation invalidates any redo history from an older branch.
+    m_redoContainer.clear();
     m_undoContainer.append(CullendulaUndoItem(from, to));
 }
 

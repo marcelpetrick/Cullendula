@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.28)
 set(QT_CREATOR_SKIP_MAINTENANCE_TOOL_PROVIDER ON)
 
 project(Cullendula
-    VERSION 0.5.3
+    VERSION 0.5.4
     LANGUAGES CXX
 )
 
@@ -25,8 +25,11 @@ find_package(Qt5 5.15 REQUIRED COMPONENTS
     Core
     Gui
     Widgets
-    Test
 )
+
+if(CULLENDULA_BUILD_TESTS)
+    find_package(Qt5 5.15 REQUIRED COMPONENTS Test)
+endif()
 
 # Build the application code
 add_subdirectory(src)

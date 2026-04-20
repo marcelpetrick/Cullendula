@@ -15,29 +15,36 @@ When you are done, then close the app. The result (the best photos) are inside t
 
 ## Build
 ```
-mkdir build
-cd build
-cmake ..
-cmake --build .
-cd src
-./Cullendula
+cmake -S . -B build
+cmake --build build
+./build/src/Cullendula
 ```
 
 ## Run the tests after building
-```
- /usr/bin/ctest --output-on-failure
- 
-Test project /home/mpetrick/repos/Cullendula/build
-    Start 1: CullendulaUndoStackTest
-1/1 Test #1: CullendulaUndoStackTest ..........   Passed    0.01 sec
 
-100% tests passed, 0 tests failed out of 1
+The unit tests cover the `CullendulaUndoStack` behavior from the command line. They verify:
 
-Total Test time (real) =   0.01 sec
+* initial empty stack state
+* push/undo/redo semantics
+* returned source/target path pairs
+* clearing redo-history after a new push
+
+You can run them in three supported CLI ways:
+
 ```
+cmake --build build --target test
+
+cmake --build build --target check
+
+./build/tests/CullendulaTests
+```
+
+At the moment the test suite contains one test executable registered with CTest:
+
+* `CullendulaUndoStackTest`
 
 ## Build information
-This is version 0.5.3.
+This is version 0.5.4.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 5.15.17 (and QtCreator 17)
@@ -51,6 +58,7 @@ This is version 0.5.3.
 * v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
 * v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
 * v0.5 moved the buildsystem to cmake (from qmake)
+* v0.5.4 fixed the undo-stack unit tests, clarified the CLI test workflow, and corrected the README
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

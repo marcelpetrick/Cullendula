@@ -32,3 +32,9 @@ target_include_directories(CullendulaTests
 # Register test with CTest
 #
 add_test(NAME CullendulaUndoStackTest COMMAND CullendulaTests)
+
+add_custom_target(check
+    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+    DEPENDS CullendulaTests
+    USES_TERMINAL
+)

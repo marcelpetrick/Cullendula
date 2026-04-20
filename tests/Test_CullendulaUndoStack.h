@@ -56,6 +56,8 @@ private Q_SLOTS:
     void slot_Test_UndoRedoLoop();
 
 private:
+    void verifyUndoItem(CullendulaUndoItem const& item, QString const& expectedSource, QString const& expectedTarget);
+
     //! contains the used undo-redo-stack
     std::unique_ptr<CullendulaUndoStack> m_stackPtr = nullptr;
 };
