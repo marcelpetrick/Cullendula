@@ -113,7 +113,7 @@ void Test_CullendulaMainWindow::cleanup() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.3"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.4"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -200,6 +200,26 @@ void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_AffectsNextDroppedDirec
     sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "dir2")});
     QVERIFY(findStatusBar()->currentMessage().contains("showing 1 of 1"));
     QVERIFY(findStatusBar()->currentMessage().contains("beta.png"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_DroppingEmptyDirectory_ClearsPreviousSessionState() {
+    createImage("loaded/alpha.jpg", Qt::red);
+    createImage("loaded/beta.jpeg", Qt::blue);
+    QDir().mkpath(m_tempDir->path() + QDir::separator() + "empty");
+
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "loaded")});
+    QVERIFY(findButton("savePB")->isEnabled());
+    QVERIFY(findStatusBar()->currentMessage().contains("alpha.jpg"));
+
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "empty")});
+    QVERIFY(!findButton("leftPB")->isEnabled());
+    QVERIFY(!findButton("rightPB")->isEnabled());
+    QVERIFY(!findButton("savePB")->isEnabled());
+    QVERIFY(!findButton("trashPB")->isEnabled());
+    QVERIFY(findCenterLabel()->text().contains("no more valid images found"));
+    QCOMPARE(findStatusBar()->currentMessage(), QString("no more files"));
 }
 
 //----------------------------------------------------------------------------------

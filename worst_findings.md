@@ -13,6 +13,7 @@ This list is ordered by engineering risk, with emphasis on user-data safety, cor
 - References: `src/CullendulaFileSystemHandler.cpp:35`, `src/CullendulaFileSystemHandler.cpp:213`, `src/CullendulaFileSystemHandler.cpp:269`, `src/CullendulaFileSystemHandler.h:82`
 - Problem: `setWorkingPath()` updates `m_workingPath`, but it does not clear `m_currentImages`, `m_positionCurrentFile`, or the undo stack before processing the new path. `createImageFileList()` only assigns a new list when images are found; otherwise it leaves the previous list intact.
 - Impact: dropping an empty or invalid folder can leave the app showing and operating on the previous folder's images while the working path points somewhere else. That is a serious correctness problem for a tool that moves files.
+- Status: addressed. `setWorkingPath()` now resets handler state before processing the new path, `createImageFileList()` clears the in-memory list before rescanning, and the test suite covers both handler-level reload failure and the GUI case of dropping an empty folder after a populated one.
 
 ## 3. Redo history is never invalidated after a new action
 

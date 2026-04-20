@@ -29,6 +29,7 @@ class Test_CullendulaMainWindow : public QObject {
     void slot_Test_ResizeWithoutLoadedImages_ShowsFallbackText();
     void slot_Test_DragEnterAndDropValidDirectory_LoadsImages();
     void slot_Test_ExtensionsMenu_AffectsNextDroppedDirectory();
+    void slot_Test_DroppingEmptyDirectory_ClearsPreviousSessionState();
     void slot_Test_DropInvalidPayload_ShowsErrorStatus();
     void slot_Test_ButtonNavigationAndSaveFlow();
     void slot_Test_ButtonTrashFlow();
