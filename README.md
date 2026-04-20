@@ -21,6 +21,15 @@ cmake --build build
 ./build/src/Cullendula
 ```
 
+## Format the code
+This repository ships a `.clang-format` using the default Google C++ style.
+
+Run it from the repository root like this:
+
+```bash
+clang-format -i src/*.cpp src/*.h tests/*.cpp tests/*.h
+```
+
 ## Run the tests after building
 
 The unit tests cover the core CLI and GUI behavior from the command line. They verify:
@@ -92,7 +101,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.2.
+This is version 0.6.3.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -111,6 +120,7 @@ This is version 0.6.2.
 * v0.6.0 ports the project build and test setup to Qt 6.10
 * v0.6.1 restores image loading across the Qt-supported readable image formats
 * v0.6.2 adds a configurable `Main -> Extensions` menu for choosing which image suffixes are loaded
+* v0.6.3 adds a repository-local clang-format configuration based on the default Google C++ style
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
