@@ -27,7 +27,7 @@ namespace {
 //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
 //! v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
 //! v0.5 moved the buildsystem to cmake (from qmake)
-QString const c_versionString = " - v0.6.8";
+QString const c_versionString = " - v0.6.9";
 
 //! Determines how long the status message is visible. After timer runs out, it is removed.
 unsigned int const c_StatusBarDelay = 5000;
@@ -392,7 +392,9 @@ void CullendulaMainWindow::createActions() {
     m_undoAction->setShortcut(Qt::CTRL | Qt::Key_Y);
     connect(m_undoAction, &QAction::triggered, this, [=]() {
         qDebug("pressed Undo");
-        m_fileSystemHandler.undo();
+        if (m_fileSystemHandler.undo()) {
+            refreshLabel();
+        }
         updateUndoRedoButtonStatus();
     });
 
@@ -401,7 +403,9 @@ void CullendulaMainWindow::createActions() {
     m_redoQtAction->setShortcut(Qt::CTRL | Qt::Key_Z);
     connect(m_redoQtAction, &QAction::triggered, this, [=]() {
         qDebug("pressed Redo");
-        m_fileSystemHandler.redo();
+        if (m_fileSystemHandler.redo()) {
+            refreshLabel();
+        }
         updateUndoRedoButtonStatus();
     });
 

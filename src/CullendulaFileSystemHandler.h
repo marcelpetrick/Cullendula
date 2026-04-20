@@ -59,10 +59,10 @@ class CullendulaFileSystemHandler {
     bool canRedo();
 
     //! Execute the undo.
-    void undo();
+    bool undo();
 
     //! Execute the redo.
-    void redo();
+    bool redo();
 
    private:
     //! Reset the handler state before loading a new working path.
@@ -73,6 +73,9 @@ class CullendulaFileSystemHandler {
 
     //! Scan given path for image-file-types (for now suffix: jpg, jpeg - more later)
     bool createImageFileList();
+
+    //! Rebuild the current image list and keep the selection stable whenever possible.
+    bool rebuildImageFileList(QString const& preferredImagePath, int fallbackPosition);
 
     //! Create and check if an output-folder exists.
     //! Initially: just create sub-dir "output".
@@ -87,6 +90,9 @@ class CullendulaFileSystemHandler {
     //! adjust the current position inside the file list by the given offset.
     //! @returns sanity-check
     bool adjustCurrentPositionBy(const int offset);
+
+    //! Find the current index for the given absolute file path inside the cached image list.
+    int findImageIndexByPath(QString const& imagePath) const;
 
     // [members]
     //! the currently chosen path to the directory (not file)

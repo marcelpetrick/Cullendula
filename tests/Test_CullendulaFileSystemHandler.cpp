@@ -226,15 +226,23 @@ void Test_CullendulaFileSystemHandler::slot_Test_UndoRedo_MoveFilesOnDisk() {
     QVERIFY(m_handler->saveCurrentFile());
     QVERIFY(QFile::exists(movedPath));
     QVERIFY(m_handler->canUndo());
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
+    QCOMPARE(m_handler->getCurrentStatus(), QString("showing 1 of 1"));
 
-    m_handler->undo();
+    QVERIFY(m_handler->undo());
     QVERIFY(QFile::exists(originalPath));
     QVERIFY(!QFile::exists(movedPath));
     QVERIFY(m_handler->canRedo());
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("alpha.jpg"));
+    QCOMPARE(m_handler->getCurrentStatus(), QString("showing 1 of 2"));
+    QVERIFY(m_handler->switchCurrentPositionToTheRight());
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
 
-    m_handler->redo();
+    QVERIFY(m_handler->redo());
     QVERIFY(!QFile::exists(originalPath));
     QVERIFY(QFile::exists(movedPath));
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
+    QCOMPARE(m_handler->getCurrentStatus(), QString("showing 1 of 1"));
 }
 
 //----------------------------------------------------------------------------------

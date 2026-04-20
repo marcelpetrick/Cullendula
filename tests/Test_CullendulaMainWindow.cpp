@@ -120,7 +120,7 @@ void Test_CullendulaMainWindow::cleanup() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.8"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.9"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -357,6 +357,12 @@ void Test_CullendulaMainWindow::slot_Test_UndoRedoActions_MoveFilesOnDisk() {
     QVERIFY(!QFile::exists(movedPath));
     QVERIFY(!findAction("Undo")->isEnabled());
     QVERIFY(findAction("Redo")->isEnabled());
+    QVERIFY(findStatusBar()->currentMessage().contains("showing 1 of 2"));
+    QVERIFY(findStatusBar()->currentMessage().contains("alpha.jpg"));
+    QVERIFY(findButton("leftPB")->isEnabled());
+    QVERIFY(findButton("rightPB")->isEnabled());
+    QVERIFY(findButton("savePB")->isEnabled());
+    QVERIFY(findButton("trashPB")->isEnabled());
 
     findAction("Redo")->trigger();
     QApplication::processEvents();
@@ -364,6 +370,12 @@ void Test_CullendulaMainWindow::slot_Test_UndoRedoActions_MoveFilesOnDisk() {
     QVERIFY(QFile::exists(movedPath));
     QVERIFY(findAction("Undo")->isEnabled());
     QVERIFY(!findAction("Redo")->isEnabled());
+    QVERIFY(findStatusBar()->currentMessage().contains("showing 1 of 1"));
+    QVERIFY(findStatusBar()->currentMessage().contains("beta.jpeg"));
+    QVERIFY(findButton("leftPB")->isEnabled());
+    QVERIFY(findButton("rightPB")->isEnabled());
+    QVERIFY(findButton("savePB")->isEnabled());
+    QVERIFY(findButton("trashPB")->isEnabled());
 }
 
 //----------------------------------------------------------------------------------

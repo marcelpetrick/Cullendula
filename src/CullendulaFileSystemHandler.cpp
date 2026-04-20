@@ -12,6 +12,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QList>
 #include <QtGui/QImageReader>
+#include <algorithm>
 
 //----------------------------------------------------------------------------
 
@@ -213,52 +214,58 @@ bool CullendulaFileSystemHandler::canRedo() { return m_undoStack.canRedo(); }
 
 //----------------------------------------------------------------------------
 
-void CullendulaFileSystemHandler::undo() {
-    if (canUndo()) {
-        qDebug() << "CullendulaFileSystemHandler::undo()";  // todom remove
-        CullendulaUndoItem const item = m_undoStack.undo();
-        // swap source & target
-        QString const targetPath = item.sourcePath;
-        QString const sourcePath = item.targetPath;
-        qDebug() << "\tsource: " << sourcePath;  // todom remove
-        qDebug() << "\ttarget: " << targetPath;  // todom remove
-        QDir fileHandler;
-        bool const successfullyRenamed = fileHandler.rename(sourcePath, targetPath);
-        qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR");  // todom remove
-
-        // handle error-case (could fail for at least one filesystem)
-        if (successfullyRenamed) {
-            // update the file-list (means: rescan?)
-            qDebug() << "update the file-list (means: rescan?)";  // todom remove
-
-            //! @todo something like createImageFileList() has to be called, but without modiyfing the current position and re-initialisation of the filter ..
-        }
+bool CullendulaFileSystemHandler::undo() {
+    if (!canUndo()) {
+        return false;
     }
+
+    qDebug() << "CullendulaFileSystemHandler::undo()";
+    CullendulaUndoItem const item = m_undoStack.undo();
+    QString const targetPath = item.sourcePath;
+    QString const sourcePath = item.targetPath;
+    qDebug() << "\tsource: " << sourcePath;
+    qDebug() << "\ttarget: " << targetPath;
+
+    QDir fileHandler;
+    bool const successfullyRenamed = fileHandler.rename(sourcePath, targetPath);
+    qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR");
+
+    if (!successfullyRenamed) {
+        return false;
+    }
+
+    return rebuildImageFileList(targetPath, m_positionCurrentFile);
 }
 
 //----------------------------------------------------------------------------
 
-void CullendulaFileSystemHandler::redo() {
-    if (canRedo()) {
-        qDebug() << "CullendulaFileSystemHandler::redo()";  // todom remove
-        CullendulaUndoItem const item = m_undoStack.redo();
-        // swap source & target
-        QString const targetPath = item.sourcePath;
-        QString const sourcePath = item.targetPath;
-        qDebug() << "\tsource: " << sourcePath;  // todom remove
-        qDebug() << "\ttarget: " << targetPath;  // todom remove
-        QDir fileHandler;
-        bool const successfullyRenamed = fileHandler.rename(sourcePath, targetPath);
-        qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR");  // todom remove
-
-        // handle error-case (could fail for at least one filesystem)
-        if (successfullyRenamed) {
-            // update the file-list (means: rescan?)
-            qDebug() << "update the file-list (means: rescan?)";  // todom remove
-
-            //! @todo something like createImageFileList() has to be called, but without modiyfing the current position and re-initialisation of the filter ..
-        }
+bool CullendulaFileSystemHandler::redo() {
+    if (!canRedo()) {
+        return false;
     }
+
+    qDebug() << "CullendulaFileSystemHandler::redo()";
+    CullendulaUndoItem const item = m_undoStack.redo();
+    QString const targetPath = item.sourcePath;
+    QString const sourcePath = item.targetPath;
+    qDebug() << "\tsource: " << sourcePath;
+    qDebug() << "\ttarget: " << targetPath;
+
+    int fallbackPosition = m_positionCurrentFile;
+    int const sourceIndex = findImageIndexByPath(sourcePath);
+    if (sourceIndex >= 0) {
+        fallbackPosition = sourceIndex;
+    }
+
+    QDir fileHandler;
+    bool const successfullyRenamed = fileHandler.rename(sourcePath, targetPath);
+    qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR");
+
+    if (!successfullyRenamed) {
+        return false;
+    }
+
+    return rebuildImageFileList(QString(), fallbackPosition);
 }
 
 //----------------------------------------------------------------------------
@@ -316,10 +323,13 @@ bool CullendulaFileSystemHandler::processNewPath() {
 //----------------------------------------------------------------------------
 
 bool CullendulaFileSystemHandler::createImageFileList() {
-    bool returnValue(false);
-
     qDebug() << "CullendulaFileSystemHandler::createImageFileList():";
+    return rebuildImageFileList(QString(), 0);
+}
 
+//----------------------------------------------------------------------------
+
+bool CullendulaFileSystemHandler::rebuildImageFileList(QString const& preferredImagePath, int const fallbackPosition) {
     m_currentImages.clear();
     m_positionCurrentFile = -1;
 
@@ -334,22 +344,33 @@ bool CullendulaFileSystemHandler::createImageFileList() {
         }
     }
 
-    if (!availableImages.isEmpty()) {
-        qDebug() << "found the following image files:";
-        for (auto const& file : availableImages) {
-            qDebug() << "\t" << file.absoluteFilePath();
-        }
-
-        // save the current file-list as vector and initialize the position-member
-        m_currentImages = availableImages.toVector();
-        m_positionCurrentFile = 0;
-
-        returnValue = true;  // everything ok
-    } else {
+    if (availableImages.isEmpty()) {
         qDebug() << "no nice files found :(";
+        return false;
     }
 
-    return returnValue;
+    qDebug() << "found the following image files:";
+    for (QFileInfo const& file : availableImages) {
+        qDebug() << "\t" << file.absoluteFilePath();
+    }
+
+    m_currentImages = availableImages.toVector();
+
+    int const lastValidIndex = static_cast<int>(m_currentImages.size()) - 1;
+    int positionToSelect = 0;
+    if (!preferredImagePath.isEmpty()) {
+        int const preferredIndex = findImageIndexByPath(preferredImagePath);
+        if (preferredIndex >= 0) {
+            positionToSelect = preferredIndex;
+        } else {
+            positionToSelect = std::clamp(fallbackPosition, 0, lastValidIndex);
+        }
+    } else {
+        positionToSelect = std::clamp(fallbackPosition, 0, lastValidIndex);
+    }
+
+    m_positionCurrentFile = positionToSelect;
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -420,6 +441,18 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const&
     }
 
     return returnValue;
+}
+
+//----------------------------------------------------------------------------
+
+int CullendulaFileSystemHandler::findImageIndexByPath(QString const& imagePath) const {
+    for (int index = 0; index < m_currentImages.size(); ++index) {
+        if (m_currentImages[index].absoluteFilePath() == imagePath) {
+            return index;
+        }
+    }
+
+    return -1;
 }
 
 //----------------------------------------------------------------------------

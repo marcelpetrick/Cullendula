@@ -11,6 +11,7 @@ The widget-based UI also provides `Main -> Style` with `Light` and `Dark` themes
 Switch between the images via the buttons at the botton of the app or use the arrow-keys (LEFT and RIGHT).  
 The button "save" (or UP arrow-key) moves the current image to the output-folder.  
 The button "trash" (or DOWN arrow-key) moves the current image to the trash-folder.  
+Undo and redo keep the in-memory image list and the visible main view synchronized with the on-disk file moves.  
 When you are done, then close the app. The result (the best photos) are inside the output-folder :)  
 
 ![](media/Cullendula_current_state.png)
@@ -119,7 +120,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.8.
+This is version 0.6.9.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -143,13 +144,10 @@ This is version 0.6.8.
 * v0.6.5 strengthens the test suite around extension-filter normalization and the all-filters-disabled UI case
 * v0.6.6 adds switchable light and dark widget themes under `Main -> Style`
 * v0.6.8 fixes the remaining Doxygen warnings and keeps the generated warning log clean
+* v0.6.9 keeps undo/redo synchronized across the filesystem state, in-memory image list, and visible main view
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
-* show position and amount: like: "3/234 output: 7 trash: 10" - maybe in the status-bar? - refine this
-* add an icon for the program
-* make the used image-file-suffixes configureable
-* DONE: add some version/help menu-entry
+* show position and amount: like: "3/234 output: 7 trash: 10" - maybe in the status-bar?
+* add an icon for the program - #wip, but problematic for Linux/Wayland
 * important: add a file-existance_check before loading to QPixmap
-* show the name + path of the current file
-* add possibility to open the current file directly
