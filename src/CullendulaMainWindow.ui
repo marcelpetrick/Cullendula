@@ -62,7 +62,7 @@
         </property>
         <property name="text">
          <string>drag&amp;drop folder or file to start :)
-(currently only *.jpg/*.jpeg from the directory are loaded)</string>
+(loads readable image formats from the directory, for example *.jpg, *.jpeg, *.png, *.webp)</string>
         </property>
         <property name="scaledContents">
          <bool>false</bool>

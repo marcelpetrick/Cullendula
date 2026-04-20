@@ -22,8 +22,10 @@ private Q_SLOTS:
 
     void slot_Test_SetWorkingPath_FromDirectory();
     void slot_Test_SetWorkingPath_FromImageFile();
+    void slot_Test_SetWorkingPath_FindsPngAndUppercaseSuffixes();
     void slot_Test_SetWorkingPath_InvalidPath();
     void slot_Test_SetWorkingPath_NoImages();
+    void slot_Test_SetWorkingPath_ClearsStateOnReloadFailure();
     void slot_Test_NavigationWrapsAround();
     void slot_Test_SaveCurrentFile_MovesFileAndUpdatesState();
     void slot_Test_TrashCurrentFile_MovesFileAndUpdatesState();

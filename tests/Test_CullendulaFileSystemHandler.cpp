@@ -88,6 +88,19 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FromImageFile()
 
 //----------------------------------------------------------------------------------
 
+void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FindsPngAndUppercaseSuffixes()
+{
+    createFile("alpha.JPG");
+    createFile("beta.png");
+    createFile("notes.txt");
+
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("alpha.JPG"));
+    QCOMPARE(m_handler->getCurrentStatus(), QString("showing 1 of 2"));
+}
+
+//----------------------------------------------------------------------------------
+
 void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_InvalidPath()
 {
     QVERIFY(!m_handler->setWorkingPath(m_tempDir->path() + QDir::separator() + "missing"));
@@ -104,6 +117,25 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_NoImages()
     QVERIFY(m_handler->getCurrentImagePath().isEmpty());
     QVERIFY(QDir(m_tempDir->path() + QDir::separator() + "output").exists());
     QVERIFY(QDir(m_tempDir->path() + QDir::separator() + "trash").exists());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_ClearsStateOnReloadFailure()
+{
+    createImageSet();
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+    QVERIFY(m_handler->saveCurrentFile());
+    QVERIFY(!m_handler->getCurrentImagePath().isEmpty());
+    QVERIFY(m_handler->canUndo());
+
+    QTemporaryDir emptyDir;
+    QVERIFY(emptyDir.isValid());
+
+    QVERIFY(!m_handler->setWorkingPath(emptyDir.path()));
+    QVERIFY(m_handler->getCurrentImagePath().isEmpty());
+    QVERIFY(!m_handler->canUndo());
+    QVERIFY(!m_handler->canRedo());
 }
 
 //----------------------------------------------------------------------------------

@@ -11,6 +11,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QList>
+#include <QtGui/QImageReader>
 
 //----------------------------------------------------------------------------
 
@@ -19,6 +20,19 @@ namespace {
     //! Determines the name of the output-folders
     QString const c_hardcodedOutput = "output";
     QString const c_hardcodedTrash = "trash";
+
+    QSet<QString> getSupportedImageSuffixes()
+    {
+        QSet<QString> suffixes;
+
+        QList<QByteArray> const supportedFormats = QImageReader::supportedImageFormats();
+        for(QByteArray const& format : supportedFormats)
+        {
+            suffixes.insert(QString::fromLatin1(format).toLower());
+        }
+
+        return suffixes;
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -37,6 +51,7 @@ bool CullendulaFileSystemHandler::setWorkingPath(const QString & urlPath)
     bool returnValue(false);
 
     qDebug() << "CullendulaFileSystemHandler::setWorkingPath(): urlPath=" << urlPath;
+    resetCurrentState();
     m_workingPath.setPath("");
     m_workingPath.setPath(urlPath);
 
@@ -44,6 +59,15 @@ bool CullendulaFileSystemHandler::setWorkingPath(const QString & urlPath)
     returnValue = processNewPath();
 
     return returnValue;
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaFileSystemHandler::resetCurrentState()
+{
+    m_currentImages.clear();
+    m_positionCurrentFile = -1;
+    m_undoStack = CullendulaUndoStack();
 }
 
 //----------------------------------------------------------------------------
@@ -272,17 +296,24 @@ bool CullendulaFileSystemHandler::createImageFileList()
 
     qDebug() << "CullendulaFileSystemHandler::createImageFileList():";
 
-    // apply the wanted filters
-    QStringList filters; //! @TODO make the filter configurable for the user
-    filters << "*.jpg" << "*.jpeg";
-    m_workingPath.setNameFilters(filters);
+    m_currentImages.clear();
+    m_positionCurrentFile = -1;
 
-    QFileInfoList const availableImages = m_workingPath.entryInfoList(QDir::Files);
+    QSet<QString> const supportedImageSuffixes = getSupportedImageSuffixes();
+    QFileInfoList const availableFiles = m_workingPath.entryInfoList(QDir::Files, QDir::Name);
+    QFileInfoList availableImages;
+
+    for(QFileInfo const& file : availableFiles)
+    {
+        if(supportedImageSuffixes.contains(file.suffix().toLower()))
+        {
+            availableImages.append(file);
+        }
+    }
 
     if(!availableImages.isEmpty())
     {
-        // just for debugging: could be removed
-        qDebug() << "found the following JPGs:";
+        qDebug() << "found the following image files:";
         for(auto const& file : availableImages)
         {
             qDebug() << "\t" << file.absoluteFilePath();

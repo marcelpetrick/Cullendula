@@ -55,6 +55,9 @@ public:
     void redo();
 
 private:
+    //! Reset the handler state before loading a new working path.
+    void resetCurrentState();
+
     //! checks the currently set path and gets the file-list. Afterwards triggers loading of the current image.
     bool processNewPath();
 

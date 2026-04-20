@@ -6,6 +6,7 @@ The name itself is a wordplay of the plant `Calendula` and the activity "to cull
 Start it and then drag&drop a folder with the pictures or an example picture to the central area of the app. Cullendula figures out itself which path to use.  
 It also creates automatically a new folder named "output" inside the given path.  
 The first picture of the files is loaded automatically too.  
+Cullendula scans the dropped directory for image files supported by the current Qt image plugins, such as `jpg`, `jpeg`, `png`, and `webp`.  
 Switch between the images via the buttons at the botton of the app or use the arrow-keys (LEFT and RIGHT).  
 The button "save" (or UP arrow-key) moves the current image to the output-folder.  
 The button "trash" (or DOWN arrow-key) moves the current image to the trash-folder.  
@@ -91,7 +92,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.0.
+This is version 0.6.1.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -108,6 +109,7 @@ This is version 0.6.0.
 * v0.5.4 fixed the undo-stack unit tests, clarified the CLI test workflow, and corrected the README
 * v0.5.6 expanded coverage with deterministic MainWindow tests and documented the HTML coverage workflow
 * v0.6.0 ports the project build and test setup to Qt 6.10
+* v0.6.1 restores image loading across the Qt-supported readable image formats
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
