@@ -119,7 +119,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.7.
+This is version 0.6.8.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -142,7 +142,7 @@ This is version 0.6.7.
 * v0.6.4 closes the stale-session reload gap with explicit regression coverage when switching to an empty folder
 * v0.6.5 strengthens the test suite around extension-filter normalization and the all-filters-disabled UI case
 * v0.6.6 adds switchable light and dark widget themes under `Main -> Style`
-* v0.6.7 adds a Doxygen build target with HTML output, warning logs, and dot-based dependency graphs
+* v0.6.8 fixes the remaining Doxygen warnings and keeps the generated warning log clean
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
