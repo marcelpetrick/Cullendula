@@ -58,3 +58,4 @@ Cullendula
 *.aps
 /build/
 /llm_compat_output.md
+/.codex
