@@ -15,6 +15,7 @@
 #include <QtGui/QAction>
 #include <QtGui/QDropEvent>
 #include <QtGui/QPixmap>
+#include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
 
 //----------------------------------------------------------------------------
@@ -26,13 +27,117 @@ namespace {
 //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
 //! v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
 //! v0.5 moved the buildsystem to cmake (from qmake)
-    QString const c_versionString = " - v0.6.5";
+QString const c_versionString = " - v0.6.6";
 
 //! Determines how long the status message is visible. After timer runs out, it is removed.
 unsigned int const c_StatusBarDelay = 5000;
 
 //! prevent pumping window because of scaling. Describes the expected size of the frame.
 int const c_extraPixelsBecauseOfFraming = 2;
+
+QString getLightThemeStyleSheet() {
+    return QStringLiteral(
+        "QMainWindow {"
+        "    background-color: #f6f3ee;"
+        "    color: #1f252d;"
+        "}"
+        "QMenuBar {"
+        "    background-color: #ece6dc;"
+        "    color: #1f252d;"
+        "}"
+        "QMenuBar::item:selected {"
+        "    background-color: #d7c9b4;"
+        "}"
+        "QMenu {"
+        "    background-color: #fffaf2;"
+        "    color: #1f252d;"
+        "    border: 1px solid #c9bba8;"
+        "}"
+        "QMenu::item:selected {"
+        "    background-color: #d7c9b4;"
+        "}"
+        "QLabel#centerLabel {"
+        "    background-color: #fffaf2;"
+        "    color: #25303b;"
+        "    border: 2px solid #c5b59e;"
+        "    padding: 18px;"
+        "}"
+        "QPushButton {"
+        "    background-color: #efe2cc;"
+        "    color: #1f252d;"
+        "    border: 1px solid #b79d7f;"
+        "    border-radius: 6px;"
+        "    padding: 8px 14px;"
+        "}"
+        "QPushButton:hover:!disabled {"
+        "    background-color: #e3d1b5;"
+        "}"
+        "QPushButton:pressed:!disabled {"
+        "    background-color: #d3bd9d;"
+        "}"
+        "QPushButton:disabled {"
+        "    background-color: #ddd7ce;"
+        "    color: #7a7f86;"
+        "    border-color: #c8c0b5;"
+        "}"
+        "QStatusBar {"
+        "    background-color: #ece6dc;"
+        "    color: #1f252d;"
+        "}"
+    );
+}
+
+QString getDarkThemeStyleSheet() {
+    return QStringLiteral(
+        "QMainWindow {"
+        "    background-color: #0b0f14;"
+        "    color: #f4f7fb;"
+        "}"
+        "QMenuBar {"
+        "    background-color: #111821;"
+        "    color: #f4f7fb;"
+        "}"
+        "QMenuBar::item:selected {"
+        "    background-color: #1f3147;"
+        "}"
+        "QMenu {"
+        "    background-color: #131c26;"
+        "    color: #f4f7fb;"
+        "    border: 1px solid #3e5875;"
+        "}"
+        "QMenu::item:selected {"
+        "    background-color: #24415f;"
+        "}"
+        "QLabel#centerLabel {"
+        "    background-color: #0f141b;"
+        "    color: #f8fbff;"
+        "    border: 2px solid #74b9ff;"
+        "    padding: 18px;"
+        "}"
+        "QPushButton {"
+        "    background-color: #16324b;"
+        "    color: #f8fbff;"
+        "    border: 1px solid #79c0ff;"
+        "    border-radius: 6px;"
+        "    padding: 8px 14px;"
+        "}"
+        "QPushButton:hover:!disabled {"
+        "    background-color: #1d4668;"
+        "}"
+        "QPushButton:pressed:!disabled {"
+        "    background-color: #24567f;"
+        "}"
+        "QPushButton:disabled {"
+        "    background-color: #1b2128;"
+        "    color: #7a8795;"
+        "    border-color: #39424d;"
+        "}"
+        "QStatusBar {"
+        "    background-color: #111821;"
+        "    color: #f4f7fb;"
+        "}"
+    );
+}
 }  // namespace
 
 //----------------------------------------------------------------------------
@@ -59,6 +164,7 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) : QMainWindow(parent
     // create the menu
     createActions();
     createMenus();
+    applyTheme(ThemeMode::Light);
     syncAllowedExtensionsToFileSystemHandler();
 
     // set undo/redo correctly
@@ -70,6 +176,10 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) : QMainWindow(parent
 //----------------------------------------------------------------------------
 
 CullendulaMainWindow::~CullendulaMainWindow() { delete ui; }
+
+//----------------------------------------------------------------------------
+
+CullendulaMainWindow::ThemeMode CullendulaMainWindow::getThemeMode() const { return m_themeMode; }
 
 //----------------------------------------------------------------------------
 
@@ -266,6 +376,18 @@ void CullendulaMainWindow::createActions() {
         m_extensionActions.insert(extension, extensionAction);
     }
 
+    m_lightThemeAction = new QAction(tr("Light"), this);
+    m_lightThemeAction->setCheckable(true);
+    m_lightThemeAction->setObjectName("themeAction_light");
+    m_lightThemeAction->setStatusTip(tr("Use the light application theme"));
+    connect(m_lightThemeAction, &QAction::triggered, this, [this]() { applyTheme(ThemeMode::Light); });
+
+    m_darkThemeAction = new QAction(tr("Dark"), this);
+    m_darkThemeAction->setCheckable(true);
+    m_darkThemeAction->setObjectName("themeAction_dark");
+    m_darkThemeAction->setStatusTip(tr("Use the high-contrast dark application theme"));
+    connect(m_darkThemeAction, &QAction::triggered, this, [this]() { applyTheme(ThemeMode::Dark); });
+
     // edit menu
     m_undoAction = new QAction(tr("Undo"), this);
     m_undoAction->setStatusTip(tr("Revert the last file-move-operation"));
@@ -307,6 +429,9 @@ void CullendulaMainWindow::createMenus() {
     for (QAction* extensionAction : m_extensionActions) {
         m_extensionsMenu->addAction(extensionAction);
     }
+    m_styleMenu = m_mainMenu->addMenu(tr("Style"));
+    m_styleMenu->addAction(m_lightThemeAction);
+    m_styleMenu->addAction(m_darkThemeAction);
 
     // edit menu
     m_editMenu = menuBar()->addMenu(tr("Edit"));
@@ -330,6 +455,26 @@ void CullendulaMainWindow::syncAllowedExtensionsToFileSystemHandler() {
     }
 
     m_fileSystemHandler.setAllowedImageExtensions(enabledExtensions);
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::applyTheme(ThemeMode themeMode) {
+    m_themeMode = themeMode;
+
+    if (m_lightThemeAction != nullptr) {
+        m_lightThemeAction->setChecked(themeMode == ThemeMode::Light);
+    }
+
+    if (m_darkThemeAction != nullptr) {
+        m_darkThemeAction->setChecked(themeMode == ThemeMode::Dark);
+    }
+
+    if (themeMode == ThemeMode::Dark) {
+        setStyleSheet(getDarkThemeStyleSheet());
+    } else {
+        setStyleSheet(getLightThemeStyleSheet());
+    }
 }
 
 //----------------------------------------------------------------------------

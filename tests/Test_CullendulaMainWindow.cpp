@@ -82,6 +82,12 @@ QAction* Test_CullendulaMainWindow::findExtensionAction(QString const& extension
 
 //----------------------------------------------------------------------------------
 
+QAction* Test_CullendulaMainWindow::findThemeAction(QString const& themeName) const {
+    return m_window->findChild<QAction*>("themeAction_" + themeName.toLower());
+}
+
+//----------------------------------------------------------------------------------
+
 QPushButton* Test_CullendulaMainWindow::findButton(char const* name) const { return m_window->findChild<QPushButton*>(name); }
 
 //----------------------------------------------------------------------------------
@@ -114,7 +120,7 @@ void Test_CullendulaMainWindow::cleanup() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.5"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.6"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -127,6 +133,40 @@ void Test_CullendulaMainWindow::slot_Test_InitialState() {
     QVERIFY(!findAction("Redo")->isEnabled());
     QVERIFY(findCenterLabel()->text().contains("no more valid images found"));
     QCOMPARE(findStatusBar()->currentMessage(), QString("no more files"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_LightTheme_IsDefault() {
+    QAction* lightThemeAction = findThemeAction("light");
+    QAction* darkThemeAction = findThemeAction("dark");
+
+    QVERIFY(lightThemeAction != nullptr);
+    QVERIFY(darkThemeAction != nullptr);
+    QVERIFY(lightThemeAction->isCheckable());
+    QVERIFY(darkThemeAction->isCheckable());
+    QVERIFY(lightThemeAction->isChecked());
+    QVERIFY(!darkThemeAction->isChecked());
+    QCOMPARE(m_window->getThemeMode(), CullendulaMainWindow::ThemeMode::Light);
+    QVERIFY(m_window->styleSheet().contains("#f6f3ee"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_ThemeMenu_SwitchesToDarkMode() {
+    QAction* lightThemeAction = findThemeAction("light");
+    QAction* darkThemeAction = findThemeAction("dark");
+    QVERIFY(lightThemeAction != nullptr);
+    QVERIFY(darkThemeAction != nullptr);
+
+    darkThemeAction->trigger();
+    QApplication::processEvents();
+
+    QVERIFY(!lightThemeAction->isChecked());
+    QVERIFY(darkThemeAction->isChecked());
+    QCOMPARE(m_window->getThemeMode(), CullendulaMainWindow::ThemeMode::Dark);
+    QVERIFY(m_window->styleSheet().contains("#0b0f14"));
+    QVERIFY(m_window->styleSheet().contains("#74b9ff"));
 }
 
 //----------------------------------------------------------------------------------

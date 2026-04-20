@@ -25,6 +25,8 @@ class Test_CullendulaMainWindow : public QObject {
     void cleanup();
 
     void slot_Test_InitialState();
+    void slot_Test_LightTheme_IsDefault();
+    void slot_Test_ThemeMenu_SwitchesToDarkMode();
     void slot_Test_ExtensionsMenu_DefaultsToAllChecked();
     void slot_Test_ExtensionsMenu_AllUncheckedBlocksNextDrop();
     void slot_Test_ResizeWithoutLoadedImages_ShowsFallbackText();
@@ -42,6 +44,7 @@ class Test_CullendulaMainWindow : public QObject {
     void sendDropWithUrls(QList<QUrl> const& urls);
     QAction* findAction(QString const& text) const;
     QAction* findExtensionAction(QString const& extension) const;
+    QAction* findThemeAction(QString const& themeName) const;
     QPushButton* findButton(char const* name) const;
     QLabel* findCenterLabel() const;
     QStatusBar* findStatusBar() const;

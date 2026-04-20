@@ -12,6 +12,7 @@
 // Qt includes
 #include <QtCore/QMap>
 #include <QtCore/QStringList>
+#include <QtCore/QVector>
 #include <QtWidgets/QMainWindow>
 
 namespace Ui {
@@ -24,8 +25,12 @@ class CullendulaMainWindow : public QMainWindow {
     Q_OBJECT
 
    public:
+    enum class ThemeMode { Light, Dark };
+
     explicit CullendulaMainWindow(QWidget* parent = nullptr);
     ~CullendulaMainWindow() override;
+
+    ThemeMode getThemeMode() const;
 
    protected:
     //! Need to be reimplemented to make the drag&drop possible ... to get the path for the dropped file/folder
@@ -50,6 +55,9 @@ class CullendulaMainWindow : public QMainWindow {
    private:
     //! Synchronize the selected extension menu entries into the file system handler.
     void syncAllowedExtensionsToFileSystemHandler();
+
+    //! Apply one of the supported widget themes.
+    void applyTheme(ThemeMode themeMode);
 
     //! Refresh the label: if file available, then show as image - else reset to the initial text
     void refreshLabel();
@@ -81,7 +89,10 @@ class CullendulaMainWindow : public QMainWindow {
     //! members for the "main"- and "edit"- menus
     QMenu* m_mainMenu = nullptr;
     QMenu* m_extensionsMenu = nullptr;
+    QMenu* m_styleMenu = nullptr;
     QMap<QString, QAction*> m_extensionActions;
+    QAction* m_lightThemeAction = nullptr;
+    QAction* m_darkThemeAction = nullptr;
     QMenu* m_editMenu = nullptr;
     QAction* m_undoAction = nullptr;
     QAction* m_redoQtAction = nullptr;
@@ -92,4 +103,6 @@ class CullendulaMainWindow : public QMainWindow {
     QAction* m_aboutAction = nullptr;
     QAction* m_aboutQtAction = nullptr;
     //! - end -
+
+    ThemeMode m_themeMode = ThemeMode::Light;
 };
