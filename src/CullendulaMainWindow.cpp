@@ -83,8 +83,7 @@ QString getLightThemeStyleSheet() {
         "QStatusBar {"
         "    background-color: #ece6dc;"
         "    color: #1f252d;"
-        "}"
-    );
+        "}");
 }
 
 QString getDarkThemeStyleSheet() {
@@ -135,8 +134,7 @@ QString getDarkThemeStyleSheet() {
         "QStatusBar {"
         "    background-color: #111821;"
         "    color: #f4f7fb;"
-        "}"
-    );
+        "}");
 }
 }  // namespace
 
