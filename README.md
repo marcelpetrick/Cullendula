@@ -13,7 +13,7 @@ The button "save" (or UP arrow-key) moves the current image to the output-folder
 The button "trash" (or DOWN arrow-key) moves the current image to the trash-folder.  
 When you are done, then close the app. The result (the best photos) are inside the output-folder :)  
 
-![](Cullendula_current_state.png)
+![](media/Cullendula_current_state.png)
 
 ## Build
 ```
