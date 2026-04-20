@@ -31,6 +31,23 @@ Run it from the repository root like this:
 clang-format -i src/*.cpp src/*.h tests/*.cpp tests/*.h
 ```
 
+## Generate API docs
+If `doxygen` is installed when CMake configures the project, a `doxygen` target is available.
+
+Generate the HTML documentation like this:
+
+```bash
+cmake -S . -B build
+cmake --build build --target doxygen
+```
+
+The generated HTML entry point is:
+
+* `build/doxygen/html/index.html`
+* `build/doxygen/warnings.txt`
+
+The configured Doxygen project version follows the current CMake project version automatically.
+
 ## Run the tests after building
 
 The unit tests cover the core CLI and GUI behavior from the command line. They verify:
@@ -102,7 +119,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.6.
+This is version 0.6.7.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -125,6 +142,7 @@ This is version 0.6.6.
 * v0.6.4 closes the stale-session reload gap with explicit regression coverage when switching to an empty folder
 * v0.6.5 strengthens the test suite around extension-filter normalization and the all-filters-disabled UI case
 * v0.6.6 adds switchable light and dark widget themes under `Main -> Style`
+* v0.6.7 adds a Doxygen build target with HTML output, warning logs, and dot-based dependency graphs
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

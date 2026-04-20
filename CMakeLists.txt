@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.28)
 set(QT_CREATOR_SKIP_MAINTENANCE_TOOL_PROVIDER ON)
 
 project(Cullendula
-    VERSION 0.6.6
+    VERSION 0.6.7
     LANGUAGES CXX
 )
 
@@ -43,6 +43,29 @@ find_package(Qt6 6.10 REQUIRED COMPONENTS
 
 if(CULLENDULA_BUILD_TESTS)
     find_package(Qt6 6.10 REQUIRED COMPONENTS Test)
+endif()
+
+find_package(Doxygen)
+
+if(DOXYGEN_FOUND)
+    set(CULLENDULA_DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/doxygen")
+    set(CULLENDULA_DOXYGEN_CONFIG_FILE "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile")
+
+    configure_file(
+        "${CMAKE_SOURCE_DIR}/Doxyfile.in"
+        "${CULLENDULA_DOXYGEN_CONFIG_FILE}"
+        @ONLY
+    )
+
+    add_custom_target(doxygen
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CULLENDULA_DOXYGEN_OUTPUT_DIRECTORY}"
+        COMMAND ${DOXYGEN_EXECUTABLE} "${CULLENDULA_DOXYGEN_CONFIG_FILE}"
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        COMMENT "Generating HTML API documentation with Doxygen"
+        VERBATIM
+    )
+else()
+    message(STATUS "Doxygen not found: the 'doxygen' target will be unavailable")
 endif()
 
 # Build the application code
