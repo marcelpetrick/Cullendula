@@ -3,6 +3,10 @@
 #
 set(TEST_SOURCES
     main.cpp
+    Test_CullendulaFileSystemHandler.cpp
+    Test_CullendulaFileSystemHandler.h
+    Test_CullendulaMainWindow.cpp
+    Test_CullendulaMainWindow.h
     Test_CullendulaUndoStack.cpp
     Test_CullendulaUndoStack.h
 )
@@ -19,6 +23,7 @@ target_link_libraries(CullendulaTests
     Qt5::Core
     Qt5::Gui          # needed because UndoStack uses Qt GUI types
     Qt5::Test
+    Qt5::Widgets
     CullendulaLib
 )
 
@@ -46,6 +51,8 @@ if(CULLENDULA_ENABLE_COVERAGE)
     find_program(CULLENDULA_GENHTML_EXECUTABLE genhtml)
 
     set(CULLENDULA_COVERAGE_OBJECTS
+        "${CMAKE_BINARY_DIR}/src/CMakeFiles/CullendulaLib.dir/CullendulaMainWindow.cpp.gcno"
+        "${CMAKE_BINARY_DIR}/src/CMakeFiles/CullendulaLib.dir/CullendulaFileSystemHandler.cpp.gcno"
         "${CMAKE_BINARY_DIR}/src/CMakeFiles/CullendulaLib.dir/CullendulaUndoStack.cpp.gcno"
     )
 

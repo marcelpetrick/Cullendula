@@ -90,7 +90,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.5.5.
+This is version 0.5.6.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 5.15.17 (and QtCreator 17)
@@ -105,7 +105,7 @@ This is version 0.5.5.
 * v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
 * v0.5 moved the buildsystem to cmake (from qmake)
 * v0.5.4 fixed the undo-stack unit tests, clarified the CLI test workflow, and corrected the README
-* v0.5.5 added an opt-in gcov coverage target and documented the coverage workflow
+* v0.5.6 expanded coverage with deterministic MainWindow tests and documented the HTML coverage workflow
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
