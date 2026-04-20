@@ -17,9 +17,12 @@ When you are done, then close the app. The result (the best photos) are inside t
 ![](media/Cullendula_current_state.png)
 
 ## Build
+By default, the documented build commands use all available CPU cores via `--parallel $(nproc)`.
+If you want the same behavior without repeating the flag, export `CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)` in your shell first.
+
 ```
 cmake -S . -B build
-cmake --build build
+cmake --build build --parallel $(nproc)
 ./build/src/Cullendula
 ```
 
@@ -39,7 +42,7 @@ Generate the HTML documentation like this:
 
 ```bash
 cmake -S . -B build
-cmake --build build --target doxygen
+cmake --build build --target doxygen --parallel $(nproc)
 ```
 
 The generated HTML entry point is:
@@ -60,9 +63,9 @@ The unit tests cover the core CLI and GUI behavior from the command line. They v
 You can run them in three supported CLI ways:
 
 ```
-cmake --build build --target test
+cmake --build build --target test --parallel $(nproc)
 
-cmake --build build --target check
+cmake --build build --target check --parallel $(nproc)
 
 ./build/tests/CullendulaTests
 ```
@@ -79,8 +82,8 @@ Build, run the tests, and generate the text coverage report:
 
 ```
 cmake -S . -B build-coverage -DCULLENDULA_ENABLE_COVERAGE=ON
-cmake --build build-coverage
-cmake --build build-coverage --target coverage
+cmake --build build-coverage --parallel $(nproc)
+cmake --build build-coverage --target coverage --parallel $(nproc)
 ```
 
 This produces:
@@ -107,7 +110,7 @@ Install the tool first, then reconfigure and run:
 
 ```
 cmake -S . -B build-coverage -DCULLENDULA_ENABLE_COVERAGE=ON
-cmake --build build-coverage --target coverage-html
+cmake --build build-coverage --target coverage-html --parallel $(nproc)
 ```
 
 If the tool is missing, CMake disables the `coverage-html` target and prints a status message during configure.
