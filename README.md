@@ -202,7 +202,7 @@ In short:
 * the `.ts` update is manual; the `.qm` generation is automatic during builds
 
 ## Build information
-This is version 0.6.24.
+This is version 0.6.25.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -216,7 +216,11 @@ This is version 0.6.24.
 * v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
 * v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
 * v0.5 moved the buildsystem to cmake (from qmake)
+* v0.5.1 suppresses the QtCreator maintenance-tool warning during CMake configure
+* v0.5.2 makes the CMake project buildable out of the box from QtCreator
+* v0.5.3 fixes the QTest target integration for XML output
 * v0.5.4 fixed the undo-stack unit tests, clarified the CLI test workflow, and corrected the README
+* v0.5.5 adds opt-in coverage support with standard gcov-based tooling
 * v0.5.6 expanded coverage with deterministic MainWindow tests and documented the HTML coverage workflow
 * v0.6.0 ports the project build and test setup to Qt 6.10
 * v0.6.1 restores image loading across the Qt-supported readable image formats
@@ -225,6 +229,7 @@ This is version 0.6.24.
 * v0.6.4 closes the stale-session reload gap with explicit regression coverage when switching to an empty folder
 * v0.6.5 strengthens the test suite around extension-filter normalization and the all-filters-disabled UI case
 * v0.6.6 adds switchable light and dark widget themes under `Main -> Style`
+* v0.6.7 adds a Doxygen target with generated HTML output, warning logging, and dependency graphs
 * v0.6.8 fixes the remaining Doxygen warnings and keeps the generated warning log clean
 * v0.6.9 keeps undo/redo synchronized across the filesystem state, in-memory image list, and visible main view
 * v0.6.10 applies the selected light or dark theme across the application palette and Qt dialogs
@@ -238,9 +243,11 @@ This is version 0.6.24.
 * v0.6.18 makes undo/redo history transitions atomic with the filesystem rename so failed undo or redo attempts preserve history and surface actionable errors
 * v0.6.19 replaces the remaining filesystem TODOs with explicit directory-setup error handling, on-demand recreation of output folders, and regression coverage for those failure paths
 * v0.6.20 extends the local pipeline with a final app-launch step that waits for the user to close Cullendula without changing the script exit status
-* v0.6.22 lays the Qt 6 localization groundwork with embedded TS/QM resources, runtime `QTranslator` switching, and a new language menu for English, German, Croatian, and Chinese
+* v0.6.21 lays the Qt 6 localization groundwork with embedded TS/QM resources, runtime `QTranslator` switching, and a new language menu for English, German, Croatian, and Chinese
+* v0.6.22 adds the `localPipeline.sh --noRun` option so the final app launch can be skipped without affecting the script return value
 * v0.6.23 makes CMake the single source of truth for the visible application version while keeping the version in the window title
 * v0.6.24 marks the remaining user-visible strings for Qt translation extraction and documents the TS/QM workflow in the README
+* v0.6.25 prepares the German, Croatian, and Chinese translations for the current Qt 6 localization scaffolding
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
