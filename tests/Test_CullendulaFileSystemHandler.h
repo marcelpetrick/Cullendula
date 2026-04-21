@@ -50,6 +50,12 @@ class Test_CullendulaFileSystemHandler : public QObject {
     //! Verify invalid paths fail cleanly.
     void slot_Test_SetWorkingPath_InvalidPath();
 
+    //! Verify setup fails when the output directory path is blocked by a file.
+    void slot_Test_SetWorkingPath_FailsWhenOutputDirectoryCannotBeCreated();
+
+    //! Verify setup fails when the trash directory path is blocked by a file.
+    void slot_Test_SetWorkingPath_FailsWhenTrashDirectoryCannotBeCreated();
+
     //! Verify empty directories do not create a usable image session.
     void slot_Test_SetWorkingPath_NoImages();
 
@@ -70,6 +76,27 @@ class Test_CullendulaFileSystemHandler : public QObject {
 
     //! Verify save resolves destination collisions through a unique target name.
     void slot_Test_SaveCurrentFile_UsesUniqueNameOnCollision();
+
+    //! Verify save skips over several occupied collision suffixes.
+    void slot_Test_SaveCurrentFile_UsesNextFreeCollisionSuffix();
+
+    //! Verify moving without a loaded session returns a user-facing error.
+    void slot_Test_SaveCurrentFile_WithoutLoadedImage_ReturnsError();
+
+    //! Verify failed filesystem renames surface actionable save errors.
+    void slot_Test_SaveCurrentFile_RenameFailure_ReturnsError();
+
+    //! Verify trash resolves destination collisions through a unique target name.
+    void slot_Test_TrashCurrentFile_UsesUniqueNameOnCollision();
+
+    //! Verify failed filesystem renames surface actionable trash errors.
+    void slot_Test_TrashCurrentFile_RenameFailure_ReturnsError();
+
+    //! Verify undo failures are reported when the moved file disappeared.
+    void slot_Test_Undo_WhenMovedFileIsMissing_ReturnsFalse();
+
+    //! Verify redo failures are reported when the restored file disappeared.
+    void slot_Test_Redo_WhenRestoredFileIsMissing_ReturnsFalse();
 
    private:
     /*!

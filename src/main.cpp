@@ -4,6 +4,7 @@
 // repo: https://github.com/marcelpetrick/Cullendula
 //----------------------------------------------------------------------------------
 
+#include "CullendulaAppBootstrap.h"
 #include "CullendulaMainWindow.h"
 
 // Qt includes
@@ -14,7 +15,7 @@
 int main(int argc, char* argv[]) {
     QApplication a(argc, argv);
     CullendulaMainWindow mainWindow;
-    mainWindow.show();
+    CullendulaAppBootstrap::showMainWindow(mainWindow);
 
-    return QApplication::exec();
+    return CullendulaAppBootstrap::runEventLoop(a);
 }

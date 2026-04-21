@@ -157,7 +157,7 @@ void Test_CullendulaMainWindow::cleanup() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.15"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.17"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -208,6 +208,25 @@ void Test_CullendulaMainWindow::slot_Test_ThemeMenu_SwitchesToDarkMode() {
     QVERIFY(qApp->styleSheet().contains("#79c0ff"));
     QCOMPARE(qApp->palette().color(QPalette::Window), QColor("#0b0f14"));
     QCOMPARE(qApp->palette().color(QPalette::Button), QColor("#16324b"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_ThemeMenu_SwitchesBackToLightMode() {
+    QAction* lightThemeAction = findThemeAction("light");
+    QAction* darkThemeAction = findThemeAction("dark");
+    QVERIFY(lightThemeAction != nullptr);
+    QVERIFY(darkThemeAction != nullptr);
+
+    darkThemeAction->trigger();
+    QApplication::processEvents();
+    lightThemeAction->trigger();
+    QApplication::processEvents();
+
+    QVERIFY(lightThemeAction->isChecked());
+    QVERIFY(!darkThemeAction->isChecked());
+    QCOMPARE(m_window->getThemeMode(), CullendulaMainWindow::ThemeMode::Light);
+    QCOMPARE(qApp->palette().color(QPalette::Window), QColor("#f6f3ee"));
 }
 
 //----------------------------------------------------------------------------------
@@ -322,6 +341,19 @@ void Test_CullendulaMainWindow::slot_Test_DragEnter_InvalidPayloadIsRejected() {
 
 //----------------------------------------------------------------------------------
 
+void Test_CullendulaMainWindow::slot_Test_DragEnter_EmptyUrlListIsRejected() {
+    QMimeData mimeData;
+    mimeData.setUrls({});
+
+    QDragEnterEvent dragEnterEvent(QPoint(10, 10), Qt::CopyAction, &mimeData, Qt::LeftButton, Qt::NoModifier);
+    static_cast<TestableCullendulaMainWindow*>(m_window.get())->dragEnterEvent(&dragEnterEvent);
+
+    QVERIFY(!dragEnterEvent.isAccepted());
+    QCOMPARE(findStatusBar()->currentMessage(), QString("no more files"));
+}
+
+//----------------------------------------------------------------------------------
+
 void Test_CullendulaMainWindow::slot_Test_DragEnterAndDropValidDirectory_LoadsImages() {
     createImage("alpha.jpg", Qt::red);
     createImage("beta.jpeg", Qt::blue);
@@ -400,6 +432,55 @@ void Test_CullendulaMainWindow::slot_Test_DropInvalidPayload_ShowsErrorStatus() 
 
     QCOMPARE(findStatusBar()->currentMessage(), QString("The load was not usable! :("));
     QVERIFY(!findButton("savePB")->isEnabled());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_DropEmptyUrlList_LeavesStateUnchanged() {
+    createImage("alpha.jpg", Qt::red);
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
+    QString const statusBeforeDrop = findStatusBar()->currentMessage();
+
+    QMimeData mimeData;
+    mimeData.setUrls({});
+
+    QDragEnterEvent dragEnterEvent(QPoint(10, 10), Qt::CopyAction, &mimeData, Qt::LeftButton, Qt::NoModifier);
+    QDropEvent dropEvent(QPointF(10, 10), Qt::CopyAction, &mimeData, Qt::LeftButton, Qt::NoModifier);
+    auto* window = static_cast<TestableCullendulaMainWindow*>(m_window.get());
+    window->dragEnterEvent(&dragEnterEvent);
+    window->dropEvent(&dropEvent);
+    QApplication::processEvents();
+
+    QVERIFY(dropEvent.isAccepted());
+    QCOMPARE(findStatusBar()->currentMessage(), statusBeforeDrop);
+    QVERIFY(findButton("savePB")->isEnabled());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_DropMultipleUrls_UsesFirstEntry() {
+    createImage("first/alpha.jpg", Qt::red);
+    createImage("second/beta.jpeg", Qt::blue);
+
+    sendDropWithUrls(
+        {QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "second"), QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "first")});
+
+    QVERIFY(findStatusBar()->currentMessage().contains("beta.jpeg"));
+    QVERIFY(!findStatusBar()->currentMessage().contains("alpha.jpg"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_ButtonNavigationWithoutSession_LeavesUiUnchanged() {
+    QString const initialStatus = findStatusBar()->currentMessage();
+
+    QVERIFY(QMetaObject::invokeMethod(m_window.get(), "slotButtonLeftTriggered"));
+    QVERIFY(QMetaObject::invokeMethod(m_window.get(), "slotButtonRightTriggered"));
+    QApplication::processEvents();
+
+    QCOMPARE(findStatusBar()->currentMessage(), initialStatus);
+    QVERIFY(!findButton("leftPB")->isEnabled());
+    QVERIFY(!findButton("rightPB")->isEnabled());
 }
 
 //----------------------------------------------------------------------------------
@@ -492,6 +573,29 @@ void Test_CullendulaMainWindow::slot_Test_SaveFailure_ShowsStatusMessage() {
     replacement.close();
 
     QTest::mouseClick(findButton("savePB"), Qt::LeftButton);
+
+    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "alpha.jpg"));
+    QVERIFY(findStatusBar()->currentMessage().contains("Target directory"));
+    QVERIFY(findStatusBar()->currentMessage().contains("unavailable"));
+    QVERIFY(!findAction("Undo")->isEnabled());
+    QVERIFY(!findAction("Redo")->isEnabled());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_TrashFailure_ShowsStatusMessage() {
+    createImage("alpha.jpg", Qt::red);
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
+
+    QString const trashPath = m_tempDir->path() + QDir::separator() + "trash";
+    QVERIFY(QDir(trashPath).removeRecursively());
+
+    QFile replacement(trashPath);
+    QVERIFY(replacement.open(QIODevice::WriteOnly));
+    replacement.write("not a directory");
+    replacement.close();
+
+    QTest::mouseClick(findButton("trashPB"), Qt::LeftButton);
 
     QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "alpha.jpg"));
     QVERIFY(findStatusBar()->currentMessage().contains("Target directory"));

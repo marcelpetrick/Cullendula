@@ -3,6 +3,8 @@
 #
 set(TEST_SOURCES
     main.cpp
+    Test_CullendulaAppBootstrap.cpp
+    Test_CullendulaAppBootstrap.h
     Test_CullendulaFileSystemHandler.cpp
     Test_CullendulaFileSystemHandler.h
     Test_CullendulaMainWindow.cpp
@@ -51,6 +53,7 @@ if(CULLENDULA_ENABLE_COVERAGE)
     find_program(CULLENDULA_GENHTML_EXECUTABLE genhtml)
 
     set(CULLENDULA_COVERAGE_OBJECTS
+        "${CMAKE_BINARY_DIR}/src/CMakeFiles/CullendulaLib.dir/CullendulaAppBootstrap.cpp.gcno"
         "${CMAKE_BINARY_DIR}/src/CMakeFiles/CullendulaLib.dir/CullendulaMainWindow.cpp.gcno"
         "${CMAKE_BINARY_DIR}/src/CMakeFiles/CullendulaLib.dir/CullendulaFileSystemHandler.cpp.gcno"
         "${CMAKE_BINARY_DIR}/src/CMakeFiles/CullendulaLib.dir/CullendulaUndoStack.cpp.gcno"

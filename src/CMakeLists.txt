@@ -2,10 +2,12 @@
 # Library containing all core + UI logic (except main.cpp)
 #
 add_library(CullendulaLib
+    CullendulaAppBootstrap.cpp
     CullendulaMainWindow.cpp
     CullendulaFileSystemHandler.cpp
     CullendulaUndoStack.cpp
 
+    CullendulaAppBootstrap.h
     CullendulaMainWindow.h
     CullendulaFileSystemHandler.h
     CullendulaUndoStack.h

@@ -60,6 +60,15 @@ class Test_CullendulaUndoStack : public QObject {
     //! Verify alternating undo and redo operations over multiple items.
     void slot_Test_UndoRedoLoop();
 
+    //! Verify undo on an empty stack leaves all state untouched.
+    void slot_Test_Undo_OnEmptyStack_PreservesEmptyState();
+
+    //! Verify redo on an empty stack leaves all state untouched.
+    void slot_Test_Redo_OnEmptyStack_PreservesEmptyState();
+
+    //! Verify a fresh push clears redo history after partial undo.
+    void slot_Test_Push_AfterUndo_ClearsRedoHistory();
+
    private:
     /*!
      * @brief Compare an undo item against its expected source and target paths.

@@ -45,6 +45,9 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify the theme menu can switch the UI into dark mode.
     void slot_Test_ThemeMenu_SwitchesToDarkMode();
 
+    //! Verify the theme menu can switch back from dark mode to light mode.
+    void slot_Test_ThemeMenu_SwitchesBackToLightMode();
+
     //! Verify all suggested extensions start enabled.
     void slot_Test_ExtensionsMenu_DefaultsToAllChecked();
 
@@ -66,6 +69,9 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify drag-enter rejects unsupported payloads immediately.
     void slot_Test_DragEnter_InvalidPayloadIsRejected();
 
+    //! Verify drag-enter rejects URL payloads that contain no actual URLs.
+    void slot_Test_DragEnter_EmptyUrlListIsRejected();
+
     //! Verify dropping a valid directory loads an image session.
     void slot_Test_DragEnterAndDropValidDirectory_LoadsImages();
 
@@ -78,6 +84,15 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify unsupported drag payloads report an error status.
     void slot_Test_DropInvalidPayload_ShowsErrorStatus();
 
+    //! Verify dropping an empty URL list leaves the current session unchanged.
+    void slot_Test_DropEmptyUrlList_LeavesStateUnchanged();
+
+    //! Verify dropping several URLs only loads the first entry.
+    void slot_Test_DropMultipleUrls_UsesFirstEntry();
+
+    //! Verify navigation slots tolerate an empty session.
+    void slot_Test_ButtonNavigationWithoutSession_LeavesUiUnchanged();
+
     //! Verify navigation and saving work through the main window controls.
     void slot_Test_ButtonNavigationAndSaveFlow();
 
@@ -89,6 +104,9 @@ class Test_CullendulaMainWindow : public QObject {
 
     //! Verify failed save operations update the status bar with an error.
     void slot_Test_SaveFailure_ShowsStatusMessage();
+
+    //! Verify failed trash operations update the status bar with an error.
+    void slot_Test_TrashFailure_ShowsStatusMessage();
 
     //! Verify the application About action opens a dialog and updates status.
     void slot_Test_AboutAction_ShowsDialogAndStatus();

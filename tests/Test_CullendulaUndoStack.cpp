@@ -196,6 +196,52 @@ void Test_CullendulaUndoStack::slot_Test_UndoRedoLoop() {
 
 //----------------------------------------------------------------------------------
 
+void Test_CullendulaUndoStack::slot_Test_Undo_OnEmptyStack_PreservesEmptyState() {
+    CullendulaUndoItem const item = m_stackPtr->undo();
+
+    verifyUndoItem(item, "", "");
+    QCOMPARE(static_cast<int>(m_stackPtr->getUndoDepth()), 0);
+    QCOMPARE(static_cast<int>(m_stackPtr->getRedoDepth()), 0);
+    QVERIFY(!m_stackPtr->canUndo());
+    QVERIFY(!m_stackPtr->canRedo());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaUndoStack::slot_Test_Redo_OnEmptyStack_PreservesEmptyState() {
+    CullendulaUndoItem const item = m_stackPtr->redo();
+
+    verifyUndoItem(item, "", "");
+    QCOMPARE(static_cast<int>(m_stackPtr->getUndoDepth()), 0);
+    QCOMPARE(static_cast<int>(m_stackPtr->getRedoDepth()), 0);
+    QVERIFY(!m_stackPtr->canUndo());
+    QVERIFY(!m_stackPtr->canRedo());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaUndoStack::slot_Test_Push_AfterUndo_ClearsRedoHistory() {
+    m_stackPtr->push("1", "2");
+    m_stackPtr->push("3", "4");
+    QCOMPARE(static_cast<int>(m_stackPtr->getUndoDepth()), 2);
+
+    CullendulaUndoItem const undone = m_stackPtr->undo();
+    verifyUndoItem(undone, "3", "4");
+    QCOMPARE(static_cast<int>(m_stackPtr->getRedoDepth()), 1);
+    QVERIFY(m_stackPtr->canRedo());
+
+    m_stackPtr->push("5", "6");
+
+    QCOMPARE(static_cast<int>(m_stackPtr->getUndoDepth()), 2);
+    QCOMPARE(static_cast<int>(m_stackPtr->getRedoDepth()), 0);
+    QVERIFY(!m_stackPtr->canRedo());
+
+    CullendulaUndoItem const redoItem = m_stackPtr->redo();
+    verifyUndoItem(redoItem, "", "");
+}
+
+//----------------------------------------------------------------------------------
+
 // uncomment the following line to make the unit-test runnable
 //! @attention Moved to main.cpp
 // QTEST_MAIN(Test_CullendulaUndoStack)
