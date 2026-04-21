@@ -16,6 +16,9 @@ When you are done, then close the app. The result (the best photos) are inside t
 
 ![](media/Cullendula_current_state.png)
 
+### Preview of the language- and style-switching
+![Runtime language switch recording](media/i18n_example_run.gif)
+
 ## Build
 
 ### tl;dr

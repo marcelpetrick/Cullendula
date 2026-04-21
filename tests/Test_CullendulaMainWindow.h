@@ -57,6 +57,9 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify switching the language updates the checked menu action.
     void slot_Test_LanguageMenu_SwitchesCurrentLanguage();
 
+    //! Verify a real translated action label is applied and restored at runtime.
+    void slot_Test_LanguageMenu_AppliesTranslatedActionTexts();
+
     //! Verify all suggested extensions start enabled.
     void slot_Test_ExtensionsMenu_DefaultsToAllChecked();
 

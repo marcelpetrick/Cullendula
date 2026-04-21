@@ -313,6 +313,32 @@ void Test_CullendulaMainWindow::slot_Test_LanguageMenu_SwitchesCurrentLanguage()
 
 //----------------------------------------------------------------------------------
 
+void Test_CullendulaMainWindow::slot_Test_LanguageMenu_AppliesTranslatedActionTexts() {
+    QAction* englishAction = findLanguageAction("en");
+    QAction* germanAction = findLanguageAction("de");
+    QVERIFY(englishAction != nullptr);
+    QVERIFY(germanAction != nullptr);
+
+    QAction* undoAction = findAction("Undo");
+    QVERIFY(undoAction != nullptr);
+    QCOMPARE(undoAction->text(), QString("Undo"));
+
+    germanAction->trigger();
+    QApplication::processEvents();
+
+    QString const germanUndoText = QString::fromUtf8("Rückgängig machen");
+    QVERIFY(findAction(germanUndoText) != nullptr);
+    QVERIFY(findAction("Undo") == nullptr);
+
+    englishAction->trigger();
+    QApplication::processEvents();
+
+    QVERIFY(findAction("Undo") != nullptr);
+    QVERIFY(findAction(germanUndoText) == nullptr);
+}
+
+//----------------------------------------------------------------------------------
+
 void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_DefaultsToAllChecked() {
     QAction* pngAction = findExtensionAction("png");
     QAction* jpgAction = findExtensionAction("jpg");
