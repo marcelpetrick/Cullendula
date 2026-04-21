@@ -33,7 +33,7 @@ Use the `localPipeline.sh` to handle all steps for building, test-runs and docum
 [INFO] Building coverage configuration with 20 parallel job(s).
 [INFO] Generating coverage report.
 [INFO] Coverage HTML entry point: /home/mpetrick/repos/Cullendula/build-coverage/coverage/html/index.html
-[INFO] Total line coverage: 91.2%
+[INFO] Total line coverage: 91.0%
 [INFO] Opening coverage report with 'xdg-open'.
 [INFO] Generating Doxygen documentation.
 [INFO] Doxygen warnings file is empty.
@@ -46,7 +46,7 @@ Use the `localPipeline.sh` to handle all steps for building, test-runs and docum
 Configure+Build    : PASS Project configured and built in /home/mpetrick/repos/Cullendula/build
 Unit Tests         : PASS CTest completed without failures
 Coverage           : PASS Coverage HTML generated successfully in /home/mpetrick/repos/Cullendula/build-coverage
-Coverage Gate      : PASS Line coverage is 91.2% (threshold 90.0%)
+Coverage Gate      : PASS Line coverage is 91.0% (threshold 90.0%)
 Open Coverage      : WARN Coverage index.html path was printed but auto-open was unavailable or failed
 Doxygen            : PASS Documentation generated successfully
 Doxygen Warnings   : PASS warnings.txt is empty
@@ -163,7 +163,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.14.
+This is version 0.6.15.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -193,6 +193,7 @@ This is version 0.6.14.
 * v0.6.12 adds a repository-local pipeline script for build, test, docs, coverage, and formatting checks
 * v0.6.13 resolves filename collisions during save/trash moves and surfaces move failures to the user
 * v0.6.14 validates drag payloads at drag-enter time so unsupported drops are rejected before the UI advertises acceptance
+* v0.6.15 caches the currently displayed image so window resizes only rescale the in-memory preview instead of reloading from disk
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

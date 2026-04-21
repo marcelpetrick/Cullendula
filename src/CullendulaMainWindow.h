@@ -13,6 +13,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QStringList>
 #include <QtCore/QVector>
+#include <QtGui/QPixmap>
 #include <QtWidgets/QMainWindow>
 
 namespace Ui {
@@ -144,10 +145,16 @@ class CullendulaMainWindow : public QMainWindow {
     void updateUndoRedoButtonStatus();
 
     /*!
-     * @brief Load an image from disk and assign a scaled preview to the center label.
+     * @brief Load an image from disk into the in-memory preview cache when needed.
      * @param path Absolute image path to display.
      */
-    void loadAndScalePhoto(const QString& path) const;
+    void loadAndCachePhoto(QString const& path);
+
+    //! Scale the cached image to the current label size and assign it to the UI.
+    void showCachedPhoto();
+
+    //! Clear the cached preview image and its source-path bookkeeping.
+    void clearCachedPhoto();
 
     // [members]
     //! Generated widget tree from the `.ui` file.
@@ -194,4 +201,10 @@ class CullendulaMainWindow : public QMainWindow {
 
     //! Theme mode currently applied to the application palette and stylesheets.
     ThemeMode m_themeMode = ThemeMode::Light;
+
+    //! Absolute path of the image currently stored in the preview cache.
+    QString m_cachedImagePath;
+
+    //! Original-resolution pixmap for the currently displayed image.
+    QPixmap m_cachedPhoto;
 };

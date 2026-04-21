@@ -54,6 +54,12 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify resizing without images keeps the fallback label text.
     void slot_Test_ResizeWithoutLoadedImages_ShowsFallbackText();
 
+    //! Verify resizing a loaded image reuses the cached preview path.
+    void slot_Test_ResizeLoadedImage_ReusesCachedPreview();
+
+    //! Verify invalid image contents surface a preview fallback error.
+    void slot_Test_InvalidImagePreview_ShowsFallbackError();
+
     //! Verify drag-enter accepts URL payloads before drop processing.
     void slot_Test_DragEnter_ValidUrlsAreAccepted();
 
@@ -98,6 +104,13 @@ class Test_CullendulaMainWindow : public QObject {
      * @return Absolute file path of the created image.
      */
     QString createImage(QString const& relativePath, QColor const& color = Qt::red);
+
+    /*!
+     * @brief Create a file with an image suffix but invalid image contents.
+     * @param relativePath Relative output path below the temporary directory.
+     * @return Absolute file path of the created file.
+     */
+    QString createInvalidImageFile(QString const& relativePath);
 
     /*!
      * @brief Simulate dropping one or more local URLs onto the window.

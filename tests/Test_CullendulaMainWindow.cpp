@@ -6,6 +6,7 @@
 
 #include "Test_CullendulaMainWindow.h"
 
+#include <QtCore/QFile>
 #include <QtCore/QMimeData>
 #include <QtCore/QRegularExpression>
 #include <QtGui/QAction>
@@ -45,6 +46,24 @@ QString Test_CullendulaMainWindow::createImage(QString const& relativePath, QCol
         return {};
     }
 
+    return absolutePath;
+}
+
+//----------------------------------------------------------------------------------
+
+QString Test_CullendulaMainWindow::createInvalidImageFile(QString const& relativePath) {
+    QString const absolutePath = m_tempDir->path() + QDir::separator() + relativePath;
+    QFileInfo const fileInfo(absolutePath);
+    QDir().mkpath(fileInfo.absolutePath());
+
+    QFile file(absolutePath);
+    if (!file.open(QIODevice::WriteOnly)) {
+        QTest::qFail("Could not create invalid image test file", __FILE__, __LINE__);
+        return {};
+    }
+
+    file.write("not a real image");
+    file.close();
     return absolutePath;
 }
 
@@ -138,7 +157,7 @@ void Test_CullendulaMainWindow::cleanup() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.14"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.15"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -241,6 +260,36 @@ void Test_CullendulaMainWindow::slot_Test_ResizeWithoutLoadedImages_ShowsFallbac
 
     QVERIFY(findCenterLabel()->text().contains("no more valid images found"));
     QVERIFY(!findButton("savePB")->isEnabled());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_ResizeLoadedImage_ReusesCachedPreview() {
+    createImage("alpha.jpg", Qt::red);
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
+
+    QPixmap const beforeResize = findCenterLabel()->pixmap(Qt::ReturnByValue);
+    QVERIFY(!beforeResize.isNull());
+    QVERIFY(findStatusBar()->currentMessage().contains("alpha.jpg"));
+
+    m_window->resize(900, 700);
+    QApplication::processEvents();
+
+    QPixmap const afterResize = findCenterLabel()->pixmap(Qt::ReturnByValue);
+    QVERIFY(!afterResize.isNull());
+    QVERIFY(findStatusBar()->currentMessage().contains("alpha.jpg"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_InvalidImagePreview_ShowsFallbackError() {
+    createInvalidImageFile("broken.jpg");
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
+
+    QCOMPARE(findCenterLabel()->text(), QString("could not load the current image preview"));
+    QCOMPARE(findStatusBar()->currentMessage(), QString("could not load the current image preview"));
+    QVERIFY(!findButton("savePB")->isEnabled());
+    QVERIFY(!findButton("trashPB")->isEnabled());
 }
 
 //----------------------------------------------------------------------------------

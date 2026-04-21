@@ -31,7 +31,7 @@ namespace {
 //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
 //! v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
 //! v0.5 moved the buildsystem to cmake (from qmake)
-QString const c_versionString = " - v0.6.14";
+QString const c_versionString = " - v0.6.15";
 
 //! Determines how long the status message is visible. After timer runs out, it is removed.
 unsigned int const c_StatusBarDelay = 5000;
@@ -330,10 +330,30 @@ void CullendulaMainWindow::slotButtonTrashTriggered() {
 
 //----------------------------------------------------------------------------
 
-void CullendulaMainWindow::loadAndScalePhoto(QString const& path) const {
-    qDebug() << "CullendulaMainWindow::loadAndScalePhoto(): path=" << path;
+void CullendulaMainWindow::loadAndCachePhoto(QString const& path) {
+    if (m_cachedImagePath == path && !m_cachedPhoto.isNull()) {
+        return;
+    }
 
-    QPixmap const pixmap = QPixmap(path);
+    qDebug() << "CullendulaMainWindow::loadAndCachePhoto(): path=" << path;
+
+    QPixmap const pixmap(path);
+    if (pixmap.isNull()) {
+        clearCachedPhoto();
+        return;
+    }
+
+    m_cachedImagePath = path;
+    m_cachedPhoto = pixmap;
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::showCachedPhoto() {
+    if (m_cachedPhoto.isNull()) {
+        ui->centerLabel->clear();
+        return;
+    }
 
     // scale while keeping the aspect ratio
     int width = ui->centerLabel->width() - c_extraPixelsBecauseOfFraming;
@@ -341,12 +361,12 @@ void CullendulaMainWindow::loadAndScalePhoto(QString const& path) const {
     qDebug() << "label-size:" << width << "*" << height;
 
     // prevent upscaling of smaller photos
-    if (pixmap.width() < width) {
-        width = pixmap.width();
+    if (m_cachedPhoto.width() < width) {
+        width = m_cachedPhoto.width();
     }
 
-    if (pixmap.height() < height) {
-        height = pixmap.height();
+    if (m_cachedPhoto.height() < height) {
+        height = m_cachedPhoto.height();
     }
 
     // assert that both values are positive
@@ -354,7 +374,14 @@ void CullendulaMainWindow::loadAndScalePhoto(QString const& path) const {
     height = std::max(0, height);
 
     // set a scaled pixmap keeping its aspect ratio
-    ui->centerLabel->setPixmap(pixmap.scaled(width, height, Qt::KeepAspectRatio));
+    ui->centerLabel->setPixmap(m_cachedPhoto.scaled(width, height, Qt::KeepAspectRatio));
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::clearCachedPhoto() {
+    m_cachedImagePath.clear();
+    m_cachedPhoto = QPixmap();
 }
 
 //----------------------------------------------------------------------------
@@ -365,6 +392,7 @@ void CullendulaMainWindow::refreshLabel() {
     QString const path = m_fileSystemHandler.getCurrentImagePath();
     if (path.isEmpty())  // just the case if no valid images found
     {
+        clearCachedPhoto();
         ui->centerLabel->setText("no more valid images found: work maybe finished? :)\ndrag&drop the next folder or files if you want!");
 
         activateButtons(false);
@@ -372,8 +400,17 @@ void CullendulaMainWindow::refreshLabel() {
         printStatus("no more files");
     } else {
         if (QFile::exists(path)) {
-            // load the file
-            loadAndScalePhoto(path);
+            loadAndCachePhoto(path);
+            if (m_cachedPhoto.isNull()) {
+                clearCachedPhoto();
+                ui->centerLabel->setText("could not load the current image preview");
+                activateButtons(false);
+                printStatus("could not load the current image preview");
+                return;
+            }
+
+            // scale the cached file to the current label geometry
+            showCachedPhoto();
 
             activateButtons(true);
 
@@ -381,6 +418,7 @@ void CullendulaMainWindow::refreshLabel() {
             QString const message = m_fileSystemHandler.getCurrentStatus() + ": " + path;
             printStatus(message);
         } else {
+            clearCachedPhoto();
             qDebug() << "CullendulaMainWindow::refreshLabel(): given path did not exist: " << path;
         }
     }
