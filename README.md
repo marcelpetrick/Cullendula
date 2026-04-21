@@ -17,6 +17,46 @@ When you are done, then close the app. The result (the best photos) are inside t
 ![](media/Cullendula_current_state.png)
 
 ## Build
+
+### tl;dr
+Use the `localPipeline.sh` to handle all steps for building, test-runs and documentation and coverage generation.
+
+```sh
+[INFO] Project root: /home/mpetrick/repos/Cullendula
+[INFO] Build directory: /home/mpetrick/repos/Cullendula/build
+[INFO] Coverage build directory: /home/mpetrick/repos/Cullendula/build-coverage
+[INFO] Parallel jobs: 20
+[INFO] Configuring project in '/home/mpetrick/repos/Cullendula/build'.
+[INFO] Building project with 20 parallel job(s).
+[INFO] Running unit tests via CTest with 20 parallel job(s).
+[INFO] Configuring dedicated coverage build in '/home/mpetrick/repos/Cullendula/build-coverage'.
+[INFO] Building coverage configuration with 20 parallel job(s).
+[INFO] Generating coverage report.
+[INFO] Coverage HTML entry point: /home/mpetrick/repos/Cullendula/build-coverage/coverage/html/index.html
+[INFO] Total line coverage: 90.6%
+[INFO] Opening coverage report with 'xdg-open'.
+[INFO] Generating Doxygen documentation.
+[INFO] Doxygen warnings file is empty.
+[INFO] Doxygen HTML entry point: /home/mpetrick/repos/Cullendula/build/doxygen/html/index.html
+[INFO] Opening generated documentation with 'xdg-open'.
+[INFO] Running clang-format on project C++ sources.
+[INFO] clang-format left all tracked source files unchanged.
+
+========== Local Pipeline Summary ==========
+Configure+Build    : PASS Project configured and built in /home/mpetrick/repos/Cullendula/build
+Unit Tests         : PASS CTest completed without failures
+Coverage           : PASS Coverage HTML generated successfully in /home/mpetrick/repos/Cullendula/build-coverage
+Coverage Gate      : PASS Line coverage is 90.6% (threshold 90.0%)
+Open Coverage      : PASS Coverage index.html was handed to the desktop opener
+Doxygen            : PASS Documentation generated successfully
+Doxygen Warnings   : PASS warnings.txt is empty
+Open Docs          : PASS index.html was handed to the desktop opener
+clang-format       : PASS Formatting completed without changing files
+============================================
+```
+
+--
+
 By default, the documented build commands use all available CPU cores via `--parallel $(nproc)`.
 If you want the same behavior without repeating the flag, export `CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)` in your shell first.
 
@@ -123,7 +163,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.10.
+This is version 0.6.12.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -149,9 +189,11 @@ This is version 0.6.10.
 * v0.6.8 fixes the remaining Doxygen warnings and keeps the generated warning log clean
 * v0.6.9 keeps undo/redo synchronized across the filesystem state, in-memory image list, and visible main view
 * v0.6.10 applies the selected light or dark theme across the application palette and Qt dialogs
+* v0.6.11 adds a repository-local pipeline script for build, test, docs, coverage, and formatting checks
+* v0.6.12 aligns the local pipeline with the documented coverage workflow and keeps versioned surfaces in sync
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
 * show position and amount: like: "3/234 output: 7 trash: 10" - maybe in the status-bar?
-* add an icon for the program - #wip, but problematic for Linux/Wayland
+* add an icon for the program - started as feature-branch, but problematic for Linux/Wayland
 * important: add a file-existance_check before loading to QPixmap
