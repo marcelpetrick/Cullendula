@@ -6,6 +6,9 @@
 
 #pragma once
 
+// Qt includes
+#include <QtCore/QString>
+
 class QApplication;
 class CullendulaMainWindow;
 
@@ -15,6 +18,11 @@ class CullendulaMainWindow;
  */
 
 namespace CullendulaAppBootstrap {
+/*!
+ * @brief Supported user-selectable UI languages.
+ */
+enum class UiLanguage { English, German, Croatian, Chinese };
+
 /*!
  * @brief Force the offscreen Qt platform plugin for headless test runs.
  *
@@ -29,6 +37,22 @@ void ensureQtPlatformPluginForTests();
  * @param mainWindow Main window instance to present to the user.
  */
 void showMainWindow(CullendulaMainWindow& mainWindow);
+
+/*!
+ * @brief Return the currently installed application language.
+ * @return Active UI language selection, with English meaning "no translator".
+ */
+UiLanguage getApplicationLanguage();
+
+/*!
+ * @brief Switch the application UI language at runtime.
+ * @param language Target language to activate.
+ * @return `true` when the requested language is active after the call.
+ *
+ * English keeps the untranslated source strings. Other languages are loaded
+ * from embedded `.qm` resources generated during the build.
+ */
+bool setApplicationLanguage(UiLanguage language);
 
 /*!
  * @brief Execute the Qt event loop for the current application instance.

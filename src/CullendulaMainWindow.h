@@ -7,6 +7,7 @@
 #pragma once
 
 // own includes
+#include "CullendulaAppBootstrap.h"
 #include "CullendulaFileSystemHandler.h"
 
 // Qt includes
@@ -19,6 +20,8 @@
 namespace Ui {
 class CullendulaMainWindow;
 }
+
+class QActionGroup;
 
 //----------------------------------------------------------------------------
 
@@ -77,6 +80,12 @@ class CullendulaMainWindow : public QMainWindow {
      */
     void resizeEvent(QResizeEvent* event) override;
 
+    /*!
+     * @brief React to runtime translator installation/removal.
+     * @param event Qt change event delivered by the application.
+     */
+    void changeEvent(QEvent* event) override;
+
    private Q_SLOTS:
     //! Navigate to the previous image in the current directory session.
     void slotButtonLeftTriggered();
@@ -104,6 +113,9 @@ class CullendulaMainWindow : public QMainWindow {
      */
     void showInformationDialog(QString const& title, QString const& text);
 
+    //! Re-apply translatable menu, action, and window texts after a language change.
+    void retranslateStaticTexts();
+
     /*!
      * @brief Push the checked extension menu entries into the file system handler.
      */
@@ -114,6 +126,12 @@ class CullendulaMainWindow : public QMainWindow {
      * @param themeMode Theme variant to activate.
      */
     void applyTheme(ThemeMode themeMode);
+
+    /*!
+     * @brief Activate a user-selected UI language and sync the menu state.
+     * @param language Requested language.
+     */
+    void applyLanguage(CullendulaAppBootstrap::UiLanguage language);
 
     /*!
      * @brief Refresh the central preview and the related window state.
@@ -172,6 +190,9 @@ class CullendulaMainWindow : public QMainWindow {
     //! Menu that lets the user switch between theme variants.
     QMenu* m_styleMenu = nullptr;
 
+    //! Menu that lets the user switch the UI language at runtime.
+    QMenu* m_languageMenu = nullptr;
+
     //! One toggle action per supported image extension, keyed by lowercase suffix.
     QMap<QString, QAction*> m_extensionActions;
 
@@ -180,6 +201,21 @@ class CullendulaMainWindow : public QMainWindow {
 
     //! Action that activates the dark palette.
     QAction* m_darkThemeAction = nullptr;
+
+    //! Exclusive action group backing the language menu.
+    QActionGroup* m_languageActionGroup = nullptr;
+
+    //! Action that keeps the untranslated English source strings active.
+    QAction* m_englishLanguageAction = nullptr;
+
+    //! Action that loads the German translator resource.
+    QAction* m_germanLanguageAction = nullptr;
+
+    //! Action that loads the Croatian translator resource.
+    QAction* m_croatianLanguageAction = nullptr;
+
+    //! Action that loads the Chinese translator resource.
+    QAction* m_chineseLanguageAction = nullptr;
 
     //! Edit menu that contains undo and redo commands.
     QMenu* m_editMenu = nullptr;

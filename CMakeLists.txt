@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.28)
 set(QT_CREATOR_SKIP_MAINTENANCE_TOOL_PROVIDER ON)
 
 project(Cullendula
-    VERSION 0.6.20
+    VERSION 0.6.21
     LANGUAGES CXX
 )
 
@@ -38,6 +38,7 @@ endif()
 find_package(Qt6 6.10 REQUIRED COMPONENTS
     Core
     Gui
+    LinguistTools
     Widgets
 )
 
@@ -76,3 +77,21 @@ if(CULLENDULA_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
+
+set(CULLENDULA_TRANSLATION_TS_FILES
+    "${CMAKE_SOURCE_DIR}/translations/Cullendula_de.ts"
+    "${CMAKE_SOURCE_DIR}/translations/Cullendula_hr.ts"
+    "${CMAKE_SOURCE_DIR}/translations/Cullendula_zh_CN.ts"
+)
+
+set(CULLENDULA_TRANSLATION_TARGETS Cullendula)
+if(CULLENDULA_BUILD_TESTS)
+    list(APPEND CULLENDULA_TRANSLATION_TARGETS CullendulaTests)
+endif()
+
+qt_add_translations(
+    TARGETS ${CULLENDULA_TRANSLATION_TARGETS}
+    SOURCE_TARGETS CullendulaLib Cullendula
+    TS_FILES ${CULLENDULA_TRANSLATION_TS_FILES}
+    RESOURCE_PREFIX "/i18n"
+)

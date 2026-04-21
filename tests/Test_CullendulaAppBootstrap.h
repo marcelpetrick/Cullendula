@@ -26,6 +26,12 @@ class Test_CullendulaAppBootstrap : public QObject {
     //! Verify an explicit Qt platform plugin is preserved.
     void slot_Test_EnsureQtPlatformPluginForTests_RespectsExistingValue();
 
+    //! Verify English is the default application language selection.
+    void slot_Test_DefaultApplicationLanguage_IsEnglish();
+
+    //! Verify switching the application language updates the tracked selection.
+    void slot_Test_SetApplicationLanguage_UpdatesCurrentSelection();
+
     //! Verify the helper shows the main window.
     void slot_Test_ShowMainWindow_MakesWindowVisible();
 };

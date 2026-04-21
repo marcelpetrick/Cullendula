@@ -48,6 +48,12 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify the theme menu can switch back from dark mode to light mode.
     void slot_Test_ThemeMenu_SwitchesBackToLightMode();
 
+    //! Verify the language menu exposes all supported runtime language options.
+    void slot_Test_LanguageMenu_ContainsSupportedLanguages();
+
+    //! Verify switching the language updates the checked menu action.
+    void slot_Test_LanguageMenu_SwitchesCurrentLanguage();
+
     //! Verify all suggested extensions start enabled.
     void slot_Test_ExtensionsMenu_DefaultsToAllChecked();
 
@@ -165,6 +171,13 @@ class Test_CullendulaMainWindow : public QObject {
      * @return Matching action or `nullptr`.
      */
     QAction* findThemeAction(QString const& themeName) const;
+
+    /*!
+     * @brief Find a language action by locale suffix.
+     * @param languageCode Locale code used in the action object name.
+     * @return Matching action or `nullptr`.
+     */
+    QAction* findLanguageAction(QString const& languageCode) const;
 
     //! Find the currently open dialog owned by the window, if any.
     QDialog* findOpenDialog() const;

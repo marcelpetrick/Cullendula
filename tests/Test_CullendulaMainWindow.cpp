@@ -108,6 +108,12 @@ QAction* Test_CullendulaMainWindow::findThemeAction(QString const& themeName) co
 
 //----------------------------------------------------------------------------------
 
+QAction* Test_CullendulaMainWindow::findLanguageAction(QString const& languageCode) const {
+    return m_window->findChild<QAction*>("languageAction_" + languageCode);
+}
+
+//----------------------------------------------------------------------------------
+
 QDialog* Test_CullendulaMainWindow::findOpenDialog() const {
     QList<QWidget*> const topLevelWidgets = QApplication::topLevelWidgets();
     for (QWidget* widget : topLevelWidgets) {
@@ -152,12 +158,13 @@ void Test_CullendulaMainWindow::init() {
 void Test_CullendulaMainWindow::cleanup() {
     m_window.reset();
     m_tempDir.reset();
+    QVERIFY(CullendulaAppBootstrap::setApplicationLanguage(CullendulaAppBootstrap::UiLanguage::English));
 }
 
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.20"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.21"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -227,6 +234,66 @@ void Test_CullendulaMainWindow::slot_Test_ThemeMenu_SwitchesBackToLightMode() {
     QVERIFY(!darkThemeAction->isChecked());
     QCOMPARE(m_window->getThemeMode(), CullendulaMainWindow::ThemeMode::Light);
     QCOMPARE(qApp->palette().color(QPalette::Window), QColor("#f6f3ee"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_LanguageMenu_ContainsSupportedLanguages() {
+    QAction* englishAction = findLanguageAction("en");
+    QAction* germanAction = findLanguageAction("de");
+    QAction* croatianAction = findLanguageAction("hr");
+    QAction* chineseAction = findLanguageAction("zh_CN");
+
+    QVERIFY(englishAction != nullptr);
+    QVERIFY(germanAction != nullptr);
+    QVERIFY(croatianAction != nullptr);
+    QVERIFY(chineseAction != nullptr);
+    QVERIFY(englishAction->isCheckable());
+    QVERIFY(germanAction->isCheckable());
+    QVERIFY(croatianAction->isCheckable());
+    QVERIFY(chineseAction->isCheckable());
+    QVERIFY(englishAction->isChecked());
+    QVERIFY(!germanAction->isChecked());
+    QVERIFY(!croatianAction->isChecked());
+    QVERIFY(!chineseAction->isChecked());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_LanguageMenu_SwitchesCurrentLanguage() {
+    QAction* englishAction = findLanguageAction("en");
+    QAction* germanAction = findLanguageAction("de");
+    QAction* croatianAction = findLanguageAction("hr");
+    QAction* chineseAction = findLanguageAction("zh_CN");
+    QVERIFY(englishAction != nullptr);
+    QVERIFY(germanAction != nullptr);
+    QVERIFY(croatianAction != nullptr);
+    QVERIFY(chineseAction != nullptr);
+
+    germanAction->trigger();
+    QApplication::processEvents();
+    QVERIFY(germanAction->isChecked());
+    QVERIFY(!englishAction->isChecked());
+    QCOMPARE(CullendulaAppBootstrap::getApplicationLanguage(), CullendulaAppBootstrap::UiLanguage::German);
+
+    croatianAction->trigger();
+    QApplication::processEvents();
+    QVERIFY(croatianAction->isChecked());
+    QVERIFY(!germanAction->isChecked());
+    QCOMPARE(CullendulaAppBootstrap::getApplicationLanguage(), CullendulaAppBootstrap::UiLanguage::Croatian);
+
+    chineseAction->trigger();
+    QApplication::processEvents();
+    QVERIFY(chineseAction->isChecked());
+    QVERIFY(!croatianAction->isChecked());
+    QCOMPARE(CullendulaAppBootstrap::getApplicationLanguage(), CullendulaAppBootstrap::UiLanguage::Chinese);
+
+    englishAction->trigger();
+    QApplication::processEvents();
+    QVERIFY(englishAction->isChecked());
+    QVERIFY(!chineseAction->isChecked());
+    QCOMPARE(CullendulaAppBootstrap::getApplicationLanguage(), CullendulaAppBootstrap::UiLanguage::English);
+    QVERIFY(m_window->windowTitle().contains("v0.6.21"));
 }
 
 //----------------------------------------------------------------------------------

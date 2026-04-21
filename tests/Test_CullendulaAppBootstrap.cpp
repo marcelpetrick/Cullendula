@@ -31,6 +31,22 @@ void Test_CullendulaAppBootstrap::slot_Test_EnsureQtPlatformPluginForTests_Respe
 
 //----------------------------------------------------------------------------------
 
+void Test_CullendulaAppBootstrap::slot_Test_DefaultApplicationLanguage_IsEnglish() {
+    QCOMPARE(CullendulaAppBootstrap::getApplicationLanguage(), CullendulaAppBootstrap::UiLanguage::English);
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaAppBootstrap::slot_Test_SetApplicationLanguage_UpdatesCurrentSelection() {
+    QVERIFY(CullendulaAppBootstrap::setApplicationLanguage(CullendulaAppBootstrap::UiLanguage::German));
+    QCOMPARE(CullendulaAppBootstrap::getApplicationLanguage(), CullendulaAppBootstrap::UiLanguage::German);
+
+    QVERIFY(CullendulaAppBootstrap::setApplicationLanguage(CullendulaAppBootstrap::UiLanguage::English));
+    QCOMPARE(CullendulaAppBootstrap::getApplicationLanguage(), CullendulaAppBootstrap::UiLanguage::English);
+}
+
+//----------------------------------------------------------------------------------
+
 void Test_CullendulaAppBootstrap::slot_Test_ShowMainWindow_MakesWindowVisible() {
     CullendulaMainWindow window;
 

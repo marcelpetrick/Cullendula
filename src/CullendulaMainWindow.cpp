@@ -11,9 +11,11 @@
 
 // Qt includes
 #include <QtCore/QDebug>  //todom maybe remove
+#include <QtCore/QEvent>
 #include <QtCore/QLibraryInfo>
 #include <QtCore/QMimeData>
 #include <QtGui/QAction>
+#include <QtGui/QActionGroup>
 #include <QtGui/QColor>
 #include <QtGui/QDropEvent>
 #include <QtGui/QPalette>
@@ -31,7 +33,7 @@ namespace {
 //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
 //! v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
 //! v0.5 moved the buildsystem to cmake (from qmake)
-QString const c_versionString = " - v0.6.20";
+QString const c_versionString = " - v0.6.21";
 
 //! Determines how long the status message is visible. After timer runs out, it is removed.
 unsigned int const c_StatusBarDelay = 5000;
@@ -178,8 +180,6 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) : QMainWindow(parent
     ui->setupUi(this);
 
     // make the current version information visible to the user - as long as no menu with help&stuff exists
-    setWindowTitle(windowTitle().append(c_versionString));
-
     // disable the buttons immediately; until the directory is set
     activateButtons(false);
 
@@ -195,7 +195,9 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) : QMainWindow(parent
     // create the menu
     createActions();
     createMenus();
+    retranslateStaticTexts();
     applyTheme(ThemeMode::Light);
+    applyLanguage(CullendulaAppBootstrap::getApplicationLanguage());
     syncAllowedExtensionsToFileSystemHandler();
 
     // set undo/redo correctly
@@ -211,6 +213,18 @@ CullendulaMainWindow::~CullendulaMainWindow() { delete ui; }
 //----------------------------------------------------------------------------
 
 CullendulaMainWindow::ThemeMode CullendulaMainWindow::getThemeMode() const { return m_themeMode; }
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::changeEvent(QEvent* event) {
+    QMainWindow::changeEvent(event);
+
+    if (event != nullptr && event->type() == QEvent::LanguageChange) {
+        ui->retranslateUi(this);
+        retranslateStaticTexts();
+        refreshLabel();
+    }
+}
 
 //----------------------------------------------------------------------------
 
@@ -472,6 +486,33 @@ void CullendulaMainWindow::createActions() {
     m_darkThemeAction->setStatusTip(tr("Use the high-contrast dark application theme"));
     connect(m_darkThemeAction, &QAction::triggered, this, [this]() { applyTheme(ThemeMode::Dark); });
 
+    m_languageActionGroup = new QActionGroup(this);
+    m_languageActionGroup->setExclusive(true);
+
+    m_englishLanguageAction = new QAction(QStringLiteral("English"), this);
+    m_englishLanguageAction->setCheckable(true);
+    m_englishLanguageAction->setObjectName("languageAction_en");
+    connect(m_englishLanguageAction, &QAction::triggered, this, [this]() { applyLanguage(CullendulaAppBootstrap::UiLanguage::English); });
+    m_languageActionGroup->addAction(m_englishLanguageAction);
+
+    m_germanLanguageAction = new QAction(QStringLiteral("Deutsch"), this);
+    m_germanLanguageAction->setCheckable(true);
+    m_germanLanguageAction->setObjectName("languageAction_de");
+    connect(m_germanLanguageAction, &QAction::triggered, this, [this]() { applyLanguage(CullendulaAppBootstrap::UiLanguage::German); });
+    m_languageActionGroup->addAction(m_germanLanguageAction);
+
+    m_croatianLanguageAction = new QAction(QStringLiteral("Hrvatski"), this);
+    m_croatianLanguageAction->setCheckable(true);
+    m_croatianLanguageAction->setObjectName("languageAction_hr");
+    connect(m_croatianLanguageAction, &QAction::triggered, this, [this]() { applyLanguage(CullendulaAppBootstrap::UiLanguage::Croatian); });
+    m_languageActionGroup->addAction(m_croatianLanguageAction);
+
+    m_chineseLanguageAction = new QAction(QStringLiteral("中文"), this);
+    m_chineseLanguageAction->setCheckable(true);
+    m_chineseLanguageAction->setObjectName("languageAction_zh_CN");
+    connect(m_chineseLanguageAction, &QAction::triggered, this, [this]() { applyLanguage(CullendulaAppBootstrap::UiLanguage::Chinese); });
+    m_languageActionGroup->addAction(m_chineseLanguageAction);
+
     // edit menu
     m_undoAction = new QAction(tr("Undo"), this);
     m_undoAction->setStatusTip(tr("Revert the last file-move-operation"));
@@ -517,24 +558,112 @@ void CullendulaMainWindow::createActions() {
 
 void CullendulaMainWindow::createMenus() {
     // main menu
-    m_mainMenu = menuBar()->addMenu(tr("Main"));
-    m_extensionsMenu = m_mainMenu->addMenu(tr("Extensions"));
+    m_mainMenu = menuBar()->addMenu(QString());
+    m_extensionsMenu = m_mainMenu->addMenu(QString());
     for (QAction* extensionAction : m_extensionActions) {
         m_extensionsMenu->addAction(extensionAction);
     }
-    m_styleMenu = m_mainMenu->addMenu(tr("Style"));
+    m_styleMenu = m_mainMenu->addMenu(QString());
     m_styleMenu->addAction(m_lightThemeAction);
     m_styleMenu->addAction(m_darkThemeAction);
+    m_languageMenu = m_mainMenu->addMenu(QString());
+    m_languageMenu->addAction(m_englishLanguageAction);
+    m_languageMenu->addAction(m_germanLanguageAction);
+    m_languageMenu->addAction(m_croatianLanguageAction);
+    m_languageMenu->addAction(m_chineseLanguageAction);
 
     // edit menu
-    m_editMenu = menuBar()->addMenu(tr("Edit"));
+    m_editMenu = menuBar()->addMenu(QString());
     m_editMenu->addAction(m_undoAction);
     m_editMenu->addAction(m_redoQtAction);
 
     // help menu
-    m_helpMenu = menuBar()->addMenu(tr("Help"));
+    m_helpMenu = menuBar()->addMenu(QString());
     m_helpMenu->addAction(m_aboutAction);
     m_helpMenu->addAction(m_aboutQtAction);
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::retranslateStaticTexts() {
+    setWindowTitle(tr("Cullendula") + c_versionString);
+
+    if (m_mainMenu != nullptr) {
+        m_mainMenu->setTitle(tr("Main"));
+    }
+
+    if (m_extensionsMenu != nullptr) {
+        m_extensionsMenu->setTitle(tr("Extensions"));
+    }
+
+    if (m_styleMenu != nullptr) {
+        m_styleMenu->setTitle(tr("Style"));
+    }
+
+    if (m_languageMenu != nullptr) {
+        m_languageMenu->setTitle(tr("Language"));
+    }
+
+    for (auto it = m_extensionActions.begin(); it != m_extensionActions.end(); ++it) {
+        if (it.value() != nullptr) {
+            it.value()->setText(it.key().toUpper());
+            it.value()->setStatusTip(tr("Enable loading of *.%1 files when opening the next directory").arg(it.key()));
+        }
+    }
+
+    if (m_lightThemeAction != nullptr) {
+        m_lightThemeAction->setText(tr("Light"));
+        m_lightThemeAction->setStatusTip(tr("Use the light application theme"));
+    }
+
+    if (m_darkThemeAction != nullptr) {
+        m_darkThemeAction->setText(tr("Dark"));
+        m_darkThemeAction->setStatusTip(tr("Use the high-contrast dark application theme"));
+    }
+
+    if (m_englishLanguageAction != nullptr) {
+        m_englishLanguageAction->setStatusTip(tr("Use the default English source texts"));
+    }
+
+    if (m_germanLanguageAction != nullptr) {
+        m_germanLanguageAction->setStatusTip(tr("Load the German user-interface translation"));
+    }
+
+    if (m_croatianLanguageAction != nullptr) {
+        m_croatianLanguageAction->setStatusTip(tr("Load the Croatian user-interface translation"));
+    }
+
+    if (m_chineseLanguageAction != nullptr) {
+        m_chineseLanguageAction->setStatusTip(tr("Load the Chinese user-interface translation"));
+    }
+
+    if (m_editMenu != nullptr) {
+        m_editMenu->setTitle(tr("Edit"));
+    }
+
+    if (m_undoAction != nullptr) {
+        m_undoAction->setText(tr("Undo"));
+        m_undoAction->setStatusTip(tr("Revert the last file-move-operation"));
+    }
+
+    if (m_redoQtAction != nullptr) {
+        m_redoQtAction->setText(tr("Redo"));
+        m_redoQtAction->setStatusTip(tr("Redo the last file-move-operation (means: undo undo)"));
+    }
+
+    if (m_helpMenu != nullptr) {
+        m_helpMenu->setTitle(tr("Help"));
+    }
+
+    if (m_aboutAction != nullptr) {
+        m_aboutAction->setText(tr("About Cullendula"));
+        m_aboutAction->setStatusTip(tr("Show the application's About box"));
+    }
+
+    if (m_aboutQtAction != nullptr) {
+        m_aboutQtAction->setText(tr("About Qt"));
+        m_aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -548,6 +677,31 @@ void CullendulaMainWindow::syncAllowedExtensionsToFileSystemHandler() {
     }
 
     m_fileSystemHandler.setAllowedImageExtensions(enabledExtensions);
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaMainWindow::applyLanguage(CullendulaAppBootstrap::UiLanguage language) {
+    if (!CullendulaAppBootstrap::setApplicationLanguage(language)) {
+        printStatus(tr("Could not load the selected language."));
+        return;
+    }
+
+    if (m_englishLanguageAction != nullptr) {
+        m_englishLanguageAction->setChecked(language == CullendulaAppBootstrap::UiLanguage::English);
+    }
+
+    if (m_germanLanguageAction != nullptr) {
+        m_germanLanguageAction->setChecked(language == CullendulaAppBootstrap::UiLanguage::German);
+    }
+
+    if (m_croatianLanguageAction != nullptr) {
+        m_croatianLanguageAction->setChecked(language == CullendulaAppBootstrap::UiLanguage::Croatian);
+    }
+
+    if (m_chineseLanguageAction != nullptr) {
+        m_chineseLanguageAction->setChecked(language == CullendulaAppBootstrap::UiLanguage::Chinese);
+    }
 }
 
 //----------------------------------------------------------------------------
