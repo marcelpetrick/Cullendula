@@ -18,7 +18,8 @@
 #   8. Print the generated Doxygen index.html path and try to open it
 #   9. Run clang-format on the C++ sources in src/ and tests/
 #   10. Detect whether clang-format changed any files
-#   11. Print a final stage-by-stage summary and exit with a useful status code
+#   11. Launch the built Cullendula application as the final interactive step
+#   12. Print a final stage-by-stage summary and exit with a useful status code
 #
 # Invocation:
 #   ./localPipeline.sh
@@ -32,6 +33,7 @@
 #   0  All mandatory stages succeeded:
 #      configure/build, tests, coverage generation, coverage threshold,
 #      Doxygen generation, zero Doxygen warnings, and clang-format execution.
+#      Launching the GUI application does not affect the exit code.
 #   1  One or more mandatory stages failed.
 #   2  Invalid command line arguments.
 # -----------------------------------------------------------------------------
@@ -84,6 +86,7 @@ Local project pipeline:
   6. Open the generated HTML reports when possible
   7. Run clang-format on project C++ sources
   8. Report whether formatting changed any files
+  9. Launch the built Cullendula app and wait for the user to close it
 EOF
 }
 
@@ -502,6 +505,30 @@ run_clang_format() {
     return 0
 }
 
+launch_application() {
+    local app_path="${BUILD_DIR}/src/Cullendula"
+
+    if [[ ! -f "${app_path}" ]]; then
+        warn "The built application was not found at '${app_path}'."
+        return 1
+    fi
+
+    if [[ ! -x "${app_path}" ]]; then
+        warn "The built application is not executable: '${app_path}'."
+        return 1
+    fi
+
+    log "Launching Cullendula as the final pipeline step."
+    log "Close the application window to let the script finish."
+
+    if ! run_command "Launching the Cullendula application" "${app_path}"; then
+        warn "The Cullendula application could not be launched successfully."
+        return 1
+    fi
+
+    return 0
+}
+
 print_summary() {
     printf '\n========== Local Pipeline Summary ==========\n'
     local line
@@ -686,13 +713,23 @@ main() {
         mark_result "clang-format" "FAIL" "Formatting step failed"
     fi
 
-    print_summary
-
+    local exit_code=1
     if [[ "${BUILD_OK}" -eq 1 && "${TESTS_OK}" -eq 1 && "${COVERAGE_OK}" -eq 1 && "${COVERAGE_THRESHOLD_OK}" -eq 1 && "${DOXYGEN_OK}" -eq 1 && "${DOXYGEN_WARNINGS_OK}" -eq 1 && "${FORMAT_OK}" -eq 1 ]]; then
-        exit 0
+        exit_code=0
     fi
 
-    exit 1
+    if [[ "${BUILD_OK}" -eq 1 ]]; then
+        if launch_application; then
+            mark_result "Launch App" "PASS" "Cullendula was started; the script resumed after the window was closed"
+        else
+            mark_result "Launch App" "WARN" "Launching Cullendula failed or was unavailable; this does not affect the pipeline result"
+        fi
+    else
+        mark_result "Launch App" "SKIP" "Skipped because the application build did not complete successfully"
+    fi
+
+    print_summary
+    exit "${exit_code}"
 }
 
 main "$@"

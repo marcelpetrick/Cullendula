@@ -19,9 +19,10 @@ When you are done, then close the app. The result (the best photos) are inside t
 ## Build
 
 ### tl;dr
-Use the `localPipeline.sh` to handle all steps for building, test-runs and documentation and coverage generation.
+Use the `localPipeline.sh` to handle all steps for building, test-runs, documentation, coverage generation, and a final interactive launch of the built `Cullendula` app.
 
 ```sh
+time ./localPipeline.sh
 [INFO] Project root: /home/mpetrick/repos/Cullendula
 [INFO] Build directory: /home/mpetrick/repos/Cullendula/build
 [INFO] Coverage build directory: /home/mpetrick/repos/Cullendula/build-coverage
@@ -33,7 +34,7 @@ Use the `localPipeline.sh` to handle all steps for building, test-runs and docum
 [INFO] Building coverage configuration with 20 parallel job(s).
 [INFO] Generating coverage report.
 [INFO] Coverage HTML entry point: /home/mpetrick/repos/Cullendula/build-coverage/coverage/html/index.html
-[INFO] Total line coverage: 93.7%
+[INFO] Total line coverage: 94.4%
 [INFO] Opening coverage report with 'xdg-open'.
 [INFO] Generating Doxygen documentation.
 [INFO] Doxygen warnings file is empty.
@@ -41,18 +42,22 @@ Use the `localPipeline.sh` to handle all steps for building, test-runs and docum
 [INFO] Opening generated documentation with 'xdg-open'.
 [INFO] Running clang-format on project C++ sources.
 [INFO] clang-format left all tracked source files unchanged.
+[INFO] Launching Cullendula as the final pipeline step.
+[INFO] Close the application window to let the script finish.
 
 ========== Local Pipeline Summary ==========
 Configure+Build    : PASS Project configured and built in /home/mpetrick/repos/Cullendula/build
 Unit Tests         : PASS CTest completed without failures
 Coverage           : PASS Coverage HTML generated successfully in /home/mpetrick/repos/Cullendula/build-coverage
-Coverage Gate      : PASS Line coverage is 93.7% (threshold 90.0%)
+Coverage Gate      : PASS Line coverage is 94.4% (threshold 90.0%)
 Open Coverage      : PASS Coverage index.html was handed to the desktop opener
 Doxygen            : PASS Documentation generated successfully
 Doxygen Warnings   : PASS warnings.txt is empty
 Open Docs          : PASS index.html was handed to the desktop opener
 clang-format       : PASS Formatting completed without changing files
+Launch App         : PASS Cullendula was started; the script resumed after the window was closed
 ============================================
+./localPipeline.sh  2.05s user 0.67s system 47% cpu 5.718 total
 ```
 
 ----
@@ -163,7 +168,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.19.
+This is version 0.6.20.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -198,6 +203,7 @@ This is version 0.6.19.
 * v0.6.17 aligns the repository with clang-format output so the local pipeline finishes with a clean worktree after formatting checks
 * v0.6.18 makes undo/redo history transitions atomic with the filesystem rename so failed undo or redo attempts preserve history and surface actionable errors
 * v0.6.19 replaces the remaining filesystem TODOs with explicit directory-setup error handling, on-demand recreation of output folders, and regression coverage for those failure paths
+* v0.6.20 extends the local pipeline with a final app-launch step that waits for the user to close Cullendula without changing the script exit status
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
