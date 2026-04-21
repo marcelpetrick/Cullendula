@@ -177,7 +177,7 @@ The repository now contains Qt Linguist translation source files in `translation
 The CMake build uses Qt 6 `LinguistTools` to turn these `.ts` files into `.qm` files and embeds the generated `.qm` resources into the application. English remains the default language because the source strings are written in English. The runtime language switch is wired through `QTranslator`; the actual translation content can be filled in later without changing the surrounding application structure.
 
 ## Build information
-This is version 0.6.22.
+This is version 0.6.23.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -214,6 +214,7 @@ This is version 0.6.22.
 * v0.6.19 replaces the remaining filesystem TODOs with explicit directory-setup error handling, on-demand recreation of output folders, and regression coverage for those failure paths
 * v0.6.20 extends the local pipeline with a final app-launch step that waits for the user to close Cullendula without changing the script exit status
 * v0.6.22 lays the Qt 6 localization groundwork with embedded TS/QM resources, runtime `QTranslator` switching, and a new language menu for English, German, Croatian, and Chinese
+* v0.6.23 makes CMake the single source of truth for the visible application version while keeping the version in the window title
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

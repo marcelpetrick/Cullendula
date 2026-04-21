@@ -164,7 +164,7 @@ void Test_CullendulaMainWindow::cleanup() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.22"));
+    QVERIFY(m_window->windowTitle().startsWith("Cullendula - v"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -177,6 +177,21 @@ void Test_CullendulaMainWindow::slot_Test_InitialState() {
     QVERIFY(!findAction("Redo")->isEnabled());
     QVERIFY(findCenterLabel()->text().contains("no more valid images found"));
     QCOMPARE(findStatusBar()->currentMessage(), QString("no more files"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistently() {
+    QFile cmakeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/CMakeLists.txt"));
+    QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
+    QVERIFY(cmakeContents.contains("VERSION 0.6.23"));
+
+    QFile readmeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/README.md"));
+    QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
+    QVERIFY(readmeContents.contains("This is version 0.6.23."));
+    QVERIFY(readmeContents.contains("* v0.6.23 makes CMake the single source of truth for the visible application version"));
 }
 
 //----------------------------------------------------------------------------------
@@ -293,7 +308,7 @@ void Test_CullendulaMainWindow::slot_Test_LanguageMenu_SwitchesCurrentLanguage()
     QVERIFY(englishAction->isChecked());
     QVERIFY(!chineseAction->isChecked());
     QCOMPARE(CullendulaAppBootstrap::getApplicationLanguage(), CullendulaAppBootstrap::UiLanguage::English);
-    QVERIFY(m_window->windowTitle().contains("v0.6.22"));
+    QVERIFY(m_window->windowTitle().startsWith("Cullendula - v"));
 }
 
 //----------------------------------------------------------------------------------

@@ -39,6 +39,9 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify the window starts with the expected default widget state.
     void slot_Test_InitialState();
 
+    //! Verify version metadata is documented consistently in the intended files only.
+    void slot_Test_VersionMetadata_IsDocumentedConsistently();
+
     //! Verify the light theme is active by default.
     void slot_Test_LightTheme_IsDefault();
 

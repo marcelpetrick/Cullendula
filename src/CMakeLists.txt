@@ -27,6 +27,11 @@ target_include_directories(CullendulaLib
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+target_compile_definitions(CullendulaLib
+    PUBLIC
+        CULLENDULA_PROJECT_VERSION="${PROJECT_VERSION}"
+)
+
 #
 # GUI Application — links to the library
 #
