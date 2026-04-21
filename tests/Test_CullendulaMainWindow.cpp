@@ -185,13 +185,13 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
     QFile cmakeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.6.23"));
+    QVERIFY(cmakeContents.contains("VERSION 0.6.24"));
 
     QFile readmeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.6.23."));
-    QVERIFY(readmeContents.contains("* v0.6.23 makes CMake the single source of truth for the visible application version"));
+    QVERIFY(readmeContents.contains("This is version 0.6.24."));
+    QVERIFY(readmeContents.contains("* v0.6.24 marks the remaining user-visible strings for Qt translation extraction"));
 }
 
 //----------------------------------------------------------------------------------

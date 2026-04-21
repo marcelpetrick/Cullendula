@@ -198,7 +198,7 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) : QMainWindow(parent
     // set undo/redo correctly
     updateUndoRedoButtonStatus();
 
-    printStatus("system is up and running :)");
+    printStatus(tr("system is up and running :)"));
 }
 
 //----------------------------------------------------------------------------
@@ -226,7 +226,7 @@ void CullendulaMainWindow::changeEvent(QEvent* event) {
 void CullendulaMainWindow::dragEnterEvent(QDragEnterEvent* event) {
     if (event != nullptr && event->mimeData() != nullptr && event->mimeData()->hasUrls() && !event->mimeData()->urls().isEmpty()) {
         event->acceptProposedAction();
-        printStatus("drop current load and let's see what you dragged?");
+        printStatus(tr("drop current load and let's see what you dragged?"));
         return;
     }
 
@@ -265,7 +265,7 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event) {
             }
         }
     } else {
-        printStatus("The load was not usable! :(");
+        printStatus(tr("The load was not usable! :("));
     }
 
     event->acceptProposedAction();
@@ -319,7 +319,7 @@ void CullendulaMainWindow::slotButtonSaveTriggered() {
         updateUndoRedoButtonStatus();
     } else {
         QString const errorMessage = m_fileSystemHandler.getLastErrorMessage();
-        printStatus(errorMessage.isEmpty() ? "Could not save the current file." : errorMessage);
+        printStatus(errorMessage.isEmpty() ? tr("Could not save the current file.") : errorMessage);
         qDebug() << "\tERROR: moving file did not succeed";
     }
 }
@@ -337,7 +337,7 @@ void CullendulaMainWindow::slotButtonTrashTriggered() {
         updateUndoRedoButtonStatus();
     } else {
         QString const errorMessage = m_fileSystemHandler.getLastErrorMessage();
-        printStatus(errorMessage.isEmpty() ? "Could not trash the current file." : errorMessage);
+        printStatus(errorMessage.isEmpty() ? tr("Could not trash the current file.") : errorMessage);
         qDebug() << "\tERROR: moving file did not succeed";
     }
 }
@@ -407,19 +407,21 @@ void CullendulaMainWindow::refreshLabel() {
     if (path.isEmpty())  // just the case if no valid images found
     {
         clearCachedPhoto();
-        ui->centerLabel->setText("no more valid images found: work maybe finished? :)\ndrag&drop the next folder or files if you want!");
+        ui->centerLabel->setText(
+            tr("no more valid images found: work maybe finished? :)\n"
+               "drag&drop the next folder or files if you want!"));
 
         activateButtons(false);
 
-        printStatus("no more files");
+        printStatus(tr("no more files"));
     } else {
         if (QFile::exists(path)) {
             loadAndCachePhoto(path);
             if (m_cachedPhoto.isNull()) {
                 clearCachedPhoto();
-                ui->centerLabel->setText("could not load the current image preview");
+                ui->centerLabel->setText(tr("could not load the current image preview"));
                 activateButtons(false);
-                printStatus("could not load the current image preview");
+                printStatus(tr("could not load the current image preview"));
                 return;
             }
 
@@ -484,25 +486,25 @@ void CullendulaMainWindow::createActions() {
     m_languageActionGroup = new QActionGroup(this);
     m_languageActionGroup->setExclusive(true);
 
-    m_englishLanguageAction = new QAction(QStringLiteral("English"), this);
+    m_englishLanguageAction = new QAction(tr("English"), this);
     m_englishLanguageAction->setCheckable(true);
     m_englishLanguageAction->setObjectName("languageAction_en");
     connect(m_englishLanguageAction, &QAction::triggered, this, [this]() { applyLanguage(CullendulaAppBootstrap::UiLanguage::English); });
     m_languageActionGroup->addAction(m_englishLanguageAction);
 
-    m_germanLanguageAction = new QAction(QStringLiteral("Deutsch"), this);
+    m_germanLanguageAction = new QAction(tr("Deutsch"), this);
     m_germanLanguageAction->setCheckable(true);
     m_germanLanguageAction->setObjectName("languageAction_de");
     connect(m_germanLanguageAction, &QAction::triggered, this, [this]() { applyLanguage(CullendulaAppBootstrap::UiLanguage::German); });
     m_languageActionGroup->addAction(m_germanLanguageAction);
 
-    m_croatianLanguageAction = new QAction(QStringLiteral("Hrvatski"), this);
+    m_croatianLanguageAction = new QAction(tr("Hrvatski"), this);
     m_croatianLanguageAction->setCheckable(true);
     m_croatianLanguageAction->setObjectName("languageAction_hr");
     connect(m_croatianLanguageAction, &QAction::triggered, this, [this]() { applyLanguage(CullendulaAppBootstrap::UiLanguage::Croatian); });
     m_languageActionGroup->addAction(m_croatianLanguageAction);
 
-    m_chineseLanguageAction = new QAction(QStringLiteral("中文"), this);
+    m_chineseLanguageAction = new QAction(tr("中文"), this);
     m_chineseLanguageAction->setCheckable(true);
     m_chineseLanguageAction->setObjectName("languageAction_zh_CN");
     connect(m_chineseLanguageAction, &QAction::triggered, this, [this]() { applyLanguage(CullendulaAppBootstrap::UiLanguage::Chinese); });
@@ -518,7 +520,7 @@ void CullendulaMainWindow::createActions() {
             refreshLabel();
         } else {
             QString const errorMessage = m_fileSystemHandler.getLastErrorMessage();
-            printStatus(errorMessage.isEmpty() ? "Could not undo the last file move." : errorMessage);
+            printStatus(errorMessage.isEmpty() ? tr("Could not undo the last file move.") : errorMessage);
         }
         updateUndoRedoButtonStatus();
     });
@@ -532,7 +534,7 @@ void CullendulaMainWindow::createActions() {
             refreshLabel();
         } else {
             QString const errorMessage = m_fileSystemHandler.getLastErrorMessage();
-            printStatus(errorMessage.isEmpty() ? "Could not redo the last file move." : errorMessage);
+            printStatus(errorMessage.isEmpty() ? tr("Could not redo the last file move.") : errorMessage);
         }
         updateUndoRedoButtonStatus();
     });
@@ -617,18 +619,22 @@ void CullendulaMainWindow::retranslateStaticTexts() {
     }
 
     if (m_englishLanguageAction != nullptr) {
+        m_englishLanguageAction->setText(tr("English"));
         m_englishLanguageAction->setStatusTip(tr("Use the default English source texts"));
     }
 
     if (m_germanLanguageAction != nullptr) {
+        m_germanLanguageAction->setText(tr("Deutsch"));
         m_germanLanguageAction->setStatusTip(tr("Load the German user-interface translation"));
     }
 
     if (m_croatianLanguageAction != nullptr) {
+        m_croatianLanguageAction->setText(tr("Hrvatski"));
         m_croatianLanguageAction->setStatusTip(tr("Load the Croatian user-interface translation"));
     }
 
     if (m_chineseLanguageAction != nullptr) {
+        m_chineseLanguageAction->setText(tr("中文"));
         m_chineseLanguageAction->setStatusTip(tr("Load the Chinese user-interface translation"));
     }
 

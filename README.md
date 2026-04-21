@@ -176,8 +176,33 @@ The repository now contains Qt Linguist translation source files in `translation
 
 The CMake build uses Qt 6 `LinguistTools` to turn these `.ts` files into `.qm` files and embeds the generated `.qm` resources into the application. English remains the default language because the source strings are written in English. The runtime language switch is wired through `QTranslator`; the actual translation content can be filled in later without changing the surrounding application structure.
 
+### Translation workflow
+User-visible strings from Qt Designer `.ui` files are discovered automatically by Qt `lupdate`.
+User-visible strings from C++ sources are discovered when they are marked with Qt translation APIs such as `tr(...)` or a class translation context like `Q_DECLARE_TR_FUNCTIONS(...)`.
+
+Regenerate the translation source files after adding or changing source strings:
+
+```sh
+cmake -S . -B build
+cmake --build build --target update_translations
+```
+
+This updates the `.ts` files in `translations/`.
+
+After editing the translations, rebuild the application to regenerate the `.qm` files and embed them into the app:
+
+```sh
+cmake --build build --parallel $(nproc)
+```
+
+In short:
+
+* `update_translations` refreshes the `.ts` files from source code and `.ui` files
+* a normal build regenerates the `.qm` files from the current `.ts` files
+* the `.ts` update is manual; the `.qm` generation is automatic during builds
+
 ## Build information
-This is version 0.6.23.
+This is version 0.6.24.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -215,6 +240,7 @@ This is version 0.6.23.
 * v0.6.20 extends the local pipeline with a final app-launch step that waits for the user to close Cullendula without changing the script exit status
 * v0.6.22 lays the Qt 6 localization groundwork with embedded TS/QM resources, runtime `QTranslator` switching, and a new language menu for English, German, Croatian, and Chinese
 * v0.6.23 makes CMake the single source of truth for the visible application version while keeping the version in the window title
+* v0.6.24 marks the remaining user-visible strings for Qt translation extraction and documents the TS/QM workflow in the README
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

@@ -10,6 +10,7 @@
 #include "CullendulaUndoStack.h"
 
 // Qt includes
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QSet>
@@ -32,6 +33,8 @@
  * corresponding undo/redo history for those move operations.
  */
 class CullendulaFileSystemHandler {
+    Q_DECLARE_TR_FUNCTIONS(CullendulaFileSystemHandler)
+
    public:
     //! Construct an empty handler with the default set of suggested extensions.
     CullendulaFileSystemHandler();
