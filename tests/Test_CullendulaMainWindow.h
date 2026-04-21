@@ -102,6 +102,12 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify the undo and redo actions move files on disk as expected.
     void slot_Test_UndoRedoActions_MoveFilesOnDisk();
 
+    //! Verify failed undo operations keep history and surface an error.
+    void slot_Test_UndoFailure_ShowsStatusMessageAndKeepsRedoUnavailable();
+
+    //! Verify failed redo operations keep history and surface an error.
+    void slot_Test_RedoFailure_ShowsStatusMessageAndKeepsRedoAvailable();
+
     //! Verify failed save operations update the status bar with an error.
     void slot_Test_SaveFailure_ShowsStatusMessage();
 

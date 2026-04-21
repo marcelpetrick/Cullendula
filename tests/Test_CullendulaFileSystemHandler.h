@@ -95,8 +95,14 @@ class Test_CullendulaFileSystemHandler : public QObject {
     //! Verify undo failures are reported when the moved file disappeared.
     void slot_Test_Undo_WhenMovedFileIsMissing_ReturnsFalse();
 
+    //! Verify failed undo operations keep history intact for a retry.
+    void slot_Test_Undo_FailurePreservesUndoAndRedoHistory();
+
     //! Verify redo failures are reported when the restored file disappeared.
     void slot_Test_Redo_WhenRestoredFileIsMissing_ReturnsFalse();
+
+    //! Verify failed redo operations keep history intact for a retry.
+    void slot_Test_Redo_FailurePreservesUndoAndRedoHistory();
 
    private:
     /*!

@@ -157,7 +157,7 @@ void Test_CullendulaMainWindow::cleanup() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.17"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.18"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -556,6 +556,49 @@ void Test_CullendulaMainWindow::slot_Test_UndoRedoActions_MoveFilesOnDisk() {
     QVERIFY(findButton("rightPB")->isEnabled());
     QVERIFY(findButton("savePB")->isEnabled());
     QVERIFY(findButton("trashPB")->isEnabled());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_UndoFailure_ShowsStatusMessageAndKeepsRedoUnavailable() {
+    createImage("alpha.jpg", Qt::red);
+    createImage("beta.jpeg", Qt::blue);
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
+
+    QTest::mouseClick(findButton("savePB"), Qt::LeftButton);
+    QString const movedPath = m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg";
+    QVERIFY(QFile::exists(movedPath));
+    QVERIFY(QFile::remove(movedPath));
+
+    findAction("Undo")->trigger();
+    QApplication::processEvents();
+
+    QVERIFY(findStatusBar()->currentMessage().contains("Could not move 'alpha.jpg' to 'undo'"));
+    QVERIFY(findAction("Undo")->isEnabled());
+    QVERIFY(!findAction("Redo")->isEnabled());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_RedoFailure_ShowsStatusMessageAndKeepsRedoAvailable() {
+    createImage("alpha.jpg", Qt::red);
+    createImage("beta.jpeg", Qt::blue);
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
+
+    QTest::mouseClick(findButton("savePB"), Qt::LeftButton);
+    findAction("Undo")->trigger();
+    QApplication::processEvents();
+
+    QString const restoredPath = m_tempDir->path() + QDir::separator() + "alpha.jpg";
+    QVERIFY(QFile::exists(restoredPath));
+    QVERIFY(QFile::remove(restoredPath));
+
+    findAction("Redo")->trigger();
+    QApplication::processEvents();
+
+    QVERIFY(findStatusBar()->currentMessage().contains("Could not move 'alpha.jpg' to 'redo'"));
+    QVERIFY(!findAction("Undo")->isEnabled());
+    QVERIFY(findAction("Redo")->isEnabled());
 }
 
 //----------------------------------------------------------------------------------

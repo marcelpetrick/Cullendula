@@ -62,9 +62,9 @@ void Test_CullendulaUndoStack::slot_Test_Push() {
     QCOMPARE(static_cast<int>(m_stackPtr->getUndoDepth()), 2);
     QVERIFY(m_stackPtr->canUndo() == true);
     QVERIFY(m_stackPtr->canRedo() == false);
-    m_stackPtr->undo();
+    m_stackPtr->commitUndo();
     QVERIFY(m_stackPtr->canRedo() == true);
-    m_stackPtr->undo();
+    m_stackPtr->commitUndo();
 
     m_stackPtr->push("e", "f");
     QCOMPARE(static_cast<int>(m_stackPtr->getUndoDepth()), 1);
@@ -77,21 +77,22 @@ void Test_CullendulaUndoStack::slot_Test_Push() {
 
 void Test_CullendulaUndoStack::slot_Test_Undo() {
     // undo on an empty stack should not return something and not fail
-    m_stackPtr->undo();
-    m_stackPtr->undo();
-    m_stackPtr->undo();
+    m_stackPtr->commitUndo();
+    m_stackPtr->commitUndo();
+    m_stackPtr->commitUndo();
 
-    CullendulaUndoItem const foo = m_stackPtr->undo();
+    CullendulaUndoItem const foo = m_stackPtr->peekUndo();
     verifyUndoItem(foo, "", "");
 
     m_stackPtr->push("a", "b");
 
-    CullendulaUndoItem const bar = m_stackPtr->undo();
+    CullendulaUndoItem const bar = m_stackPtr->peekUndo();
     verifyUndoItem(bar, "a", "b");
+    m_stackPtr->commitUndo();
     QCOMPARE(static_cast<int>(m_stackPtr->getUndoDepth()), 0);
     QCOMPARE(static_cast<int>(m_stackPtr->getRedoDepth()), 1);
 
-    CullendulaUndoItem const item2 = m_stackPtr->undo();
+    CullendulaUndoItem const item2 = m_stackPtr->peekUndo();
     verifyUndoItem(item2, "", "");
 
     // test with 3 pushed items, then undo them in reverse order
@@ -99,16 +100,19 @@ void Test_CullendulaUndoStack::slot_Test_Undo() {
     m_stackPtr->push("3", "4");
     m_stackPtr->push("5", "6");
     QVERIFY(m_stackPtr->canUndo() == true);
-    CullendulaUndoItem const item3 = m_stackPtr->undo();
+    CullendulaUndoItem const item3 = m_stackPtr->peekUndo();
     verifyUndoItem(item3, "5", "6");
+    m_stackPtr->commitUndo();
     QVERIFY(m_stackPtr->canUndo() == true);
-    CullendulaUndoItem const item4 = m_stackPtr->undo();
+    CullendulaUndoItem const item4 = m_stackPtr->peekUndo();
     verifyUndoItem(item4, "3", "4");
+    m_stackPtr->commitUndo();
     QVERIFY(m_stackPtr->canUndo() == true);
-    CullendulaUndoItem const item5 = m_stackPtr->undo();
+    CullendulaUndoItem const item5 = m_stackPtr->peekUndo();
     verifyUndoItem(item5, "1", "2");
+    m_stackPtr->commitUndo();
     QVERIFY(m_stackPtr->canUndo() == false);  // should be false
-    m_stackPtr->undo();
+    m_stackPtr->commitUndo();
     QVERIFY(m_stackPtr->canUndo() == false);
 
     // pushing one element shall allow now some undo
@@ -120,25 +124,26 @@ void Test_CullendulaUndoStack::slot_Test_Undo() {
 
 void Test_CullendulaUndoStack::slot_Test_Redo() {
     // redo on an empty stack should not return something and not fail
-    m_stackPtr->redo();
-    m_stackPtr->redo();
-    m_stackPtr->redo();
+    m_stackPtr->commitRedo();
+    m_stackPtr->commitRedo();
+    m_stackPtr->commitRedo();
     QVERIFY2(m_stackPtr->canRedo() == false, "can redo on empty stack: ERROR");
 
     // test that this returns an empty item
-    CullendulaUndoItem const foo = m_stackPtr->redo();
+    CullendulaUndoItem const foo = m_stackPtr->peekRedo();
     verifyUndoItem(foo, "", "");
 
     m_stackPtr->push("a", "b");
 
-    m_stackPtr->undo();
+    m_stackPtr->commitUndo();
     // now there should be one item on "redo"
-    CullendulaUndoItem const bar = m_stackPtr->redo();
+    CullendulaUndoItem const bar = m_stackPtr->peekRedo();
     verifyUndoItem(bar, "b", "a");
+    m_stackPtr->commitRedo();
     QCOMPARE(static_cast<int>(m_stackPtr->getUndoDepth()), 1);
     QCOMPARE(static_cast<int>(m_stackPtr->getRedoDepth()), 0);
 
-    CullendulaUndoItem const item2 = m_stackPtr->redo();
+    CullendulaUndoItem const item2 = m_stackPtr->peekRedo();
     verifyUndoItem(item2, "", "");
 }
 
@@ -158,33 +163,38 @@ void Test_CullendulaUndoStack::slot_Test_UndoRedoLoop() {
     QVERIFY(m_stackPtr->canRedo() == false);
 
     // undo should yield last item (5,6)
-    CullendulaUndoItem const foo0 = m_stackPtr->undo();
+    CullendulaUndoItem const foo0 = m_stackPtr->peekUndo();
     verifyUndoItem(foo0, "5", "6");
+    m_stackPtr->commitUndo();
 
     // redo should be possible
     QVERIFY(m_stackPtr->canRedo() == true);
 
     // redo should yield the inverse move, because redo replays the move action.
-    CullendulaUndoItem const foo1 = m_stackPtr->redo();
+    CullendulaUndoItem const foo1 = m_stackPtr->peekRedo();
     verifyUndoItem(foo1, "6", "5");
+    m_stackPtr->commitRedo();
 
     // The original move is back on the undo stack.
-    CullendulaUndoItem const foo2 = m_stackPtr->undo();
+    CullendulaUndoItem const foo2 = m_stackPtr->peekUndo();
     verifyUndoItem(foo2, "5", "6");
+    m_stackPtr->commitUndo();
 
     // undo again
-    m_stackPtr->undo();
+    m_stackPtr->commitUndo();
 
     // Redo should replay the move for the second item.
-    CullendulaUndoItem const foo3 = m_stackPtr->redo();
+    CullendulaUndoItem const foo3 = m_stackPtr->peekRedo();
     verifyUndoItem(foo3, "4", "3");
+    m_stackPtr->commitRedo();
 
     // undo again
-    m_stackPtr->undo();
+    m_stackPtr->commitUndo();
 
     // undo: is now (1,2)
-    CullendulaUndoItem const foo4 = m_stackPtr->undo();
+    CullendulaUndoItem const foo4 = m_stackPtr->peekUndo();
     verifyUndoItem(foo4, "1", "2");
+    m_stackPtr->commitUndo();
 
     // check if canUndo == false
     QVERIFY(m_stackPtr->canUndo() == false);
@@ -197,7 +207,7 @@ void Test_CullendulaUndoStack::slot_Test_UndoRedoLoop() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaUndoStack::slot_Test_Undo_OnEmptyStack_PreservesEmptyState() {
-    CullendulaUndoItem const item = m_stackPtr->undo();
+    CullendulaUndoItem const item = m_stackPtr->peekUndo();
 
     verifyUndoItem(item, "", "");
     QCOMPARE(static_cast<int>(m_stackPtr->getUndoDepth()), 0);
@@ -209,7 +219,7 @@ void Test_CullendulaUndoStack::slot_Test_Undo_OnEmptyStack_PreservesEmptyState()
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaUndoStack::slot_Test_Redo_OnEmptyStack_PreservesEmptyState() {
-    CullendulaUndoItem const item = m_stackPtr->redo();
+    CullendulaUndoItem const item = m_stackPtr->peekRedo();
 
     verifyUndoItem(item, "", "");
     QCOMPARE(static_cast<int>(m_stackPtr->getUndoDepth()), 0);
@@ -225,8 +235,9 @@ void Test_CullendulaUndoStack::slot_Test_Push_AfterUndo_ClearsRedoHistory() {
     m_stackPtr->push("3", "4");
     QCOMPARE(static_cast<int>(m_stackPtr->getUndoDepth()), 2);
 
-    CullendulaUndoItem const undone = m_stackPtr->undo();
+    CullendulaUndoItem const undone = m_stackPtr->peekUndo();
     verifyUndoItem(undone, "3", "4");
+    m_stackPtr->commitUndo();
     QCOMPARE(static_cast<int>(m_stackPtr->getRedoDepth()), 1);
     QVERIFY(m_stackPtr->canRedo());
 
@@ -236,7 +247,7 @@ void Test_CullendulaUndoStack::slot_Test_Push_AfterUndo_ClearsRedoHistory() {
     QCOMPARE(static_cast<int>(m_stackPtr->getRedoDepth()), 0);
     QVERIFY(!m_stackPtr->canRedo());
 
-    CullendulaUndoItem const redoItem = m_stackPtr->redo();
+    CullendulaUndoItem const redoItem = m_stackPtr->peekRedo();
     verifyUndoItem(redoItem, "", "");
 }
 

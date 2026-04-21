@@ -17,60 +17,56 @@ void CullendulaUndoStack::push(const QString& from, const QString& to) {
 
 //----------------------------------------------------------------------------------
 
-CullendulaUndoItem CullendulaUndoStack::undo() {
-    if (canUndo()) {
-        // pop the first item and return it
-        CullendulaUndoItem const returnValue = m_undoContainer.last();
-        // remove from this container
-        m_undoContainer.removeLast();
-        // .. and add to redo: swap order
-        m_redoContainer.append(CullendulaUndoItem(returnValue.targetPath, returnValue.sourcePath));
+CullendulaUndoItem CullendulaUndoStack::peekUndo() const { return canUndo() ? m_undoContainer.last() : CullendulaUndoItem(); }
 
-        return returnValue;  // conflicts with "single point of exit" ..
+//----------------------------------------------------------------------------------
+
+void CullendulaUndoStack::commitUndo() {
+    if (!canUndo()) {
+        return;
     }
 
-    // prevent failure: return a freshly created item
-    return CullendulaUndoItem();
+    CullendulaUndoItem const returnValue = m_undoContainer.last();
+    m_undoContainer.removeLast();
+    m_redoContainer.append(CullendulaUndoItem(returnValue.targetPath, returnValue.sourcePath));
 }
 
 //----------------------------------------------------------------------------------
 
-CullendulaUndoItem CullendulaUndoStack::redo() {
-    if (canRedo()) {
-        // pop the first item and return it
-        CullendulaUndoItem const returnValue = m_redoContainer.last();
-        // remove from this container
-        m_redoContainer.removeLast();
-        // .. and add to undo: swap order
-        m_undoContainer.append(CullendulaUndoItem(returnValue.targetPath, returnValue.sourcePath));
+CullendulaUndoItem CullendulaUndoStack::peekRedo() const { return canRedo() ? m_redoContainer.last() : CullendulaUndoItem(); }
 
-        return returnValue;  // conflicts with "single point of exit" ..
+//----------------------------------------------------------------------------------
+
+void CullendulaUndoStack::commitRedo() {
+    if (!canRedo()) {
+        return;
     }
 
-    // prevent failure: return a freshly created item
-    return CullendulaUndoItem();
+    CullendulaUndoItem const returnValue = m_redoContainer.last();
+    m_redoContainer.removeLast();
+    m_undoContainer.append(CullendulaUndoItem(returnValue.targetPath, returnValue.sourcePath));
 }
 
 //----------------------------------------------------------------------------------
 
-bool CullendulaUndoStack::canUndo() {
+bool CullendulaUndoStack::canUndo() const {
     // the undo-container has items
     return !m_undoContainer.isEmpty();
 }
 
 //----------------------------------------------------------------------------------
 
-bool CullendulaUndoStack::canRedo() {
+bool CullendulaUndoStack::canRedo() const {
     // the redo-container has items
     return !m_redoContainer.isEmpty();
 }
 
 //----------------------------------------------------------------------------------
 
-long CullendulaUndoStack::getUndoDepth() { return static_cast<long>(m_undoContainer.size()); }
+long CullendulaUndoStack::getUndoDepth() const { return static_cast<long>(m_undoContainer.size()); }
 
 //----------------------------------------------------------------------------------
 
-long CullendulaUndoStack::getRedoDepth() { return static_cast<long>(m_redoContainer.size()); }
+long CullendulaUndoStack::getRedoDepth() const { return static_cast<long>(m_redoContainer.size()); }
 
 //----------------------------------------------------------------------------------

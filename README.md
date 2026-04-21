@@ -163,7 +163,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.17.
+This is version 0.6.18.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -195,7 +195,8 @@ This is version 0.6.17.
 * v0.6.14 validates drag payloads at drag-enter time so unsupported drops are rejected before the UI advertises acceptance
 * v0.6.15 caches the currently displayed image so window resizes only rescale the in-memory preview instead of reloading from disk
 * v0.6.16 broadens coverage across bootstrap, filesystem, main-window, and undo-stack edge cases to exercise more failure paths and branch outcomes
-* v0.6.17 keeps the offscreen Qt platform fallback inside the test harness so the real desktop application starts normally again
+* v0.6.17 aligns the repository with clang-format output so the local pipeline finishes with a clean worktree after formatting checks
+* v0.6.18 makes undo/redo history transitions atomic with the filesystem rename so failed undo or redo attempts preserve history and surface actionable errors
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

@@ -366,7 +366,32 @@ void Test_CullendulaFileSystemHandler::slot_Test_Undo_WhenMovedFileIsMissing_Ret
     QVERIFY(QFile::remove(movedPath));
 
     QVERIFY(!m_handler->undo());
+    QVERIFY(m_handler->getLastErrorMessage().contains("Could not move 'alpha.jpg' to 'undo'"));
     QVERIFY(!QFile::exists(m_tempDir->path() + QDir::separator() + "alpha.jpg"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_Undo_FailurePreservesUndoAndRedoHistory() {
+    createImageSet();
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+    QVERIFY(m_handler->saveCurrentFile());
+
+    QString const movedPath = m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg";
+    QVERIFY(QFile::exists(movedPath));
+    QVERIFY(QFile::remove(movedPath));
+
+    QVERIFY(m_handler->canUndo());
+    QVERIFY(!m_handler->canRedo());
+    QVERIFY(!m_handler->undo());
+    QVERIFY(m_handler->canUndo());
+    QVERIFY(!m_handler->canRedo());
+
+    QVERIFY(createFile("output/alpha.jpg") == movedPath);
+    QVERIFY(m_handler->undo());
+    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "alpha.jpg"));
+    QVERIFY(!m_handler->canUndo());
+    QVERIFY(m_handler->canRedo());
 }
 
 //----------------------------------------------------------------------------------
@@ -382,5 +407,31 @@ void Test_CullendulaFileSystemHandler::slot_Test_Redo_WhenRestoredFileIsMissing_
     QVERIFY(QFile::remove(restoredPath));
 
     QVERIFY(!m_handler->redo());
+    QVERIFY(m_handler->getLastErrorMessage().contains("Could not move 'alpha.jpg' to 'redo'"));
     QVERIFY(!QFile::exists(m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_Redo_FailurePreservesUndoAndRedoHistory() {
+    createImageSet();
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+    QVERIFY(m_handler->saveCurrentFile());
+    QVERIFY(m_handler->undo());
+
+    QString const restoredPath = m_tempDir->path() + QDir::separator() + "alpha.jpg";
+    QVERIFY(QFile::exists(restoredPath));
+    QVERIFY(QFile::remove(restoredPath));
+
+    QVERIFY(!m_handler->canUndo());
+    QVERIFY(m_handler->canRedo());
+    QVERIFY(!m_handler->redo());
+    QVERIFY(!m_handler->canUndo());
+    QVERIFY(m_handler->canRedo());
+
+    QVERIFY(createFile("alpha.jpg") == restoredPath);
+    QVERIFY(m_handler->redo());
+    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg"));
+    QVERIFY(m_handler->canUndo());
+    QVERIFY(!m_handler->canRedo());
 }

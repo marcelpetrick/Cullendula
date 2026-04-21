@@ -31,7 +31,7 @@ namespace {
 //! v0.3 added tooltips; fixed the "pumping center-label"-issue; added menus; fixed some resizing-issues with the image-label
 //! v0.4 added undo/redo-functionality with unit-test; added a nice violet icon for the executable and program
 //! v0.5 moved the buildsystem to cmake (from qmake)
-QString const c_versionString = " - v0.6.17";
+QString const c_versionString = " - v0.6.18";
 
 //! Determines how long the status message is visible. After timer runs out, it is removed.
 unsigned int const c_StatusBarDelay = 5000;
@@ -475,6 +475,9 @@ void CullendulaMainWindow::createActions() {
         qDebug("pressed Undo");
         if (m_fileSystemHandler.undo()) {
             refreshLabel();
+        } else {
+            QString const errorMessage = m_fileSystemHandler.getLastErrorMessage();
+            printStatus(errorMessage.isEmpty() ? "Could not undo the last file move." : errorMessage);
         }
         updateUndoRedoButtonStatus();
     });
@@ -486,6 +489,9 @@ void CullendulaMainWindow::createActions() {
         qDebug("pressed Redo");
         if (m_fileSystemHandler.redo()) {
             refreshLabel();
+        } else {
+            QString const errorMessage = m_fileSystemHandler.getLastErrorMessage();
+            printStatus(errorMessage.isEmpty() ? "Could not redo the last file move." : errorMessage);
         }
         updateUndoRedoButtonStatus();
     });

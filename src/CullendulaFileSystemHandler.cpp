@@ -224,12 +224,14 @@ bool CullendulaFileSystemHandler::canRedo() { return m_undoStack.canRedo(); }
 //----------------------------------------------------------------------------
 
 bool CullendulaFileSystemHandler::undo() {
+    clearLastErrorMessage();
     if (!canUndo()) {
+        setLastErrorMessage("No undo step is currently available.");
         return false;
     }
 
     qDebug() << "CullendulaFileSystemHandler::undo()";
-    CullendulaUndoItem const item = m_undoStack.undo();
+    CullendulaUndoItem const item = m_undoStack.peekUndo();
     QString const targetPath = item.sourcePath;
     QString const sourcePath = item.targetPath;
     qDebug() << "\tsource: " << sourcePath;
@@ -240,21 +242,25 @@ bool CullendulaFileSystemHandler::undo() {
     qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR");
 
     if (!successfullyRenamed) {
+        setLastErrorMessage(formatMoveErrorMessage(QFileInfo(sourcePath).fileName(), "undo", "the filesystem rename operation failed"));
         return false;
     }
 
+    m_undoStack.commitUndo();
     return rebuildImageFileList(targetPath, m_positionCurrentFile);
 }
 
 //----------------------------------------------------------------------------
 
 bool CullendulaFileSystemHandler::redo() {
+    clearLastErrorMessage();
     if (!canRedo()) {
+        setLastErrorMessage("No redo step is currently available.");
         return false;
     }
 
     qDebug() << "CullendulaFileSystemHandler::redo()";
-    CullendulaUndoItem const item = m_undoStack.redo();
+    CullendulaUndoItem const item = m_undoStack.peekRedo();
     QString const targetPath = item.sourcePath;
     QString const sourcePath = item.targetPath;
     qDebug() << "\tsource: " << sourcePath;
@@ -271,9 +277,11 @@ bool CullendulaFileSystemHandler::redo() {
     qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR");
 
     if (!successfullyRenamed) {
+        setLastErrorMessage(formatMoveErrorMessage(QFileInfo(sourcePath).fileName(), "redo", "the filesystem rename operation failed"));
         return false;
     }
 
+    m_undoStack.commitRedo();
     return rebuildImageFileList(QString(), fallbackPosition);
 }
 

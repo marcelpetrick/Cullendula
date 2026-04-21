@@ -66,10 +66,10 @@ class CullendulaUndoItem {
 /*!
  * @brief Lightweight undo/redo stack for file move operations.
  *
- * The stack stores move operations as pairs of absolute paths. Calling undo()
- * returns the most recent move and transfers the inverse operation to the redo
- * stack. Calling redo() performs the symmetrical transfer back to the undo
- * stack. The class itself only manages history; callers remain responsible for
+ * The stack stores move operations as pairs of absolute paths. Callers can
+ * inspect the next undo/redo item without mutating the stack, then commit the
+ * history transition only after the corresponding filesystem rename succeeds.
+ * The class itself only manages history; callers remain responsible for
  * actually renaming files on disk.
  */
 class CullendulaUndoStack {
@@ -91,42 +91,60 @@ class CullendulaUndoStack {
     void push(QString const& from, QString const& to);
 
     /*!
-     * @brief Pop the most recent undo item and prepare the matching redo entry.
+     * @brief Inspect the most recent undo item without mutating history.
      * @return The last operation from the undo history, or an empty default item
      *         when no undo step is available.
      */
-    CullendulaUndoItem undo();
+    CullendulaUndoItem peekUndo() const;
 
     /*!
-     * @brief Pop the most recent redo item and prepare the matching undo entry.
+     * @brief Commit the most recent undo item after the caller completed it.
+     *
+     * The method removes the last undo entry and appends the inverse operation
+     * to the redo history. Callers should invoke this only after the actual
+     * undo rename succeeded on disk.
+     */
+    void commitUndo();
+
+    /*!
+     * @brief Inspect the most recent redo item without mutating history.
      * @return The last operation from the redo history, or an empty default item
      *         when no redo step is available.
      */
-    CullendulaUndoItem redo();
+    CullendulaUndoItem peekRedo() const;
+
+    /*!
+     * @brief Commit the most recent redo item after the caller completed it.
+     *
+     * The method removes the last redo entry and appends the inverse operation
+     * back to the undo history. Callers should invoke this only after the
+     * actual redo rename succeeded on disk.
+     */
+    void commitRedo();
 
     /*!
      * @brief Check whether at least one undo step is available.
      * @return `true` when the undo history is non-empty.
      */
-    bool canUndo();
+    bool canUndo() const;
 
     /*!
      * @brief Check whether at least one redo step is available.
      * @return `true` when the redo history is non-empty.
      */
-    bool canRedo();
+    bool canRedo() const;
 
     /*!
      * @brief Return the current number of undo entries.
      * @return Depth of the undo stack.
      */
-    long getUndoDepth();
+    long getUndoDepth() const;
 
     /*!
      * @brief Return the current number of redo entries.
      * @return Depth of the redo stack.
      */
-    long getRedoDepth();
+    long getRedoDepth() const;
 
    private:
     //! Storage for operations that can currently be undone.
