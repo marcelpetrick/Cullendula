@@ -18,12 +18,14 @@
 #   8. Print the generated Doxygen index.html path and try to open it
 #   9. Run clang-format on the C++ sources in src/ and tests/
 #   10. Detect whether clang-format changed any files
-#   11. Launch the built Cullendula application as the final interactive step
-#   12. Print a final stage-by-stage summary and exit with a useful status code
+#   11. Launch the built Cullendula application by default as the final interactive step
+#   12. Suppress application launch when --noRun is provided, which is intended for CI
+#   13. Print a final stage-by-stage summary and exit with a useful status code
 #
 # Invocation:
 #   ./localPipeline.sh
 #   ./localPipeline.sh --verbose
+#   ./localPipeline.sh --noRun
 #   ./localPipeline.sh --build-dir /absolute/or/relative/build-dir
 #   ./localPipeline.sh --coverage-build-dir /absolute/or/relative/coverage-build-dir
 #   CULLENDULA_PIPELINE_JOBS=8 ./localPipeline.sh
@@ -33,7 +35,8 @@
 #   0  All mandatory stages succeeded:
 #      configure/build, tests, coverage generation, coverage threshold,
 #      Doxygen generation, zero Doxygen warnings, and clang-format execution.
-#      Launching the GUI application does not affect the exit code.
+#      Launching the GUI application does not affect the exit code and may be
+#      suppressed with --noRun.
 #   1  One or more mandatory stages failed.
 #   2  Invalid command line arguments.
 # -----------------------------------------------------------------------------
@@ -48,6 +51,7 @@ readonly DEFAULT_COVERAGE_BUILD_DIR="${PROJECT_ROOT}/build-coverage"
 readonly STAGE_LOG_DIR="${PROJECT_ROOT}/.localPipeline"
 
 VERBOSE=0
+NO_RUN=0
 BUILD_DIR="${DEFAULT_BUILD_DIR}"
 COVERAGE_BUILD_DIR="${DEFAULT_COVERAGE_BUILD_DIR}"
 CTEST_COMMAND=""
@@ -75,7 +79,7 @@ COVERAGE_LINE_PERCENT=""
 
 print_usage() {
     cat <<EOF
-Usage: ${SCRIPT_NAME} [--verbose] [--build-dir PATH] [--coverage-build-dir PATH] [--help]
+Usage: ${SCRIPT_NAME} [--verbose] [--noRun] [--build-dir PATH] [--coverage-build-dir PATH] [--help]
 
 Local project pipeline:
   1. Configure and build the project
@@ -86,7 +90,8 @@ Local project pipeline:
   6. Open the generated HTML reports when possible
   7. Run clang-format on project C++ sources
   8. Report whether formatting changed any files
-  9. Launch the built Cullendula app and wait for the user to close it
+  9. Launch the built Cullendula app by default and wait for the user to close it
+     Use --noRun to suppress the application launch (intended for CI)
 EOF
 }
 
@@ -544,6 +549,9 @@ parse_arguments() {
             --verbose)
                 VERBOSE=1
                 ;;
+            --noRun)
+                NO_RUN=1
+                ;;
             --build-dir)
                 shift
                 if [[ "$#" -eq 0 ]]; then
@@ -590,6 +598,9 @@ main() {
     log "Coverage build directory: ${COVERAGE_BUILD_DIR}"
     if [[ "${VERBOSE}" -eq 1 ]]; then
         log "Verbose logging is enabled."
+    fi
+    if [[ "${NO_RUN}" -eq 1 ]]; then
+        log "Application launch is suppressed because --noRun was provided."
     fi
 
     local missing_prerequisites=0
@@ -719,10 +730,14 @@ main() {
     fi
 
     if [[ "${BUILD_OK}" -eq 1 ]]; then
-        if launch_application; then
-            mark_result "Launch App" "PASS" "Cullendula was started; the script resumed after the window was closed"
+        if [[ "${NO_RUN}" -eq 1 ]]; then
+            mark_result "Launch App" "SKIP" "Suppressed by --noRun (intended for CI)"
         else
-            mark_result "Launch App" "WARN" "Launching Cullendula failed or was unavailable; this does not affect the pipeline result"
+            if launch_application; then
+                mark_result "Launch App" "PASS" "Cullendula was started; the script resumed after the window was closed"
+            else
+                mark_result "Launch App" "WARN" "Launching Cullendula failed or was unavailable; this does not affect the pipeline result"
+            fi
         fi
     else
         mark_result "Launch App" "SKIP" "Skipped because the application build did not complete successfully"
