@@ -1,6 +1,6 @@
 # Cullendula
 A program to pick out the best shots of the vast amount of taken pictures per photo session.  
-The name itself is a wordplay of the plant `Calendula` and the activity "to cull" (slang for sorting the photos).
+The name itself is a wordplay of the plant `Calendula` and the activity `to cull` (slang for filtering photos).
 
 ## How to use?
 Start it and then drag&drop a folder with the pictures or an example picture to the central area of the app. Cullendula figures out itself which path to use.  
@@ -8,9 +8,9 @@ It also creates automatically a new folder named "output" inside the given path.
 The first picture of the files is loaded automatically too.  
 Cullendula scans the dropped directory for the image file extensions currently enabled in `Main -> Extensions`. The menu offers up to ten common Qt-supported formats such as `jpg`, `jpeg`, `png`, and `webp`, and all entries are enabled by default.  
 The widget-based UI also provides `Main -> Style` with `Light` and `Dark` themes. Light mode is the default, and dark mode uses a strong high-contrast palette. The theme is applied application-wide so Qt dialogs follow the selected mode as well.  
-Switch between the images via the buttons at the bottom of the app or use the arrow-keys (LEFT and RIGHT).  
-The button "save" (or UP arrow-key) moves the current image to the output-folder.  
-The button "trash" (or DOWN arrow-key) moves the current image to the trash-folder.  
+Switch between the images via the buttons at the bottom of the app or use the arrow-keys (**LEFT** and **RIGHT**).  
+The button "save" (or **UP** arrow-key) moves the current image to the output-folder.  
+The button "trash" (or **DOWN** arrow-key) moves the current image to the trash-folder.  
 Undo and redo keep the in-memory image list and the visible main view synchronized with the on-disk file moves.  
 When you are done, then close the app. The result (the best photos) are inside the output-folder :)  
 
@@ -247,3 +247,4 @@ This is version 0.6.24.
 * show position and amount: like: "3/234 output: 7 trash: 10" - maybe in the status-bar?
 * add an icon for the program - started as feature-branch, but problematic for Linux/Wayland
 * important: add a file-existance_check before loading to QPixmap
+* add cppcheck for linting; do a run and fix ..
