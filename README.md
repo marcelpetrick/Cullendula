@@ -33,7 +33,7 @@ Use the `localPipeline.sh` to handle all steps for building, test-runs and docum
 [INFO] Building coverage configuration with 20 parallel job(s).
 [INFO] Generating coverage report.
 [INFO] Coverage HTML entry point: /home/mpetrick/repos/Cullendula/build-coverage/coverage/html/index.html
-[INFO] Total line coverage: 91.0%
+[INFO] Total line coverage: 93.7%
 [INFO] Opening coverage report with 'xdg-open'.
 [INFO] Generating Doxygen documentation.
 [INFO] Doxygen warnings file is empty.
@@ -46,11 +46,11 @@ Use the `localPipeline.sh` to handle all steps for building, test-runs and docum
 Configure+Build    : PASS Project configured and built in /home/mpetrick/repos/Cullendula/build
 Unit Tests         : PASS CTest completed without failures
 Coverage           : PASS Coverage HTML generated successfully in /home/mpetrick/repos/Cullendula/build-coverage
-Coverage Gate      : PASS Line coverage is 91.0% (threshold 90.0%)
-Open Coverage      : WARN Coverage index.html path was printed but auto-open was unavailable or failed
+Coverage Gate      : PASS Line coverage is 93.7% (threshold 90.0%)
+Open Coverage      : PASS Coverage index.html was handed to the desktop opener
 Doxygen            : PASS Documentation generated successfully
 Doxygen Warnings   : PASS warnings.txt is empty
-Open Docs          : WARN index.html path was printed but auto-open was unavailable or failed
+Open Docs          : PASS index.html was handed to the desktop opener
 clang-format       : PASS Formatting completed without changing files
 ============================================
 ```
