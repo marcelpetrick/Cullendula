@@ -81,6 +81,9 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify loading an empty directory clears the previous session state.
     void slot_Test_DroppingEmptyDirectory_ClearsPreviousSessionState();
 
+    //! Verify load-time directory setup errors are surfaced to the status bar.
+    void slot_Test_DroppingDirectoryWithBlockedOutput_ShowsFilesystemError();
+
     //! Verify unsupported drag payloads report an error status.
     void slot_Test_DropInvalidPayload_ShowsErrorStatus();
 

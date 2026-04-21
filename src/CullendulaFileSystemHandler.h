@@ -171,6 +171,10 @@ class CullendulaFileSystemHandler {
      * @brief Ensure that a move target subdirectory exists below the working path.
      * @param subdir Name of the subdirectory, such as `output` or `trash`.
      * @return `true` when the directory exists after the call.
+     *
+     * On failure this stores a user-facing error that explains whether the
+     * path is blocked by a non-directory entry or the directory creation
+     * attempt itself failed.
      */
     bool createOutputFolder(QString const& subdir);
 
@@ -179,6 +183,9 @@ class CullendulaFileSystemHandler {
      * @param subdir Name of the destination subdirectory below the working path.
      * @return `true` when the file move succeeded and the undo stack plus image
      *         selection state were updated.
+     *
+     * The destination directory is validated and recreated on demand so manual
+     * filesystem changes after the initial load are handled gracefully.
      */
     bool moveCurrentFileToGivenSubfolder(QString const& subdir);
 

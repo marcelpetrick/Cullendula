@@ -50,11 +50,23 @@ class Test_CullendulaFileSystemHandler : public QObject {
     //! Verify invalid paths fail cleanly.
     void slot_Test_SetWorkingPath_InvalidPath();
 
+    //! Verify paths whose parent directory does not exist fail with an actionable error.
+    void slot_Test_SetWorkingPath_PathWithMissingParentDirectory_ReturnsError();
+
     //! Verify setup fails when the output directory path is blocked by a file.
     void slot_Test_SetWorkingPath_FailsWhenOutputDirectoryCannotBeCreated();
 
     //! Verify setup fails when the trash directory path is blocked by a file.
     void slot_Test_SetWorkingPath_FailsWhenTrashDirectoryCannotBeCreated();
+
+    //! Verify save recreates the output directory if it was deleted after load.
+    void slot_Test_SaveCurrentFile_RecreatesMissingOutputDirectory();
+
+    //! Verify trash recreates the trash directory if it was deleted after load.
+    void slot_Test_TrashCurrentFile_RecreatesMissingTrashDirectory();
+
+    //! Verify save fails with a detailed error when the output path is blocked after load.
+    void slot_Test_SaveCurrentFile_FailsWhenOutputDirectoryPathIsBlockedAfterLoad();
 
     //! Verify empty directories do not create a usable image session.
     void slot_Test_SetWorkingPath_NoImages();
@@ -91,6 +103,12 @@ class Test_CullendulaFileSystemHandler : public QObject {
 
     //! Verify failed filesystem renames surface actionable trash errors.
     void slot_Test_TrashCurrentFile_RenameFailure_ReturnsError();
+
+    //! Verify undo without history returns a user-facing error.
+    void slot_Test_Undo_WithoutHistory_ReturnsError();
+
+    //! Verify redo without history returns a user-facing error.
+    void slot_Test_Redo_WithoutHistory_ReturnsError();
 
     //! Verify undo failures are reported when the moved file disappeared.
     void slot_Test_Undo_WhenMovedFileIsMissing_ReturnsFalse();

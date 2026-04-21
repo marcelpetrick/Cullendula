@@ -157,7 +157,7 @@ void Test_CullendulaMainWindow::cleanup() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.18"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.19"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -420,6 +420,24 @@ void Test_CullendulaMainWindow::slot_Test_DroppingEmptyDirectory_ClearsPreviousS
 
 //----------------------------------------------------------------------------------
 
+void Test_CullendulaMainWindow::slot_Test_DroppingDirectoryWithBlockedOutput_ShowsFilesystemError() {
+    createImage("loaded/alpha.jpg", Qt::red);
+
+    QFile blockedOutput(m_tempDir->path() + QDir::separator() + "loaded" + QDir::separator() + "output");
+    QVERIFY(blockedOutput.open(QIODevice::WriteOnly));
+    blockedOutput.write("blocked");
+    blockedOutput.close();
+
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "loaded")});
+
+    QVERIFY(findStatusBar()->currentMessage().contains("Could not prepare 'output' directory"));
+    QVERIFY(findStatusBar()->currentMessage().contains("non-directory"));
+    QVERIFY(!findButton("savePB")->isEnabled());
+    QVERIFY(findCenterLabel()->text().contains("no more valid images found"));
+}
+
+//----------------------------------------------------------------------------------
+
 void Test_CullendulaMainWindow::slot_Test_DropInvalidPayload_ShowsErrorStatus() {
     QMimeData mimeData;
     mimeData.setText("not a file");
@@ -618,8 +636,8 @@ void Test_CullendulaMainWindow::slot_Test_SaveFailure_ShowsStatusMessage() {
     QTest::mouseClick(findButton("savePB"), Qt::LeftButton);
 
     QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "alpha.jpg"));
-    QVERIFY(findStatusBar()->currentMessage().contains("Target directory"));
-    QVERIFY(findStatusBar()->currentMessage().contains("unavailable"));
+    QVERIFY(findStatusBar()->currentMessage().contains("Could not prepare 'output' directory"));
+    QVERIFY(findStatusBar()->currentMessage().contains("non-directory"));
     QVERIFY(!findAction("Undo")->isEnabled());
     QVERIFY(!findAction("Redo")->isEnabled());
 }
@@ -641,8 +659,8 @@ void Test_CullendulaMainWindow::slot_Test_TrashFailure_ShowsStatusMessage() {
     QTest::mouseClick(findButton("trashPB"), Qt::LeftButton);
 
     QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "alpha.jpg"));
-    QVERIFY(findStatusBar()->currentMessage().contains("Target directory"));
-    QVERIFY(findStatusBar()->currentMessage().contains("unavailable"));
+    QVERIFY(findStatusBar()->currentMessage().contains("Could not prepare 'trash' directory"));
+    QVERIFY(findStatusBar()->currentMessage().contains("non-directory"));
     QVERIFY(!findAction("Undo")->isEnabled());
     QVERIFY(!findAction("Redo")->isEnabled());
 }

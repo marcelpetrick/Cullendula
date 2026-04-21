@@ -51,6 +51,10 @@ QStringList normalizeExtensions(QStringList const& extensions) {
 QString formatMoveErrorMessage(QString const& fileName, QString const& subdir, QString const& details) {
     return QString("Could not move '%1' to '%2': %3").arg(fileName, subdir, details);
 }
+
+QString formatDirectorySetupErrorMessage(QString const& subdir, QString const& directoryPath, QString const& details) {
+    return QString("Could not prepare '%1' directory at '%2': %3").arg(subdir, directoryPath, details);
+}
 }  // namespace
 
 //----------------------------------------------------------------------------
@@ -178,25 +182,19 @@ bool CullendulaFileSystemHandler::switchCurrentPositionToTheRight() {
 //----------------------------------------------------------------------------
 
 bool CullendulaFileSystemHandler::saveCurrentFile() {
-    bool returnValue(false);
     qDebug() << "CullendulaFileSystemHandler::saveCurrentFile():";
+    clearLastErrorMessage();
 
-    // TODO check the returnValue!
-    returnValue = moveCurrentFileToGivenSubfolder(c_hardcodedOutput);
-
-    return returnValue;
+    return moveCurrentFileToGivenSubfolder(c_hardcodedOutput);
 }
 
 //----------------------------------------------------------------------------
 
 bool CullendulaFileSystemHandler::trashCurrentFile() {
-    bool returnValue(false);
     qDebug() << "CullendulaFileSystemHandler::trashCurrentFile():";
+    clearLastErrorMessage();
 
-    // TODO check the returnValue!
-    returnValue = moveCurrentFileToGivenSubfolder(c_hardcodedTrash);
-
-    return returnValue;
+    return moveCurrentFileToGivenSubfolder(c_hardcodedTrash);
 }
 
 //----------------------------------------------------------------------------
@@ -324,14 +322,20 @@ bool CullendulaFileSystemHandler::processNewPath() {
     if (tempDir.exists()) {
         m_workingPath.setPath(tempDir.path());
 
-        // trigger now the creation of the parsing
-        returnValue = createImageFileList();
+        bool const foundImages = createImageFileList();
+        bool const outputReady = createOutputFolder(c_hardcodedOutput);
+        bool const trashReady = createOutputFolder(c_hardcodedTrash);
 
-        // create now the output-folders
-        returnValue &= createOutputFolder(c_hardcodedOutput);
-        returnValue &= createOutputFolder(c_hardcodedTrash);
+        returnValue = foundImages && outputReady && trashReady;
+
+        if (!outputReady || !trashReady) {
+            m_currentImages.clear();
+            m_positionCurrentFile = -1;
+            m_undoStack = CullendulaUndoStack();
+        }
     } else {
         qDebug() << "ERROR: given directory does not exist";
+        setLastErrorMessage(QString("The path '%1' could not be resolved to an existing directory.").arg(intermediatePath));
     }
 
     return returnValue;
@@ -393,30 +397,35 @@ bool CullendulaFileSystemHandler::rebuildImageFileList(QString const& preferredI
 //----------------------------------------------------------------------------
 
 bool CullendulaFileSystemHandler::createOutputFolder(QString const& subdir) {
-    bool returnValue(false);
-
     qDebug() << "CullendulaFileSystemHandler::createOutputFolder():" << subdir;
+    QString const outputDirPath = m_workingPath.path() + QDir::separator() + subdir;
+    QFileInfo const outputPathInfo(outputDirPath);
+    QDir outputDirTest(outputDirPath);
 
-    QDir outputDirTest(m_workingPath.path() + QDir::separator() + subdir);
+    if (outputPathInfo.exists() && !outputPathInfo.isDir()) {
+        setLastErrorMessage(formatDirectorySetupErrorMessage(subdir, outputDirPath, "the path is already occupied by a non-directory filesystem entry"));
+        return false;
+    }
 
     if (outputDirTest.exists()) {
         qDebug() << "output-folder exists already :) - nothing to do";
-        returnValue = true;
-    } else {
-        // create a new output dir
-        bool const creationSuccessful = m_workingPath.mkdir(subdir);
-        Q_UNUSED(creationSuccessful)  // return-value is not evaluated, because the next check test directly for existence of the directory
-
-        if (outputDirTest.exists()) {
-            qDebug() << "output-folder exists after creation!";
-            returnValue = true;
-        } else {
-            qDebug() << "very severe error - could not create output-dir :(";
-        }
+        return true;
     }
 
-    // TODO maybe return something or throw or whatever ... delete /home/..
-    return returnValue;
+    bool const creationSuccessful = m_workingPath.mkdir(subdir);
+    if (!creationSuccessful) {
+        setLastErrorMessage(formatDirectorySetupErrorMessage(subdir, outputDirPath, "creating the directory failed"));
+        return false;
+    }
+
+    if (!outputDirTest.exists()) {
+        qDebug() << "very severe error - could not create output-dir :(";
+        setLastErrorMessage(formatDirectorySetupErrorMessage(subdir, outputDirPath, "the directory is still missing after creation"));
+        return false;
+    }
+
+    qDebug() << "output-folder exists after creation!";
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -432,11 +441,11 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const&
         return false;
     }
 
-    QDir outputDir(m_workingPath.path() + QDir::separator() + subdir);
-    if (!outputDir.exists()) {
-        setLastErrorMessage(QString("Target directory '%1' is unavailable.").arg(outputDir.path()));
+    if (!createOutputFolder(subdir)) {
         return false;
     }
+
+    QDir outputDir(m_workingPath.path() + QDir::separator() + subdir);
 
     QString const sourcePathAndName(m_currentImages[m_positionCurrentFile].absoluteFilePath());
     qDebug() << "\t sourcePathAndName:" << sourcePathAndName;

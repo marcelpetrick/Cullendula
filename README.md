@@ -163,7 +163,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.18.
+This is version 0.6.19.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -197,6 +197,7 @@ This is version 0.6.18.
 * v0.6.16 broadens coverage across bootstrap, filesystem, main-window, and undo-stack edge cases to exercise more failure paths and branch outcomes
 * v0.6.17 aligns the repository with clang-format output so the local pipeline finishes with a clean worktree after formatting checks
 * v0.6.18 makes undo/redo history transitions atomic with the filesystem rename so failed undo or redo attempts preserve history and surface actionable errors
+* v0.6.19 replaces the remaining filesystem TODOs with explicit directory-setup error handling, on-demand recreation of output folders, and regression coverage for those failure paths
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

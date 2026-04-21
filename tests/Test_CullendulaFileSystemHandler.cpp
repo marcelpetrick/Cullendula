@@ -141,6 +141,16 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_InvalidPath() {
 
 //----------------------------------------------------------------------------------
 
+void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_PathWithMissingParentDirectory_ReturnsError() {
+    QString const missingPath = m_tempDir->path() + QDir::separator() + "missing" + QDir::separator() + "alpha.jpg";
+
+    QVERIFY(!m_handler->setWorkingPath(missingPath));
+    QVERIFY(m_handler->getCurrentImagePath().isEmpty());
+    QVERIFY(m_handler->getLastErrorMessage().contains("could not be resolved to an existing directory"));
+}
+
+//----------------------------------------------------------------------------------
+
 void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FailsWhenOutputDirectoryCannotBeCreated() {
     createImageSet();
     createFile("output");
@@ -148,6 +158,8 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FailsWhenOutputD
     QVERIFY(!m_handler->setWorkingPath(m_tempDir->path()));
     QVERIFY(QFileInfo(m_tempDir->path() + QDir::separator() + "output").isFile());
     QVERIFY(QDir(m_tempDir->path() + QDir::separator() + "trash").exists());
+    QVERIFY(m_handler->getLastErrorMessage().contains("Could not prepare 'output' directory"));
+    QVERIFY(m_handler->getLastErrorMessage().contains("non-directory"));
 }
 
 //----------------------------------------------------------------------------------
@@ -159,6 +171,60 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FailsWhenTrashDi
     QVERIFY(!m_handler->setWorkingPath(m_tempDir->path()));
     QVERIFY(QDir(m_tempDir->path() + QDir::separator() + "output").exists());
     QVERIFY(QFileInfo(m_tempDir->path() + QDir::separator() + "trash").isFile());
+    QVERIFY(m_handler->getLastErrorMessage().contains("Could not prepare 'trash' directory"));
+    QVERIFY(m_handler->getLastErrorMessage().contains("non-directory"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_RecreatesMissingOutputDirectory() {
+    createImageSet();
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+
+    QDir outputDir(m_tempDir->path() + QDir::separator() + "output");
+    QVERIFY(outputDir.removeRecursively());
+    QVERIFY(!outputDir.exists());
+
+    QVERIFY(m_handler->saveCurrentFile());
+    QVERIFY(outputDir.exists());
+    QVERIFY(QFile::exists(outputDir.path() + QDir::separator() + "alpha.jpg"));
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_TrashCurrentFile_RecreatesMissingTrashDirectory() {
+    createImageSet();
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+
+    QDir trashDir(m_tempDir->path() + QDir::separator() + "trash");
+    QVERIFY(trashDir.removeRecursively());
+    QVERIFY(!trashDir.exists());
+
+    QVERIFY(m_handler->trashCurrentFile());
+    QVERIFY(trashDir.exists());
+    QVERIFY(QFile::exists(trashDir.path() + QDir::separator() + "alpha.jpg"));
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_FailsWhenOutputDirectoryPathIsBlockedAfterLoad() {
+    createImageSet();
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+
+    QDir outputDir(m_tempDir->path() + QDir::separator() + "output");
+    QVERIFY(outputDir.removeRecursively());
+    QVERIFY(createFile("output") == m_tempDir->path() + QDir::separator() + "output");
+
+    QString const originalCurrent = m_handler->getCurrentImagePath();
+    QVERIFY(!originalCurrent.isEmpty());
+
+    QVERIFY(!m_handler->saveCurrentFile());
+    QCOMPARE(m_handler->getCurrentImagePath(), originalCurrent);
+    QVERIFY(m_handler->getLastErrorMessage().contains("Could not prepare 'output' directory"));
+    QVERIFY(m_handler->getLastErrorMessage().contains("non-directory"));
+    QVERIFY(QFile::exists(originalCurrent));
 }
 
 //----------------------------------------------------------------------------------
@@ -352,6 +418,20 @@ void Test_CullendulaFileSystemHandler::slot_Test_TrashCurrentFile_RenameFailure_
     QVERIFY(m_handler->getLastErrorMessage().contains("rename operation failed"));
     QVERIFY(!m_handler->canUndo());
     QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "beta.jpeg"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_Undo_WithoutHistory_ReturnsError() {
+    QVERIFY(!m_handler->undo());
+    QCOMPARE(m_handler->getLastErrorMessage(), QString("No undo step is currently available."));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_Redo_WithoutHistory_ReturnsError() {
+    QVERIFY(!m_handler->redo());
+    QCOMPARE(m_handler->getLastErrorMessage(), QString("No redo step is currently available."));
 }
 
 //----------------------------------------------------------------------------------
