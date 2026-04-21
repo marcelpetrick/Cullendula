@@ -138,7 +138,7 @@ void Test_CullendulaMainWindow::cleanup() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.13"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.14"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -241,6 +241,34 @@ void Test_CullendulaMainWindow::slot_Test_ResizeWithoutLoadedImages_ShowsFallbac
 
     QVERIFY(findCenterLabel()->text().contains("no more valid images found"));
     QVERIFY(!findButton("savePB")->isEnabled());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_DragEnter_ValidUrlsAreAccepted() {
+    createImage("alpha.jpg", Qt::red);
+
+    QMimeData mimeData;
+    mimeData.setUrls({QUrl::fromLocalFile(m_tempDir->path())});
+
+    QDragEnterEvent dragEnterEvent(QPoint(10, 10), Qt::CopyAction, &mimeData, Qt::LeftButton, Qt::NoModifier);
+    static_cast<TestableCullendulaMainWindow*>(m_window.get())->dragEnterEvent(&dragEnterEvent);
+
+    QVERIFY(dragEnterEvent.isAccepted());
+    QCOMPARE(findStatusBar()->currentMessage(), QString("drop current load and let's see what you dragged?"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_DragEnter_InvalidPayloadIsRejected() {
+    QMimeData mimeData;
+    mimeData.setText("not a file");
+
+    QDragEnterEvent dragEnterEvent(QPoint(10, 10), Qt::CopyAction, &mimeData, Qt::LeftButton, Qt::NoModifier);
+    static_cast<TestableCullendulaMainWindow*>(m_window.get())->dragEnterEvent(&dragEnterEvent);
+
+    QVERIFY(!dragEnterEvent.isAccepted());
+    QCOMPARE(findStatusBar()->currentMessage(), QString("no more files"));
 }
 
 //----------------------------------------------------------------------------------

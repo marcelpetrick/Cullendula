@@ -163,7 +163,7 @@ This writes:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.13.
+This is version 0.6.14.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -192,6 +192,7 @@ This is version 0.6.13.
 * v0.6.11 fixes the doxygen-documentation globally
 * v0.6.12 adds a repository-local pipeline script for build, test, docs, coverage, and formatting checks
 * v0.6.13 resolves filename collisions during save/trash moves and surfaces move failures to the user
+* v0.6.14 validates drag payloads at drag-enter time so unsupported drops are rejected before the UI advertises acceptance
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

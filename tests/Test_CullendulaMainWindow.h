@@ -54,6 +54,12 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify resizing without images keeps the fallback label text.
     void slot_Test_ResizeWithoutLoadedImages_ShowsFallbackText();
 
+    //! Verify drag-enter accepts URL payloads before drop processing.
+    void slot_Test_DragEnter_ValidUrlsAreAccepted();
+
+    //! Verify drag-enter rejects unsupported payloads immediately.
+    void slot_Test_DragEnter_InvalidPayloadIsRejected();
+
     //! Verify dropping a valid directory loads an image session.
     void slot_Test_DragEnterAndDropValidDirectory_LoadsImages();
 
