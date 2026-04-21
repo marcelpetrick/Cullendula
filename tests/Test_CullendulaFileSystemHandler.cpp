@@ -247,16 +247,18 @@ void Test_CullendulaFileSystemHandler::slot_Test_UndoRedo_MoveFilesOnDisk() {
 
 //----------------------------------------------------------------------------------
 
-void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_FailsOnNameCollision() {
+void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_UsesUniqueNameOnCollision() {
     createImageSet();
     createFile("output/alpha.jpg");
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
 
     QString const originalCurrent = m_handler->getCurrentImagePath();
-    QVERIFY(!m_handler->saveCurrentFile());
+    QVERIFY(m_handler->saveCurrentFile());
 
-    QVERIFY(QFile::exists(originalCurrent));
-    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("alpha.jpg"));
-    QVERIFY(!m_handler->canUndo());
+    QVERIFY(!QFile::exists(originalCurrent));
+    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg"));
+    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha (1).jpg"));
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
+    QVERIFY(m_handler->canUndo());
     QVERIFY(!m_handler->canRedo());
 }

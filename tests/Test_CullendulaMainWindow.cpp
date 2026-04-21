@@ -138,7 +138,7 @@ void Test_CullendulaMainWindow::cleanup() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_InitialState() {
-    QVERIFY(m_window->windowTitle().contains("v0.6.12"));
+    QVERIFY(m_window->windowTitle().contains("v0.6.13"));
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -398,6 +398,29 @@ void Test_CullendulaMainWindow::slot_Test_UndoRedoActions_MoveFilesOnDisk() {
     QVERIFY(findButton("rightPB")->isEnabled());
     QVERIFY(findButton("savePB")->isEnabled());
     QVERIFY(findButton("trashPB")->isEnabled());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_SaveFailure_ShowsStatusMessage() {
+    createImage("alpha.jpg", Qt::red);
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
+
+    QString const outputPath = m_tempDir->path() + QDir::separator() + "output";
+    QVERIFY(QDir(outputPath).removeRecursively());
+
+    QFile replacement(outputPath);
+    QVERIFY(replacement.open(QIODevice::WriteOnly));
+    replacement.write("not a directory");
+    replacement.close();
+
+    QTest::mouseClick(findButton("savePB"), Qt::LeftButton);
+
+    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "alpha.jpg"));
+    QVERIFY(findStatusBar()->currentMessage().contains("Target directory"));
+    QVERIFY(findStatusBar()->currentMessage().contains("unavailable"));
+    QVERIFY(!findAction("Undo")->isEnabled());
+    QVERIFY(!findAction("Redo")->isEnabled());
 }
 
 //----------------------------------------------------------------------------------

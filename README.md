@@ -8,7 +8,7 @@ It also creates automatically a new folder named "output" inside the given path.
 The first picture of the files is loaded automatically too.  
 Cullendula scans the dropped directory for the image file extensions currently enabled in `Main -> Extensions`. The menu offers up to ten common Qt-supported formats such as `jpg`, `jpeg`, `png`, and `webp`, and all entries are enabled by default.  
 The widget-based UI also provides `Main -> Style` with `Light` and `Dark` themes. Light mode is the default, and dark mode uses a strong high-contrast palette. The theme is applied application-wide so Qt dialogs follow the selected mode as well.  
-Switch between the images via the buttons at the botton of the app or use the arrow-keys (LEFT and RIGHT).  
+Switch between the images via the buttons at the bottom of the app or use the arrow-keys (LEFT and RIGHT).  
 The button "save" (or UP arrow-key) moves the current image to the output-folder.  
 The button "trash" (or DOWN arrow-key) moves the current image to the trash-folder.  
 Undo and redo keep the in-memory image list and the visible main view synchronized with the on-disk file moves.  
@@ -33,7 +33,7 @@ Use the `localPipeline.sh` to handle all steps for building, test-runs and docum
 [INFO] Building coverage configuration with 20 parallel job(s).
 [INFO] Generating coverage report.
 [INFO] Coverage HTML entry point: /home/mpetrick/repos/Cullendula/build-coverage/coverage/html/index.html
-[INFO] Total line coverage: 90.6%
+[INFO] Total line coverage: 91.2%
 [INFO] Opening coverage report with 'xdg-open'.
 [INFO] Generating Doxygen documentation.
 [INFO] Doxygen warnings file is empty.
@@ -46,16 +46,16 @@ Use the `localPipeline.sh` to handle all steps for building, test-runs and docum
 Configure+Build    : PASS Project configured and built in /home/mpetrick/repos/Cullendula/build
 Unit Tests         : PASS CTest completed without failures
 Coverage           : PASS Coverage HTML generated successfully in /home/mpetrick/repos/Cullendula/build-coverage
-Coverage Gate      : PASS Line coverage is 90.6% (threshold 90.0%)
-Open Coverage      : PASS Coverage index.html was handed to the desktop opener
+Coverage Gate      : PASS Line coverage is 91.2% (threshold 90.0%)
+Open Coverage      : WARN Coverage index.html path was printed but auto-open was unavailable or failed
 Doxygen            : PASS Documentation generated successfully
 Doxygen Warnings   : PASS warnings.txt is empty
-Open Docs          : PASS index.html was handed to the desktop opener
+Open Docs          : WARN index.html path was printed but auto-open was unavailable or failed
 clang-format       : PASS Formatting completed without changing files
 ============================================
 ```
 
---
+----
 
 By default, the documented build commands use all available CPU cores via `--parallel $(nproc)`.
 If you want the same behavior without repeating the flag, export `CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)` in your shell first.
@@ -159,17 +159,17 @@ This writes:
 
 * `build-coverage/coverage/html/index.html`
 
-### Current state of the coverage report (bad):
+### Current state of the coverage report:
 ![](media/coverage_report.png)
 
 ## Build information
-This is version 0.6.12.
+This is version 0.6.13.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
 * not supported nor tested anymore:
-  * Windows 7, Qt 5.5 and QtCreator 4.6 (todo: test)  
-  * Win 10, Qt 5.15.1 and Qt 6.0 beta with MinGW 8.1 and QtCreator 4.13.2  
+  * Windows 7, Qt 5.5 and QtCreator 4.6
+  * Win 10, Qt 5.15.1 and Qt 6.0 beta with MinGW 8.1 and QtCreator 4.13.2
 
 ## History
 * v0.1 was the basic release; working, but ugly
@@ -189,8 +189,9 @@ This is version 0.6.12.
 * v0.6.8 fixes the remaining Doxygen warnings and keeps the generated warning log clean
 * v0.6.9 keeps undo/redo synchronized across the filesystem state, in-memory image list, and visible main view
 * v0.6.10 applies the selected light or dark theme across the application palette and Qt dialogs
-* v0.6.11 adds a repository-local pipeline script for build, test, docs, coverage, and formatting checks
-* v0.6.12 aligns the local pipeline with the documented coverage workflow and keeps versioned surfaces in sync
+* v0.6.11 fixes the doxygen-documentation globally
+* v0.6.12 adds a repository-local pipeline script for build, test, docs, coverage, and formatting checks
+* v0.6.13 resolves filename collisions during save/trash moves and surfaces move failures to the user
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

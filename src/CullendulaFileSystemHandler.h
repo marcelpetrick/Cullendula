@@ -111,6 +111,12 @@ class CullendulaFileSystemHandler {
     QString getCurrentStatus() const;
 
     /*!
+     * @brief Return the most recent user-facing error message.
+     * @return Empty string when no actionable error is pending.
+     */
+    QString getLastErrorMessage() const;
+
+    /*!
      * @brief Check whether an undo step is currently available.
      * @return `true` when at least one move can be undone.
      */
@@ -196,6 +202,23 @@ class CullendulaFileSystemHandler {
      */
     int findImageIndexByPath(QString const& imagePath) const;
 
+    /*!
+     * @brief Build a collision-free destination path for a moved file.
+     * @param initialTargetPath Preferred absolute destination path.
+     * @return The preferred path when unused, otherwise a suffixed alternative
+     *         such as `name (1).jpg`.
+     */
+    QString createUniqueTargetPath(QString const& initialTargetPath) const;
+
+    //! Clear the stored user-facing error state.
+    void clearLastErrorMessage();
+
+    /*!
+     * @brief Store a user-facing error for the next UI query.
+     * @param message Error text to expose through getLastErrorMessage().
+     */
+    void setLastErrorMessage(QString const& message);
+
     // [members]
     //! Current working directory containing the image session.
     QDir m_workingPath;
@@ -211,4 +234,7 @@ class CullendulaFileSystemHandler {
 
     //! Active set of accepted image suffixes, normalized to lowercase.
     QSet<QString> m_allowedImageExtensions;
+
+    //! Most recent user-facing error produced by a mutating operation.
+    QString m_lastErrorMessage;
 };

@@ -47,6 +47,10 @@ QStringList normalizeExtensions(QStringList const& extensions) {
 
     return normalizedExtensions;
 }
+
+QString formatMoveErrorMessage(QString const& fileName, QString const& subdir, QString const& details) {
+    return QString("Could not move '%1' to '%2': %3").arg(fileName, subdir, details);
+}
 }  // namespace
 
 //----------------------------------------------------------------------------
@@ -119,6 +123,7 @@ void CullendulaFileSystemHandler::resetCurrentState() {
     m_currentImages.clear();
     m_positionCurrentFile = -1;
     m_undoStack = CullendulaUndoStack();
+    clearLastErrorMessage();
 }
 
 //----------------------------------------------------------------------------
@@ -203,6 +208,10 @@ QString CullendulaFileSystemHandler::getCurrentStatus() const {
 
     return returnValue;
 }
+
+//----------------------------------------------------------------------------
+
+QString CullendulaFileSystemHandler::getLastErrorMessage() const { return m_lastErrorMessage; }
 
 //----------------------------------------------------------------------------
 
@@ -407,38 +416,44 @@ bool CullendulaFileSystemHandler::createOutputFolder(QString const& subdir) {
 bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const& subdir) {
     bool returnValue(false);
     qDebug() << "CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder():";
+    clearLastErrorMessage();
 
     bool const saneInternalState = checkInternalSanity();
-
-    if (saneInternalState) {
-        // move the current file to the output-folder
-        QDir outputDir(m_workingPath.path() + QDir::separator() + subdir);
-        if (outputDir.exists()) {
-            QString const sourcePathAndName(
-                m_currentImages[m_positionCurrentFile].absoluteFilePath());  // TODO this will lead to crash, because index out of bounds
-            qDebug() << "\t sourcePathAndName:" << sourcePathAndName;
-            QFileInfo fileInfo(sourcePathAndName);
-            QString const fileName(fileInfo.fileName());
-            // qDebug() << "\t fileName:" << fileName;
-            QString const targetPathAndName(outputDir.path() + QDir::separator() + fileName);
-            qDebug() << "\t targetPathAndName:" << targetPathAndName;
-            bool const successfullyRenamed = outputDir.rename(sourcePathAndName, targetPathAndName);  //! this is the MOVE operation!
-            qDebug() << "\t successfullyRenamed?" << successfullyRenamed;
-
-            // in case the file was successfully moved (= renamed path), then adjust the internal structures
-            if (successfullyRenamed) {
-                //! add to the stack for possible undoing
-                m_undoStack.push(sourcePathAndName, targetPathAndName);
-
-                // go to the next picture by removing the entry from the file-list, but keep the position
-                m_currentImages.removeAt(m_positionCurrentFile);
-                // if this was the last item of the list (like pos 2 at list of 3; which has now just 2 elements), then modulo
-                int const listSize = m_currentImages.size();
-                m_positionCurrentFile = (listSize > 0) ? (m_positionCurrentFile % listSize) : -1;
-                returnValue = true;
-            }
-        }
+    if (!saneInternalState) {
+        setLastErrorMessage("No current image is available to move.");
+        return false;
     }
+
+    QDir outputDir(m_workingPath.path() + QDir::separator() + subdir);
+    if (!outputDir.exists()) {
+        setLastErrorMessage(QString("Target directory '%1' is unavailable.").arg(outputDir.path()));
+        return false;
+    }
+
+    QString const sourcePathAndName(m_currentImages[m_positionCurrentFile].absoluteFilePath());
+    qDebug() << "\t sourcePathAndName:" << sourcePathAndName;
+    QFileInfo const fileInfo(sourcePathAndName);
+    QString const fileName(fileInfo.fileName());
+    QString const preferredTargetPath = outputDir.path() + QDir::separator() + fileName;
+    QString const targetPathAndName = createUniqueTargetPath(preferredTargetPath);
+    qDebug() << "\t targetPathAndName:" << targetPathAndName;
+    bool const successfullyRenamed = outputDir.rename(sourcePathAndName, targetPathAndName);  //! this is the MOVE operation!
+    qDebug() << "\t successfullyRenamed?" << successfullyRenamed;
+
+    if (!successfullyRenamed) {
+        setLastErrorMessage(formatMoveErrorMessage(fileName, subdir, "the filesystem rename operation failed"));
+        return false;
+    }
+
+    //! add to the stack for possible undoing
+    m_undoStack.push(sourcePathAndName, targetPathAndName);
+
+    // go to the next picture by removing the entry from the file-list, but keep the position
+    m_currentImages.removeAt(m_positionCurrentFile);
+    // if this was the last item of the list (like pos 2 at list of 3; which has now just 2 elements), then modulo
+    int const listSize = m_currentImages.size();
+    m_positionCurrentFile = (listSize > 0) ? (m_positionCurrentFile % listSize) : -1;
+    returnValue = true;
 
     return returnValue;
 }
@@ -454,6 +469,36 @@ int CullendulaFileSystemHandler::findImageIndexByPath(QString const& imagePath) 
 
     return -1;
 }
+
+//----------------------------------------------------------------------------
+
+QString CullendulaFileSystemHandler::createUniqueTargetPath(QString const& initialTargetPath) const {
+    if (!QFileInfo::exists(initialTargetPath)) {
+        return initialTargetPath;
+    }
+
+    QFileInfo const fileInfo(initialTargetPath);
+    QString const directoryPath = fileInfo.absolutePath();
+    QString const completeBaseName = fileInfo.completeBaseName();
+    QString const completeSuffix = fileInfo.completeSuffix();
+    QString const suffixPrefix = completeSuffix.isEmpty() ? QString() : "." + completeSuffix;
+
+    for (int counter = 1;; ++counter) {
+        QString const candidateFileName = QString("%1 (%2)%3").arg(completeBaseName, QString::number(counter), suffixPrefix);
+        QString const candidatePath = directoryPath + QDir::separator() + candidateFileName;
+        if (!QFileInfo::exists(candidatePath)) {
+            return candidatePath;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------
+
+void CullendulaFileSystemHandler::clearLastErrorMessage() { m_lastErrorMessage.clear(); }
+
+//----------------------------------------------------------------------------
+
+void CullendulaFileSystemHandler::setLastErrorMessage(QString const& message) { m_lastErrorMessage = message; }
 
 //----------------------------------------------------------------------------
 

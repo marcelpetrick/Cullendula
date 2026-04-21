@@ -68,8 +68,8 @@ class Test_CullendulaFileSystemHandler : public QObject {
     //! Verify undo and redo rename the expected files on disk.
     void slot_Test_UndoRedo_MoveFilesOnDisk();
 
-    //! Verify save fails when the destination file already exists.
-    void slot_Test_SaveCurrentFile_FailsOnNameCollision();
+    //! Verify save resolves destination collisions through a unique target name.
+    void slot_Test_SaveCurrentFile_UsesUniqueNameOnCollision();
 
    private:
     /*!

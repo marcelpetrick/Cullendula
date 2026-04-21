@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.28)
 set(QT_CREATOR_SKIP_MAINTENANCE_TOOL_PROVIDER ON)
 
 project(Cullendula
-    VERSION 0.6.12
+    VERSION 0.6.13
     LANGUAGES CXX
 )
 
