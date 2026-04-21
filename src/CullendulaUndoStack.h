@@ -16,67 +16,122 @@
 
 //----------------------------------------------------------------------------------
 
-//! Helper to store the "source, target" tuples for moved files.
+/*!
+ * @file
+ * @brief Undo/redo data structures for file move operations inside Cullendula.
+ */
+
+/*!
+ * @brief Value object that describes one file move operation.
+ *
+ * The application models undo and redo as file renames between two absolute paths.
+ * Each item therefore stores the original location and the destination location of
+ * a single move so that the caller can replay the operation in either direction.
+ */
 class CullendulaUndoItem {
    public:
-    //[ctor]
+    //! Construct an empty item.
     CullendulaUndoItem() = default;
-    //[dtor]
+    //! Destroy the item.
     ~CullendulaUndoItem() = default;
-    //[ctor] - just init from the given value
+
+    /*!
+     * @brief Construct an item from a source and target path.
+     * @param from Absolute path the file is moved from.
+     * @param to Absolute path the file is moved to.
+     */
     CullendulaUndoItem(QString const& from, QString const& to) : sourcePath(from), targetPath(to) {
         // nothing else to do :)
     }
 
-    //[members]
-
-    //! Quite simple: container for a pair of two paths (saved as String).
-    //! Right now access is unlimited.
+    /*!
+     * @brief Absolute source path of the move operation.
+     *
+     * For an undo item pushed by the file system handler this is the path before
+     * the file was moved.
+     */
     QString sourcePath;
+
+    /*!
+     * @brief Absolute destination path of the move operation.
+     *
+     * For an undo item pushed by the file system handler this is the path after
+     * the file was moved.
+     */
     QString targetPath;
 };
 
 //----------------------------------------------------------------------------------
 
-//! Helper to encapsulate undo and redo functionality.
-//!         Available operations shall be "undo" and "redo" and "push".
-//!         "canUndo" and "canRedo" tell if the specific operations are available.
-//!         In case of executing undo/redo when the respective checks would fail,
-//!         an empty, fresh item is returned.
-//! @todo   The big and open question is: should undo flip the items while putting them to redo?
-//!         And redo vice versa? Because this affects how the usage has to be implemented.
-//!         For now: no flipping. (a,b) stays (a,b) at redo.
-//!
+/*!
+ * @brief Lightweight undo/redo stack for file move operations.
+ *
+ * The stack stores move operations as pairs of absolute paths. Calling undo()
+ * returns the most recent move and transfers the inverse operation to the redo
+ * stack. Calling redo() performs the symmetrical transfer back to the undo
+ * stack. The class itself only manages history; callers remain responsible for
+ * actually renaming files on disk.
+ */
 class CullendulaUndoStack {
    public:
+    //! Construct an empty undo stack.
     CullendulaUndoStack() = default;
+
+    //! Destroy the undo stack.
     ~CullendulaUndoStack() = default;
 
-    //! Push: insert new pair (from, to); will be converted to CullendulaUndoItem.
-    //! Will fill the undo-stack (first).
+    /*!
+     * @brief Append a new move operation to the undo history.
+     * @param from Absolute source path before the move.
+     * @param to Absolute destination path after the move.
+     *
+     * Pushing a new operation clears any redo history because it starts a new
+     * branch of user actions.
+     */
     void push(QString const& from, QString const& to);
 
-    //! Return the last added item from the undo-"stack", if possible.
-    //! Else return: new default item.
+    /*!
+     * @brief Pop the most recent undo item and prepare the matching redo entry.
+     * @return The last operation from the undo history, or an empty default item
+     *         when no undo step is available.
+     */
     CullendulaUndoItem undo();
-    //! Return the last added item from the redo-"stack", if possible.
-    //! Else return: new default item.
+
+    /*!
+     * @brief Pop the most recent redo item and prepare the matching undo entry.
+     * @return The last operation from the redo history, or an empty default item
+     *         when no redo step is available.
+     */
     CullendulaUndoItem redo();
 
-    //! Checks if the option is possible. Useful for the GUI (dis-/enabled).
-    //! The undo-container has items.
+    /*!
+     * @brief Check whether at least one undo step is available.
+     * @return `true` when the undo history is non-empty.
+     */
     bool canUndo();
-    //! The redo-container has items.
+
+    /*!
+     * @brief Check whether at least one redo step is available.
+     * @return `true` when the redo history is non-empty.
+     */
     bool canRedo();
 
-    //! Return the current size (= amount of items). Useful for the unit-test.
+    /*!
+     * @brief Return the current number of undo entries.
+     * @return Depth of the undo stack.
+     */
     long getUndoDepth();
+
+    /*!
+     * @brief Return the current number of redo entries.
+     * @return Depth of the redo stack.
+     */
     long getRedoDepth();
 
    private:
-    //! container: keeps the data for Undo
+    //! Storage for operations that can currently be undone.
     QVector<CullendulaUndoItem> m_undoContainer;
 
-    //! container: keeps the data for Redo
+    //! Storage for operations that can currently be redone.
     QVector<CullendulaUndoItem> m_redoContainer;
 };

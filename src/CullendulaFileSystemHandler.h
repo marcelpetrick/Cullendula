@@ -18,93 +18,197 @@
 
 //----------------------------------------------------------------------------
 
+/*!
+ * @file
+ * @brief File-system facing application logic for browsing and moving images.
+ */
+
+/*!
+ * @brief Manages the current image session for one working directory.
+ *
+ * The handler scans a directory for supported image files, keeps track of the
+ * currently selected image, exposes wrap-around navigation, and moves images
+ * into dedicated `output` or `trash` subdirectories. It also maintains the
+ * corresponding undo/redo history for those move operations.
+ */
 class CullendulaFileSystemHandler {
    public:
+    //! Construct an empty handler with the default set of suggested extensions.
     CullendulaFileSystemHandler();
 
-    //! Returns up to ten common image extensions supported by the active Qt image plugins.
+    /*!
+     * @brief Return the preferred image suffixes supported by the current Qt setup.
+     * @return Up to ten normalized, lowercase suffixes ordered by application
+     *         preference and filtered against the active Qt image plugins.
+     */
     static QStringList getSuggestedImageExtensions();
 
-    //! Configure which suffixes are accepted when the next directory is loaded.
+    /*!
+     * @brief Set the image suffixes accepted for the next directory scan.
+     * @param extensions Candidate suffixes without the leading dot.
+     *
+     * Unsupported, empty, duplicate, and differently cased values are filtered
+     * and normalized to lowercase before being stored.
+     */
     void setAllowedImageExtensions(QStringList const& extensions);
 
-    //! Return the currently active suffix filter.
+    /*!
+     * @brief Return the currently active image suffix filter.
+     * @return Sorted list of normalized suffixes without a leading dot.
+     */
     QStringList getAllowedImageExtensions() const;
 
-    //! Allows to configure the current path for the search for the album.
+    /*!
+     * @brief Load a new working directory or a file inside that directory.
+     * @param urlPath Path provided by the UI drop operation.
+     * @return `true` when the directory could be resolved, scanned, and at least
+     *         one matching image is available after applying the current filter.
+     *
+     * Passing a file path selects its parent directory. Any previous handler
+     * state and undo history are cleared before the new path is processed.
+     */
     bool setWorkingPath(QString const& urlPath);
 
-    //! Return the path to the current item.
-    //! In case no path is valid: return empty QString.
+    /*!
+     * @brief Return the absolute path of the currently selected image.
+     * @return Absolute file path when the internal state is valid and the file
+     *         still exists on disk; otherwise an empty string.
+     */
     QString getCurrentImagePath();
 
-    //! Move to the previous (left) picture-file in the vector.
+    /*!
+     * @brief Select the previous image in the current list.
+     * @return `true` when the handler contains a valid image list and the
+     *         selection could be advanced with wrap-around semantics.
+     */
     bool switchCurrentPositionToTheLeft();
 
-    //! Move to the next (right) picture-file in the vector.
+    /*!
+     * @brief Select the next image in the current list.
+     * @return `true` when the handler contains a valid image list and the
+     *         selection could be advanced with wrap-around semantics.
+     */
     bool switchCurrentPositionToTheRight();
 
-    //! Moves the current file to the "output"-folder.
+    /*!
+     * @brief Move the current image into the `output` subdirectory.
+     * @return `true` when the file move succeeded and the internal image list
+     *         was updated accordingly.
+     */
     bool saveCurrentFile();
 
-    //! Moves the current file to the "trash"-folder.
+    /*!
+     * @brief Move the current image into the `trash` subdirectory.
+     * @return `true` when the file move succeeded and the internal image list
+     *         was updated accordingly.
+     */
     bool trashCurrentFile();
 
-    //! Return a string which describes the current position in the file-list.
+    /*!
+     * @brief Return a user-facing description of the current selection.
+     * @return Status text in the form `showing X of Y`.
+     */
     QString getCurrentStatus() const;
 
-    //! Checks if the option is possible. Useful for the GUI (dis-/enabled).
-    //! Hands over the functionality from the CullendulaUndoStack.
+    /*!
+     * @brief Check whether an undo step is currently available.
+     * @return `true` when at least one move can be undone.
+     */
     bool canUndo();
+
+    /*!
+     * @brief Check whether a redo step is currently available.
+     * @return `true` when at least one move can be redone.
+     */
     bool canRedo();
 
-    //! Execute the undo.
+    /*!
+     * @brief Undo the most recent move operation on disk.
+     * @return `true` when the file rename succeeded and the in-memory image list
+     *         was rebuilt successfully.
+     */
     bool undo();
 
-    //! Execute the redo.
+    /*!
+     * @brief Redo the most recently undone move operation on disk.
+     * @return `true` when the file rename succeeded and the in-memory image list
+     *         was rebuilt successfully.
+     */
     bool redo();
 
    private:
-    //! Reset the handler state before loading a new working path.
+    //! Reset the cached image list, current index, and undo history.
     void resetCurrentState();
 
-    //! checks the currently set path and gets the file-list. Afterwards triggers loading of the current image.
+    /*!
+     * @brief Resolve the configured path into a usable directory and scan it.
+     * @return `true` when a directory exists, at least one matching image is
+     *         found, and the auxiliary output folders are ready.
+     */
     bool processNewPath();
 
-    //! Scan given path for image-file-types (for now suffix: jpg, jpeg - more later)
+    /*!
+     * @brief Rebuild the image cache from the current working directory.
+     * @return `true` when at least one matching image file was found.
+     */
     bool createImageFileList();
 
-    //! Rebuild the current image list and keep the selection stable whenever possible.
+    /*!
+     * @brief Rebuild the cached image list while preserving the current selection.
+     * @param preferredImagePath Absolute image path to keep selected when still present.
+     * @param fallbackPosition Index to clamp to when the preferred image is gone.
+     * @return `true` when the rebuilt list contains at least one matching image.
+     */
     bool rebuildImageFileList(QString const& preferredImagePath, int fallbackPosition);
 
-    //! Create and check if an output-folder exists.
-    //! Initially: just create sub-dir "output".
+    /*!
+     * @brief Ensure that a move target subdirectory exists below the working path.
+     * @param subdir Name of the subdirectory, such as `output` or `trash`.
+     * @return `true` when the directory exists after the call.
+     */
     bool createOutputFolder(QString const& subdir);
 
-    //! Unified functionality to move the current file. Called by save/trash.
+    /*!
+     * @brief Move the current image into a dedicated subdirectory.
+     * @param subdir Name of the destination subdirectory below the working path.
+     * @return `true` when the file move succeeded and the undo stack plus image
+     *         selection state were updated.
+     */
     bool moveCurrentFileToGivenSubfolder(QString const& subdir);
 
-    //! Check if the current file-list, position and working-path are valid. Else return false.
+    /*!
+     * @brief Validate the internal working directory, image list, and selection.
+     * @return `true` when the handler can safely access the current image.
+     */
     bool checkInternalSanity() const;
 
-    //! adjust the current position inside the file list by the given offset.
-    //! @returns sanity-check
+    /*!
+     * @brief Shift the current image selection by a signed offset.
+     * @param offset Relative number of steps to move inside the image list.
+     * @return `true` when the handler was in a valid state before the shift.
+     */
     bool adjustCurrentPositionBy(const int offset);
 
-    //! Find the current index for the given absolute file path inside the cached image list.
+    /*!
+     * @brief Find the index of an image path inside the cached image list.
+     * @param imagePath Absolute path to search for.
+     * @return Zero-based index when the image is present, otherwise `-1`.
+     */
     int findImageIndexByPath(QString const& imagePath) const;
 
     // [members]
-    //! the currently chosen path to the directory (not file)
+    //! Current working directory containing the image session.
     QDir m_workingPath;
 
-    //! saves the current state of the given directory; initially empty; shall be reset (TODO)
+    //! Cached and sorted list of matching images in the working directory.
     QVector<QFileInfo> m_currentImages;
+
+    //! Zero-based index into `m_currentImages`, or `-1` when no image is selected.
     int m_positionCurrentFile = -1;
 
-    //! Stores the last actions for Undo/Redo
+    //! Undo/redo history for image move operations executed by this handler.
     CullendulaUndoStack m_undoStack;
 
-    //! Active set of allowed image suffixes, normalized to lowercase.
+    //! Active set of accepted image suffixes, normalized to lowercase.
     QSet<QString> m_allowedImageExtensions;
 };

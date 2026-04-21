@@ -21,42 +21,54 @@
 // init() will be called before each test function is executed.
 // cleanup() will be called after every test function.
 
+/*!
+ * @file
+ * @brief QTest suite for the undo/redo stack primitives.
+ */
+
+/*!
+ * @brief Validates history push, undo, redo, and state bookkeeping.
+ */
 class Test_CullendulaUndoStack : public QObject {
     Q_OBJECT
 
    private Q_SLOTS:
-    //! -- slots from QTest --
-
-    // initTestCase() will be called before the first test function is executed.
+    //! Allocate long-lived test fixtures before the first test runs.
     void initTestCase();
 
-    // cleanupTestCase() will be called after the last test function was executed.
+    //! Release long-lived test fixtures after the final test.
     void cleanupTestCase();
 
-    // init() will be called before each test function is executed.
+    //! Reset state before each individual test.
     void init();
 
-    // cleanup() will be called after every test function.
+    //! Tear down per-test state after each test.
     void cleanup();
 
-    //! -- end of: slots from QTest --
-
+    //! Verify default construction of the undo stack.
     void slot_Test_Create_CullendulaUndoStack();
 
+    //! Verify that push adds items to the undo history.
     void slot_Test_Push();
 
-    //! Used to test if the returned result after popping is the same like expected
+    //! Verify that undo returns the expected item and updates stack state.
     void slot_Test_Undo();
 
-    //! Add items to undo, then undo, then redo.
+    //! Verify redo after a preceding undo.
     void slot_Test_Redo();
 
-    //! Add three items; do undo; do redo; undo ..
+    //! Verify alternating undo and redo operations over multiple items.
     void slot_Test_UndoRedoLoop();
 
    private:
+    /*!
+     * @brief Compare an undo item against its expected source and target paths.
+     * @param item Item returned by the stack.
+     * @param expectedSource Expected source path.
+     * @param expectedTarget Expected target path.
+     */
     void verifyUndoItem(CullendulaUndoItem const& item, QString const& expectedSource, QString const& expectedTarget);
 
-    //! contains the used undo-redo-stack
+    //! Stack instance under test.
     std::unique_ptr<CullendulaUndoStack> m_stackPtr = nullptr;
 };
