@@ -59,3 +59,4 @@ Cullendula
 /build/
 /llm_compat_output.md
 /.codex
+/.localPipeline/
