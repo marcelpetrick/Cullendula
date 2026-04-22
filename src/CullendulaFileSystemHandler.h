@@ -17,6 +17,8 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVector>
 
+class Test_CullendulaFileSystemHandler;
+
 //----------------------------------------------------------------------------
 
 /*!
@@ -146,6 +148,8 @@ class CullendulaFileSystemHandler {
     bool redo();
 
    private:
+    friend class Test_CullendulaFileSystemHandler;
+
     //! Reset the cached image list, current index, and undo history.
     void resetCurrentState();
 
@@ -248,3 +252,37 @@ class CullendulaFileSystemHandler {
     //! Most recent user-facing error produced by a mutating operation.
     QString m_lastErrorMessage;
 };
+
+namespace CullendulaFileSystemHandlerDetail {
+/*!
+ * @brief Hooks used to test output-directory preparation failure paths.
+ */
+struct OutputFolderHooks {
+    bool (*pathExists)(QString const& path);
+    bool (*pathIsDirectory)(QString const& path);
+    bool (*directoryExists)(QString const& path);
+    bool (*mkdir)(QDir& parentDir, QString const& subdir);
+};
+
+/*!
+ * @brief Build the default list of suggested image extensions from supported suffixes.
+ * @param supportedSuffixes Lowercase Qt-supported image suffixes.
+ * @return Up to ten normalized suffixes ordered by application preference.
+ */
+QStringList getSuggestedImageExtensions(QSet<QString> const& supportedSuffixes);
+
+/*!
+ * @brief Return the production hooks for output-directory handling.
+ */
+OutputFolderHooks defaultOutputFolderHooks();
+
+/*!
+ * @brief Prepare an application-managed subdirectory below a working path.
+ * @param workingPath Parent directory used by the handler.
+ * @param subdir Name of the application-managed subdirectory.
+ * @param errorMessage Output parameter for a user-facing failure message.
+ * @param hooks Filesystem operations to use.
+ * @return `true` when the target directory exists after the call.
+ */
+bool createOutputFolder(QDir& workingPath, QString const& subdir, QString& errorMessage, OutputFolderHooks const& hooks);
+}  // namespace CullendulaFileSystemHandlerDetail

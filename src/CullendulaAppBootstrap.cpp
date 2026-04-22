@@ -26,21 +26,69 @@ CullendulaAppBootstrap::UiLanguage& currentApplicationLanguage() {
     return currentLanguage;
 }
 
-QString translationResourcePath(CullendulaAppBootstrap::UiLanguage language) {
+bool loadTranslator(QTranslator& translator, QString const& resourcePath) { return translator.load(resourcePath); }
+
+bool installTranslator(QApplication& app, QTranslator* translator) { return app.installTranslator(translator); }
+
+void removeTranslator(QApplication& app, QTranslator* translator) { app.removeTranslator(translator); }
+}  // namespace
+
+QString CullendulaAppBootstrap::detail::translationResourcePath(UiLanguage language) {
     switch (language) {
-        case CullendulaAppBootstrap::UiLanguage::German:
+        case UiLanguage::German:
             return QString(":/i18n/Cullendula_de.qm");
-        case CullendulaAppBootstrap::UiLanguage::Croatian:
+        case UiLanguage::Croatian:
             return QString(":/i18n/Cullendula_hr.qm");
-        case CullendulaAppBootstrap::UiLanguage::Chinese:
+        case UiLanguage::Chinese:
             return QString(":/i18n/Cullendula_zh_CN.qm");
-        case CullendulaAppBootstrap::UiLanguage::English:
+        case UiLanguage::English:
             break;
     }
 
     return {};
 }
-}  // namespace
+
+CullendulaAppBootstrap::detail::TranslatorHooks CullendulaAppBootstrap::detail::defaultTranslatorHooks() {
+    return TranslatorHooks{loadTranslator, installTranslator, removeTranslator};
+}
+
+bool CullendulaAppBootstrap::detail::setApplicationLanguage(UiLanguage language, QApplication* app, TranslatorHooks const& hooks) {
+    if (app == nullptr) {
+        return false;
+    }
+
+    if (language == UiLanguage::English) {
+        if (applicationTranslator()) {
+            hooks.remove(*app, applicationTranslator().get());
+            applicationTranslator().reset();
+        }
+        currentApplicationLanguage() = UiLanguage::English;
+        return true;
+    }
+
+    QString const resourcePath = translationResourcePath(language);
+    if (resourcePath.isEmpty()) {
+        return false;
+    }
+
+    auto nextTranslator = std::make_unique<QTranslator>();
+    if (!hooks.load(*nextTranslator, resourcePath)) {
+        return false;
+    }
+
+    if (applicationTranslator()) {
+        hooks.remove(*app, applicationTranslator().get());
+    }
+
+    applicationTranslator() = std::move(nextTranslator);
+    if (!hooks.install(*app, applicationTranslator().get())) {
+        applicationTranslator().reset();
+        return false;
+    }
+
+    currentApplicationLanguage() = language;
+    return true;
+}
 
 void CullendulaAppBootstrap::ensureQtPlatformPluginForTests() {
     if (qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM")) {
@@ -59,41 +107,7 @@ CullendulaAppBootstrap::UiLanguage CullendulaAppBootstrap::getApplicationLanguag
 //----------------------------------------------------------------------------------
 
 bool CullendulaAppBootstrap::setApplicationLanguage(UiLanguage language) {
-    if (qApp == nullptr) {
-        return false;
-    }
-
-    if (language == UiLanguage::English) {
-        if (applicationTranslator()) {
-            qApp->removeTranslator(applicationTranslator().get());
-            applicationTranslator().reset();
-        }
-        currentApplicationLanguage() = UiLanguage::English;
-        return true;
-    }
-
-    QString const resourcePath = translationResourcePath(language);
-    if (resourcePath.isEmpty()) {
-        return false;
-    }
-
-    auto nextTranslator = std::make_unique<QTranslator>();
-    if (!nextTranslator->load(resourcePath)) {
-        return false;
-    }
-
-    if (applicationTranslator()) {
-        qApp->removeTranslator(applicationTranslator().get());
-    }
-
-    applicationTranslator() = std::move(nextTranslator);
-    if (!qApp->installTranslator(applicationTranslator().get())) {
-        applicationTranslator().reset();
-        return false;
-    }
-
-    currentApplicationLanguage() = language;
-    return true;
+    return detail::setApplicationLanguage(language, qApp, detail::defaultTranslatorHooks());
 }
 
 //----------------------------------------------------------------------------------

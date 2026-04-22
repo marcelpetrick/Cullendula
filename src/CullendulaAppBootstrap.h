@@ -11,6 +11,7 @@
 
 class QApplication;
 class CullendulaMainWindow;
+class QTranslator;
 
 /*!
  * @file
@@ -22,6 +23,38 @@ namespace CullendulaAppBootstrap {
  * @brief Supported user-selectable UI languages.
  */
 enum class UiLanguage { English, German, Croatian, Chinese };
+
+namespace detail {
+/*!
+ * @brief Internal hooks used to test translator setup edge cases deterministically.
+ */
+struct TranslatorHooks {
+    bool (*load)(QTranslator&, QString const&);
+    bool (*install)(QApplication&, QTranslator*);
+    void (*remove)(QApplication&, QTranslator*);
+};
+
+/*!
+ * @brief Return the translation resource path for a specific UI language.
+ * @param language Language whose embedded `.qm` resource should be used.
+ * @return Qt resource path, or an empty string for untranslated English.
+ */
+QString translationResourcePath(UiLanguage language);
+
+/*!
+ * @brief Low-level language switch helper used by tests to inject translator behavior.
+ * @param language Target language to activate.
+ * @param app Application instance that should own the translator, or `nullptr`.
+ * @param hooks Translator operations to use for loading and installation.
+ * @return `true` when the requested language becomes active.
+ */
+bool setApplicationLanguage(UiLanguage language, QApplication* app, TranslatorHooks const& hooks);
+
+/*!
+ * @brief Return the production translator hooks used by the public bootstrap API.
+ */
+TranslatorHooks defaultTranslatorHooks();
+}  // namespace detail
 
 /*!
  * @brief Force the offscreen Qt platform plugin for headless test runs.
