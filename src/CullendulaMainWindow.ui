@@ -20,7 +20,7 @@
    <bool>false</bool>
   </property>
   <property name="windowTitle">
-   <string>Cullendula - your smol helper to pick the best shots</string>
+   <string comment="Main window title shown before the runtime version suffix is applied from C++ code.">Cullendula - your smol helper to pick the best shots</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
@@ -52,7 +52,7 @@
          <bool>true</bool>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;This label will show the current photo (image-file) in case one is loaded.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Please drag and drop a directory or file on this area.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string comment="Tooltip for the large central preview area. It accepts a dropped image file or a directory containing images.">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;This label will show the current photo (image-file) in case one is loaded.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Please drag and drop a directory or file on this area.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="autoFillBackground">
          <bool>false</bool>
@@ -61,7 +61,7 @@
          <enum>QFrame::Box</enum>
         </property>
         <property name="text">
-         <string>drag&amp;drop folder or file to start :)
+         <string comment="Placeholder text in the central preview area before any image is loaded.">drag&amp;drop folder or file to start :)
 (loads the enabled extensions from Main -&gt; Extensions, for example *.jpg, *.jpeg, *.png, *.webp)</string>
         </property>
         <property name="scaledContents">
@@ -128,13 +128,13 @@
          </font>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch to the left neighbour (based on the file-list of the current directory).&lt;/p&gt;&lt;p&gt;As shortcut press the &amp;quot;left&amp;quot; arrow key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string comment="Tooltip for the left navigation button; it shows the previous image in the current directory order.">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch to the left neighbour (based on the file-list of the current directory).&lt;/p&gt;&lt;p&gt;As shortcut press the &amp;quot;left&amp;quot; arrow key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
-         <string>←</string>
+         <string comment="Label of the previous-image navigation button. Keep the arrow symbol if possible.">←</string>
         </property>
         <property name="shortcut">
-         <string>Left</string>
+         <string comment="Keyboard shortcut for the previous-image navigation action; use the standard Left Arrow key sequence.">Left</string>
         </property>
         <property name="autoRepeat">
          <bool>true</bool>
@@ -161,13 +161,13 @@
          </font>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Move the current picture into the specified output-subdirectory. Will automatically switch to the photo which is next&lt;/p&gt;&lt;p&gt;As shortcut press the &amp;quot;up&amp;quot; arrow key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string comment="Tooltip for the Save button. This moves the current image into the app-managed 'output' subdirectory, it does not write image edits.">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Move the current picture into the specified output-subdirectory. Will automatically switch to the photo which is next&lt;/p&gt;&lt;p&gt;As shortcut press the &amp;quot;up&amp;quot; arrow key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
-         <string>save ↑</string>
+         <string comment="Label of the button that keeps the current image by moving it into the 'output' subdirectory.">save ↑</string>
         </property>
         <property name="shortcut">
-         <string>Up</string>
+         <string comment="Keyboard shortcut for the Save action; use the standard Up Arrow key sequence.">Up</string>
         </property>
         <property name="autoRepeat">
          <bool>false</bool>
@@ -194,13 +194,13 @@
          </font>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Move the current picture into the specified trash-subdirectory. Will automatically switch to the photo which is next&lt;/p&gt;&lt;p&gt;As shortcut press the &amp;quot;down&amp;quot; arrow key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string comment="Tooltip for the Trash button. This moves the current image into the app-managed 'trash' subdirectory, it does not delete it permanently.">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Move the current picture into the specified trash-subdirectory. Will automatically switch to the photo which is next&lt;/p&gt;&lt;p&gt;As shortcut press the &amp;quot;down&amp;quot; arrow key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
-         <string>trash ↓</string>
+         <string comment="Label of the button that rejects the current image by moving it into the 'trash' subdirectory.">trash ↓</string>
         </property>
         <property name="shortcut">
-         <string>Down</string>
+         <string comment="Keyboard shortcut for the Trash action; use the standard Down Arrow key sequence.">Down</string>
         </property>
        </widget>
       </item>
@@ -229,13 +229,13 @@
          <bool>false</bool>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch to the right neighbour (based on the file-list of the current directory).&lt;/p&gt;&lt;p&gt;As shortcut press the &amp;quot;right&amp;quot; arrow key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string comment="Tooltip for the right navigation button; it shows the next image in the current directory order.">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch to the right neighbour (based on the file-list of the current directory).&lt;/p&gt;&lt;p&gt;As shortcut press the &amp;quot;right&amp;quot; arrow key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
-         <string>→ </string>
+         <string comment="Label of the next-image navigation button. Keep the arrow symbol if possible.">→ </string>
         </property>
         <property name="shortcut">
-         <string>Right</string>
+         <string comment="Keyboard shortcut for the next-image navigation action; use the standard Right Arrow key sequence.">Right</string>
         </property>
         <property name="autoRepeat">
          <bool>true</bool>
@@ -273,9 +273,9 @@
    </property>
   </widget>
   <widget class="QStatusBar" name="statusBar">
-   <property name="toolTip">
-    <string>This is the status bar. It will display any kind of information like current position, failure messages, ..</string>
-   </property>
+  <property name="toolTip">
+   <string comment="Tooltip for the status bar at the bottom of the main window.">This is the status bar. It will display any kind of information like current position, failure messages, ..</string>
+  </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

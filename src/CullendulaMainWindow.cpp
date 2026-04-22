@@ -198,6 +198,7 @@ CullendulaMainWindow::CullendulaMainWindow(QWidget* parent) : QMainWindow(parent
     // set undo/redo correctly
     updateUndoRedoButtonStatus();
 
+    //: Status bar message shown once after the main window is fully initialized.
     printStatus(tr("system is up and running :)"));
 }
 
@@ -226,6 +227,7 @@ void CullendulaMainWindow::changeEvent(QEvent* event) {
 void CullendulaMainWindow::dragEnterEvent(QDragEnterEvent* event) {
     if (event != nullptr && event->mimeData() != nullptr && event->mimeData()->hasUrls() && !event->mimeData()->urls().isEmpty()) {
         event->acceptProposedAction();
+        //: Status bar prompt during drag-and-drop after the payload was recognized as file-system URLs.
         printStatus(tr("drop current load and let's see what you dragged?"));
         return;
     }
@@ -265,6 +267,7 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event) {
             }
         }
     } else {
+        //: Status bar error after a drop payload was rejected because it did not contain usable local file URLs.
         printStatus(tr("The load was not usable! :("));
     }
 
@@ -319,6 +322,7 @@ void CullendulaMainWindow::slotButtonSaveTriggered() {
         updateUndoRedoButtonStatus();
     } else {
         QString const errorMessage = m_fileSystemHandler.getLastErrorMessage();
+        //: Fallback status bar error after moving the current image to the "output" folder failed without a more specific message.
         printStatus(errorMessage.isEmpty() ? tr("Could not save the current file.") : errorMessage);
         qDebug() << "\tERROR: moving file did not succeed";
     }
@@ -337,6 +341,7 @@ void CullendulaMainWindow::slotButtonTrashTriggered() {
         updateUndoRedoButtonStatus();
     } else {
         QString const errorMessage = m_fileSystemHandler.getLastErrorMessage();
+        //: Fallback status bar error after moving the current image to the "trash" folder failed without a more specific message.
         printStatus(errorMessage.isEmpty() ? tr("Could not trash the current file.") : errorMessage);
         qDebug() << "\tERROR: moving file did not succeed";
     }
@@ -407,18 +412,21 @@ void CullendulaMainWindow::refreshLabel() {
     if (path.isEmpty())  // just the case if no valid images found
     {
         clearCachedPhoto();
+        //: Center label placeholder when no further images match the current extension filter in the active directory.
         ui->centerLabel->setText(
             tr("no more valid images found: work maybe finished? :)\n"
                "drag&drop the next folder or files if you want!"));
 
         activateButtons(false);
 
+        //: Status bar message when the current directory no longer contains any matching images to show.
         printStatus(tr("no more files"));
     } else {
         if (QFile::exists(path)) {
             loadAndCachePhoto(path);
             if (m_cachedPhoto.isNull()) {
                 clearCachedPhoto();
+                //: Error shown both in the center label and the status bar when Qt cannot render the current image preview.
                 ui->centerLabel->setText(tr("could not load the current image preview"));
                 activateButtons(false);
                 printStatus(tr("could not load the current image preview"));
@@ -466,44 +474,53 @@ void CullendulaMainWindow::createActions() {
         extensionAction->setCheckable(true);
         extensionAction->setChecked(true);
         extensionAction->setObjectName("extensionAction_" + extension);
+        //: Tooltip for a checkable menu entry that enables a filename extension such as jpg, png, or webp for future directory scans.
         extensionAction->setStatusTip(tr("Enable loading of *.%1 files when opening the next directory").arg(extension));
         connect(extensionAction, &QAction::toggled, this, [this]() { syncAllowedExtensionsToFileSystemHandler(); });
         m_extensionActions.insert(extension, extensionAction);
     }
 
+    //: Menu label for the light visual theme.
     m_lightThemeAction = new QAction(tr("Light"), this);
     m_lightThemeAction->setCheckable(true);
     m_lightThemeAction->setObjectName("themeAction_light");
+    //: Tooltip for switching the whole application to the light theme.
     m_lightThemeAction->setStatusTip(tr("Use the light application theme"));
     connect(m_lightThemeAction, &QAction::triggered, this, [this]() { applyTheme(ThemeMode::Light); });
 
+    //: Menu label for the dark visual theme.
     m_darkThemeAction = new QAction(tr("Dark"), this);
     m_darkThemeAction->setCheckable(true);
     m_darkThemeAction->setObjectName("themeAction_dark");
+    //: Tooltip for switching the whole application to the dark theme.
     m_darkThemeAction->setStatusTip(tr("Use the high-contrast dark application theme"));
     connect(m_darkThemeAction, &QAction::triggered, this, [this]() { applyTheme(ThemeMode::Dark); });
 
     m_languageActionGroup = new QActionGroup(this);
     m_languageActionGroup->setExclusive(true);
 
+    //: Language menu entry naming the English user-interface language.
     m_englishLanguageAction = new QAction(tr("English"), this);
     m_englishLanguageAction->setCheckable(true);
     m_englishLanguageAction->setObjectName("languageAction_en");
     connect(m_englishLanguageAction, &QAction::triggered, this, [this]() { applyLanguage(CullendulaAppBootstrap::UiLanguage::English); });
     m_languageActionGroup->addAction(m_englishLanguageAction);
 
+    //: Language menu entry naming the German user-interface language in German.
     m_germanLanguageAction = new QAction(tr("Deutsch"), this);
     m_germanLanguageAction->setCheckable(true);
     m_germanLanguageAction->setObjectName("languageAction_de");
     connect(m_germanLanguageAction, &QAction::triggered, this, [this]() { applyLanguage(CullendulaAppBootstrap::UiLanguage::German); });
     m_languageActionGroup->addAction(m_germanLanguageAction);
 
+    //: Language menu entry naming the Croatian user-interface language in Croatian.
     m_croatianLanguageAction = new QAction(tr("Hrvatski"), this);
     m_croatianLanguageAction->setCheckable(true);
     m_croatianLanguageAction->setObjectName("languageAction_hr");
     connect(m_croatianLanguageAction, &QAction::triggered, this, [this]() { applyLanguage(CullendulaAppBootstrap::UiLanguage::Croatian); });
     m_languageActionGroup->addAction(m_croatianLanguageAction);
 
+    //: Language menu entry naming the Chinese user-interface language in Chinese.
     m_chineseLanguageAction = new QAction(tr("中文"), this);
     m_chineseLanguageAction->setCheckable(true);
     m_chineseLanguageAction->setObjectName("languageAction_zh_CN");
@@ -511,7 +528,9 @@ void CullendulaMainWindow::createActions() {
     m_languageActionGroup->addAction(m_chineseLanguageAction);
 
     // edit menu
+    //: Edit menu action label that reverses the most recent file move.
     m_undoAction = new QAction(tr("Undo"), this);
+    //: Tooltip for the Undo action that moves the previously moved image back to its original location.
     m_undoAction->setStatusTip(tr("Revert the last file-move-operation"));
     m_undoAction->setShortcut(Qt::CTRL | Qt::Key_Y);
     connect(m_undoAction, &QAction::triggered, this, [=]() {
@@ -520,12 +539,15 @@ void CullendulaMainWindow::createActions() {
             refreshLabel();
         } else {
             QString const errorMessage = m_fileSystemHandler.getLastErrorMessage();
+            //: Fallback status bar error after an undo request failed without a more specific message.
             printStatus(errorMessage.isEmpty() ? tr("Could not undo the last file move.") : errorMessage);
         }
         updateUndoRedoButtonStatus();
     });
 
+    //: Edit menu action label that reapplies the most recently undone file move.
     m_redoQtAction = new QAction(tr("Redo"), this);
+    //: Tooltip for the Redo action. "undo undo" here means reapplied after an Undo.
     m_redoQtAction->setStatusTip(tr("Redo the last file-move-operation (means: undo undo)"));
     m_redoQtAction->setShortcut(Qt::CTRL | Qt::Key_Z);
     connect(m_redoQtAction, &QAction::triggered, this, [=]() {
@@ -534,18 +556,23 @@ void CullendulaMainWindow::createActions() {
             refreshLabel();
         } else {
             QString const errorMessage = m_fileSystemHandler.getLastErrorMessage();
+            //: Fallback status bar error after a redo request failed without a more specific message.
             printStatus(errorMessage.isEmpty() ? tr("Could not redo the last file move.") : errorMessage);
         }
         updateUndoRedoButtonStatus();
     });
 
     // help menu
+    //: Help menu action label that opens the application's About dialog.
     m_aboutAction = new QAction(tr("About Cullendula"), this);
+    //: Tooltip for opening the application's About dialog.
     m_aboutAction->setStatusTip(tr("Show the application's About box"));
     m_aboutAction->setShortcut(Qt::CTRL | Qt::Key_A);
     connect(m_aboutAction, &QAction::triggered, this, &CullendulaMainWindow::about);
 
+    //: Help menu action label that opens Qt's built-in About dialog.
     m_aboutQtAction = new QAction(tr("About Qt"), this);
+    //: Tooltip for opening Qt's built-in About dialog.
     m_aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
     m_aboutQtAction->setShortcut(Qt::CTRL | Qt::Key_Q);
     connect(m_aboutQtAction, &QAction::triggered, this, &CullendulaMainWindow::aboutQt);
@@ -583,86 +610,114 @@ void CullendulaMainWindow::createMenus() {
 //----------------------------------------------------------------------------
 
 void CullendulaMainWindow::retranslateStaticTexts() {
+    //: Main window title; the version suffix is appended separately in code.
     setWindowTitle(tr("Cullendula") + applicationVersionSuffix());
 
     if (m_mainMenu != nullptr) {
+        //: Top-level menu containing application settings such as extensions, style, and language.
         m_mainMenu->setTitle(tr("Main"));
     }
 
     if (m_extensionsMenu != nullptr) {
+        //: Submenu listing the enabled image filename extensions for directory scanning.
         m_extensionsMenu->setTitle(tr("Extensions"));
     }
 
     if (m_styleMenu != nullptr) {
+        //: Submenu for switching between visual themes.
         m_styleMenu->setTitle(tr("Style"));
     }
 
     if (m_languageMenu != nullptr) {
+        //: Submenu for switching the user-interface language.
         m_languageMenu->setTitle(tr("Language"));
     }
 
     for (auto it = m_extensionActions.begin(); it != m_extensionActions.end(); ++it) {
         if (it.value() != nullptr) {
             it.value()->setText(it.key().toUpper());
+            //: Tooltip for a checkable menu entry that enables a filename extension such as jpg, png, or webp for future directory scans.
             it.value()->setStatusTip(tr("Enable loading of *.%1 files when opening the next directory").arg(it.key()));
         }
     }
 
     if (m_lightThemeAction != nullptr) {
+        //: Menu label for the light visual theme.
         m_lightThemeAction->setText(tr("Light"));
+        //: Tooltip for switching the whole application to the light theme.
         m_lightThemeAction->setStatusTip(tr("Use the light application theme"));
     }
 
     if (m_darkThemeAction != nullptr) {
+        //: Menu label for the dark visual theme.
         m_darkThemeAction->setText(tr("Dark"));
+        //: Tooltip for switching the whole application to the dark theme.
         m_darkThemeAction->setStatusTip(tr("Use the high-contrast dark application theme"));
     }
 
     if (m_englishLanguageAction != nullptr) {
+        //: Language menu entry naming the English user-interface language.
         m_englishLanguageAction->setText(tr("English"));
+        //: Tooltip for switching back to the original English source texts.
         m_englishLanguageAction->setStatusTip(tr("Use the default English source texts"));
     }
 
     if (m_germanLanguageAction != nullptr) {
+        //: Language menu entry naming the German user-interface language in German.
         m_germanLanguageAction->setText(tr("Deutsch"));
+        //: Tooltip for loading the German translation file.
         m_germanLanguageAction->setStatusTip(tr("Load the German user-interface translation"));
     }
 
     if (m_croatianLanguageAction != nullptr) {
+        //: Language menu entry naming the Croatian user-interface language in Croatian.
         m_croatianLanguageAction->setText(tr("Hrvatski"));
+        //: Tooltip for loading the Croatian translation file.
         m_croatianLanguageAction->setStatusTip(tr("Load the Croatian user-interface translation"));
     }
 
     if (m_chineseLanguageAction != nullptr) {
+        //: Language menu entry naming the Chinese user-interface language in Chinese.
         m_chineseLanguageAction->setText(tr("中文"));
+        //: Tooltip for loading the Simplified Chinese translation file.
         m_chineseLanguageAction->setStatusTip(tr("Load the Chinese user-interface translation"));
     }
 
     if (m_editMenu != nullptr) {
+        //: Top-level menu for undo and redo actions.
         m_editMenu->setTitle(tr("Edit"));
     }
 
     if (m_undoAction != nullptr) {
+        //: Edit menu action label that reverses the most recent file move.
         m_undoAction->setText(tr("Undo"));
+        //: Tooltip for the Undo action that moves the previously moved image back to its original location.
         m_undoAction->setStatusTip(tr("Revert the last file-move-operation"));
     }
 
     if (m_redoQtAction != nullptr) {
+        //: Edit menu action label that reapplies the most recently undone file move.
         m_redoQtAction->setText(tr("Redo"));
+        //: Tooltip for the Redo action. "undo undo" here means reapplied after an Undo.
         m_redoQtAction->setStatusTip(tr("Redo the last file-move-operation (means: undo undo)"));
     }
 
     if (m_helpMenu != nullptr) {
+        //: Top-level menu for About dialogs and other help-related actions.
         m_helpMenu->setTitle(tr("Help"));
     }
 
     if (m_aboutAction != nullptr) {
+        //: Help menu action label that opens the application's About dialog.
         m_aboutAction->setText(tr("About Cullendula"));
+        //: Tooltip for opening the application's About dialog.
         m_aboutAction->setStatusTip(tr("Show the application's About box"));
     }
 
     if (m_aboutQtAction != nullptr) {
+        //: Help menu action label that opens Qt's built-in About dialog.
         m_aboutQtAction->setText(tr("About Qt"));
+        //: Tooltip for opening Qt's built-in About dialog.
         m_aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
     }
 }
@@ -684,6 +739,7 @@ void CullendulaMainWindow::syncAllowedExtensionsToFileSystemHandler() {
 
 void CullendulaMainWindow::applyLanguage(CullendulaAppBootstrap::UiLanguage language) {
     if (!CullendulaAppBootstrap::setApplicationLanguage(language)) {
+        //: Status bar error when loading the requested translation catalog failed.
         printStatus(tr("Could not load the selected language."));
         return;
     }
@@ -741,8 +797,11 @@ void CullendulaMainWindow::updateUndoRedoButtonStatus() {
 //----------------------------------------------------------------------------
 
 void CullendulaMainWindow::about() {
+    //: Status bar trace shown when the user opens the application's About dialog from the Help menu.
     printStatus(tr("Invoked Help|About"));
+    //: Title of the application's About dialog.
     showInformationDialog(tr("About Cullendula"),
+                          //: Rich-text body of the application's About dialog.
                           tr("Helper program to sort out (\"cull\") a collection of pictures in a directory after a nice photo-walk or event.<br>"
                              "Should work cross-platform.<br>"
                              "<br>"
@@ -755,7 +814,10 @@ void CullendulaMainWindow::about() {
 //----------------------------------------------------------------------------
 
 void CullendulaMainWindow::aboutQt() {
+    //: Status bar trace shown when the user opens Qt's About dialog from the Help menu.
     printStatus(tr("Invoked Help|About Qt"));
+    //: Title of the Qt runtime information dialog.
+    //: Rich-text body of the Qt runtime information dialog. %1 is the Qt version, %2 is the Qt installation prefix path.
     showInformationDialog(tr("About Qt"), tr("This application currently runs with Qt %1.<br>"
                                              "Qt installation prefix: %2<br>"
                                              "<br>"

@@ -182,6 +182,11 @@ The CMake build uses Qt 6 `LinguistTools` to turn these `.ts` files into `.qm` f
 ### Translation workflow
 User-visible strings from Qt Designer `.ui` files are discovered automatically by Qt `lupdate`.
 User-visible strings from C++ sources are discovered when they are marked with Qt translation APIs such as `tr(...)` or a class translation context like `Q_DECLARE_TR_FUNCTIONS(...)`.
+Qt also supports translator-facing context:
+
+* in C++ via translator comments written as `//:` immediately before a `tr(...)` call
+* in Qt Designer `.ui` files via the `<string comment="...">...</string>` attribute
+* for true same-text ambiguities in the same translation context via the optional disambiguation/comment parameter of `tr("Text", "meaning")`
 
 Regenerate the translation source files after adding or changing source strings:
 
@@ -205,7 +210,7 @@ In short:
 * the `.ts` update is manual; the `.qm` generation is automatic during builds
 
 ## Build information
-This is version 0.6.25.
+This is version 0.6.26.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -251,6 +256,7 @@ This is version 0.6.25.
 * v0.6.23 makes CMake the single source of truth for the visible application version while keeping the version in the window title
 * v0.6.24 marks the remaining user-visible strings for Qt translation extraction and documents the TS/QM workflow in the README
 * v0.6.25 prepares the German, Croatian, and Chinese translations for the current Qt 6 localization scaffolding
+* v0.6.26 adds translator-facing Qt context comments and UI string comments so Linguist translations can distinguish ambiguous labels and status text more reliably
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

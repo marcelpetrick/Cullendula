@@ -49,10 +49,12 @@ QStringList normalizeExtensions(QStringList const& extensions) {
 }
 
 QString formatMoveErrorMessage(QString const& fileName, QString const& subdir, QString const& details) {
+    //: Error message after moving a file into a named subdirectory such as "output", "trash", "undo", or "redo" failed.
     return CullendulaFileSystemHandler::tr("Could not move '%1' to '%2': %3").arg(fileName, subdir, details);
 }
 
 QString formatDirectorySetupErrorMessage(QString const& subdir, QString const& directoryPath, QString const& details) {
+    //: Error message after preparing an application-managed subdirectory such as "output" or "trash" failed.
     return CullendulaFileSystemHandler::tr("Could not prepare '%1' directory at '%2': %3").arg(subdir, directoryPath, details);
 }
 }  // namespace
@@ -200,6 +202,7 @@ bool CullendulaFileSystemHandler::trashCurrentFile() {
 //----------------------------------------------------------------------------
 
 QString CullendulaFileSystemHandler::getCurrentStatus() const {
+    //: Status bar message showing the current 1-based image position and the total number of loaded images.
     auto returnValue = tr("showing %1 of %2")
                            .arg(QString::number(m_positionCurrentFile + 1),  // for the regular users indexing starts at 1 ..
                                 QString::number(m_currentImages.size()));
@@ -224,6 +227,7 @@ bool CullendulaFileSystemHandler::canRedo() { return m_undoStack.canRedo(); }
 bool CullendulaFileSystemHandler::undo() {
     clearLastErrorMessage();
     if (!canUndo()) {
+        //: Error shown when the user requests Undo but the undo history is empty.
         setLastErrorMessage(tr("No undo step is currently available."));
         return false;
     }
@@ -240,6 +244,7 @@ bool CullendulaFileSystemHandler::undo() {
     qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR");
 
     if (!successfullyRenamed) {
+        //: Low-level filesystem failure detail inserted into a larger user-visible move error message.
         setLastErrorMessage(formatMoveErrorMessage(QFileInfo(sourcePath).fileName(), QStringLiteral("undo"), tr("the filesystem rename operation failed")));
         return false;
     }
@@ -253,6 +258,7 @@ bool CullendulaFileSystemHandler::undo() {
 bool CullendulaFileSystemHandler::redo() {
     clearLastErrorMessage();
     if (!canRedo()) {
+        //: Error shown when the user requests Redo but the redo history is empty.
         setLastErrorMessage(tr("No redo step is currently available."));
         return false;
     }
@@ -275,6 +281,7 @@ bool CullendulaFileSystemHandler::redo() {
     qDebug() << "rename was: " << (successfullyRenamed ? "TRUE" : "ERROR");
 
     if (!successfullyRenamed) {
+        //: Low-level filesystem failure detail inserted into a larger user-visible move error message.
         setLastErrorMessage(formatMoveErrorMessage(QFileInfo(sourcePath).fileName(), QStringLiteral("redo"), tr("the filesystem rename operation failed")));
         return false;
     }
@@ -335,6 +342,7 @@ bool CullendulaFileSystemHandler::processNewPath() {
         }
     } else {
         qDebug() << "ERROR: given directory does not exist";
+        //: Error after a dropped path or selected path does not resolve to an existing directory on disk.
         setLastErrorMessage(tr("The path '%1' could not be resolved to an existing directory.").arg(intermediatePath));
     }
 
@@ -403,6 +411,7 @@ bool CullendulaFileSystemHandler::createOutputFolder(QString const& subdir) {
     QDir outputDirTest(outputDirPath);
 
     if (outputPathInfo.exists() && !outputPathInfo.isDir()) {
+        //: Failure detail for a managed output directory path that already exists as a regular file or another non-directory entry.
         setLastErrorMessage(formatDirectorySetupErrorMessage(subdir, outputDirPath, tr("the path is already occupied by a non-directory filesystem entry")));
         return false;
     }
@@ -414,12 +423,14 @@ bool CullendulaFileSystemHandler::createOutputFolder(QString const& subdir) {
 
     bool const creationSuccessful = m_workingPath.mkdir(subdir);
     if (!creationSuccessful) {
+        //: Failure detail for a managed output directory that Qt could not create on disk.
         setLastErrorMessage(formatDirectorySetupErrorMessage(subdir, outputDirPath, tr("creating the directory failed")));
         return false;
     }
 
     if (!outputDirTest.exists()) {
         qDebug() << "very severe error - could not create output-dir :(";
+        //: Failure detail for a managed output directory that still does not exist after a reported creation attempt.
         setLastErrorMessage(formatDirectorySetupErrorMessage(subdir, outputDirPath, tr("the directory is still missing after creation")));
         return false;
     }
@@ -437,6 +448,7 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const&
 
     bool const saneInternalState = checkInternalSanity();
     if (!saneInternalState) {
+        //: Error shown when the user tries to save or trash an image but no current image is loaded.
         setLastErrorMessage(tr("No current image is available to move."));
         return false;
     }
@@ -458,6 +470,7 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const&
     qDebug() << "\t successfullyRenamed?" << successfullyRenamed;
 
     if (!successfullyRenamed) {
+        //: Low-level filesystem failure detail inserted into a larger user-visible move error message.
         setLastErrorMessage(formatMoveErrorMessage(fileName, subdir, tr("the filesystem rename operation failed")));
         return false;
     }
