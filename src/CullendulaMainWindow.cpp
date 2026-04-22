@@ -68,6 +68,12 @@ ThemeDefinition getDarkThemeDefinition() {
             QColor("#24415f"), QColor("#2f5d87"), QColor("#24415f"), QColor("#182634"), QColor("#f4f7fb")};
 }
 
+ThemeDefinition getPurpleThemeDefinition() {
+    return {QColor("#110d1b"), QColor("#171127"), QColor("#1d1630"), QColor("#f0ecff"), QColor("#9d93ba"), QColor("#53436e"),
+            QColor("#372454"), QColor("#4a2f6e"), QColor("#5a3b84"), QColor("#221b31"), QColor("#3e3353"), QColor("#63d5f7"),
+            QColor("#6fe3ff"), QColor("#3cc7ef"), QColor("#2a3d5e"), QColor("#171127"), QColor("#dbfaff")};
+}
+
 QPalette createThemePalette(ThemeDefinition const& theme) {
     QPalette palette;
 
@@ -95,7 +101,7 @@ QPalette createThemePalette(ThemeDefinition const& theme) {
     return palette;
 }
 
-QString getThemeStyleSheet(ThemeDefinition const& theme) {
+QString getStandardThemeStyleSheet(ThemeDefinition const& theme) {
     return QStringLiteral(
                "QMainWindow, QDialog, QMessageBox {"
                "    background-color: %1;"
@@ -165,6 +171,79 @@ QString getThemeStyleSheet(ThemeDefinition const& theme) {
         .arg(theme.windowColor.name(), theme.textColor.name(), theme.menuSurfaceColor.name(), theme.highlightColor.name(), theme.surfaceColor.name(),
              theme.borderColor.name(), theme.tooltipTextColor.name(), theme.accentColor.name(), theme.buttonColor.name(), theme.buttonHoverColor.name(),
              theme.buttonPressedColor.name(), theme.disabledButtonColor.name(), theme.mutedTextColor.name(), theme.disabledBorderColor.name());
+}
+
+QString getPurpleThemeStyleSheet(ThemeDefinition const& theme) {
+    return QStringLiteral(
+               "QMainWindow, QDialog, QMessageBox {"
+               "    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 %1, stop:1 %15);"
+               "    color: %2;"
+               "}"
+               "QWidget#centralWidget {"
+               "    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 %1, stop:1 %15);"
+               "    color: %2;"
+               "}"
+               "QMenuBar {"
+               "    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 %3, stop:1 %16);"
+               "    color: %2;"
+               "}"
+               "QMenuBar::item:selected {"
+               "    background-color: %4;"
+               "}"
+               "QMenu {"
+               "    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 %5, stop:1 %15);"
+               "    color: %2;"
+               "    border: 1px solid %6;"
+               "}"
+               "QMenu::item:selected {"
+               "    background-color: %4;"
+               "}"
+               "QToolTip {"
+               "    background-color: %5;"
+               "    color: %7;"
+               "    border: 1px solid %6;"
+               "}"
+               "QLabel#centerLabel {"
+               "    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 %5, stop:1 %15);"
+               "    color: %2;"
+               "    border: 2px solid %8;"
+               "    padding: 18px;"
+               "}"
+               "QLabel {"
+               "    color: %2;"
+               "}"
+               "QMessageBox QLabel {"
+               "    color: %2;"
+               "}"
+               "QPushButton {"
+               "    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 %9, stop:1 %17);"
+               "    color: %2;"
+               "    border: 1px solid %8;"
+               "    border-radius: 6px;"
+               "    padding: 8px 14px;"
+               "}"
+               "QPushButton:hover:!disabled {"
+               "    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 %10, stop:1 %8);"
+               "}"
+               "QPushButton:pressed:!disabled {"
+               "    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 %11, stop:1 %14);"
+               "}"
+               "QPushButton:disabled {"
+               "    background-color: %12;"
+               "    color: %13;"
+               "    border-color: %14;"
+               "}"
+               "QStatusBar {"
+               "    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 %3, stop:1 %16);"
+               "    color: %2;"
+               "}"
+               "QStatusBar::item {"
+               "    border: none;"
+               "}")
+        .arg(theme.windowColor.name(), theme.textColor.name(), theme.menuSurfaceColor.name(), theme.highlightColor.name(), theme.surfaceColor.name(),
+             theme.borderColor.name(), theme.tooltipTextColor.name(), theme.accentColor.name(), theme.buttonColor.name(), theme.buttonHoverColor.name(),
+             theme.buttonPressedColor.name(), theme.disabledButtonColor.name(), theme.mutedTextColor.name(), theme.disabledBorderColor.name(),
+             theme.tooltipBaseColor.name(), theme.highlightColor.darker(155).name(), theme.buttonPressedColor.darker(135).name());
 }
 }  // namespace
 
@@ -480,6 +559,9 @@ void CullendulaMainWindow::createActions() {
         m_extensionActions.insert(extension, extensionAction);
     }
 
+    m_themeActionGroup = new QActionGroup(this);
+    m_themeActionGroup->setExclusive(true);
+
     //: Menu label for the light visual theme.
     m_lightThemeAction = new QAction(tr("Light"), this);
     m_lightThemeAction->setCheckable(true);
@@ -487,6 +569,7 @@ void CullendulaMainWindow::createActions() {
     //: Tooltip for switching the whole application to the light theme.
     m_lightThemeAction->setStatusTip(tr("Use the light application theme"));
     connect(m_lightThemeAction, &QAction::triggered, this, [this]() { applyTheme(ThemeMode::Light); });
+    m_themeActionGroup->addAction(m_lightThemeAction);
 
     //: Menu label for the dark visual theme.
     m_darkThemeAction = new QAction(tr("Dark"), this);
@@ -495,6 +578,16 @@ void CullendulaMainWindow::createActions() {
     //: Tooltip for switching the whole application to the dark theme.
     m_darkThemeAction->setStatusTip(tr("Use the high-contrast dark application theme"));
     connect(m_darkThemeAction, &QAction::triggered, this, [this]() { applyTheme(ThemeMode::Dark); });
+    m_themeActionGroup->addAction(m_darkThemeAction);
+
+    //: Menu label for the gloomy purple visual theme.
+    m_purpleThemeAction = new QAction(tr("Purple"), this);
+    m_purpleThemeAction->setCheckable(true);
+    m_purpleThemeAction->setObjectName("themeAction_purple");
+    //: Tooltip for switching the whole application to the gloomy purple-and-cyan theme.
+    m_purpleThemeAction->setStatusTip(tr("Use the gloomy purple application theme"));
+    connect(m_purpleThemeAction, &QAction::triggered, this, [this]() { applyTheme(ThemeMode::Purple); });
+    m_themeActionGroup->addAction(m_purpleThemeAction);
 
     m_languageActionGroup = new QActionGroup(this);
     m_languageActionGroup->setExclusive(true);
@@ -590,6 +683,7 @@ void CullendulaMainWindow::createMenus() {
     m_styleMenu = m_mainMenu->addMenu(QString());
     m_styleMenu->addAction(m_lightThemeAction);
     m_styleMenu->addAction(m_darkThemeAction);
+    m_styleMenu->addAction(m_purpleThemeAction);
     m_languageMenu = m_mainMenu->addMenu(QString());
     m_languageMenu->addAction(m_englishLanguageAction);
     m_languageMenu->addAction(m_germanLanguageAction);
@@ -653,6 +747,13 @@ void CullendulaMainWindow::retranslateStaticTexts() {
         m_darkThemeAction->setText(tr("Dark"));
         //: Tooltip for switching the whole application to the dark theme.
         m_darkThemeAction->setStatusTip(tr("Use the high-contrast dark application theme"));
+    }
+
+    if (m_purpleThemeAction != nullptr) {
+        //: Menu label for the gloomy purple visual theme.
+        m_purpleThemeAction->setText(tr("Purple"));
+        //: Tooltip for switching the whole application to the gloomy purple-and-cyan theme.
+        m_purpleThemeAction->setStatusTip(tr("Use the gloomy purple application theme"));
     }
 
     if (m_englishLanguageAction != nullptr) {
@@ -765,12 +866,27 @@ void CullendulaMainWindow::applyLanguage(CullendulaAppBootstrap::UiLanguage lang
 
 void CullendulaMainWindow::applyTheme(ThemeMode themeMode) {
     m_themeMode = themeMode;
-    ThemeDefinition const theme = (themeMode == ThemeMode::Dark) ? getDarkThemeDefinition() : getLightThemeDefinition();
+    ThemeDefinition theme;
+    QString styleSheet;
+    switch (themeMode) {
+        case ThemeMode::Light:
+            theme = getLightThemeDefinition();
+            styleSheet = getStandardThemeStyleSheet(theme);
+            break;
+        case ThemeMode::Dark:
+            theme = getDarkThemeDefinition();
+            styleSheet = getStandardThemeStyleSheet(theme);
+            break;
+        case ThemeMode::Purple:
+            theme = getPurpleThemeDefinition();
+            styleSheet = getPurpleThemeStyleSheet(theme);
+            break;
+    }
 
     if (qApp != nullptr) {
         qApp->setStyle(QStyleFactory::create("Fusion"));
         qApp->setPalette(createThemePalette(theme));
-        qApp->setStyleSheet(getThemeStyleSheet(theme));
+        qApp->setStyleSheet(styleSheet);
     }
 
     if (m_lightThemeAction != nullptr) {
@@ -779,6 +895,10 @@ void CullendulaMainWindow::applyTheme(ThemeMode themeMode) {
 
     if (m_darkThemeAction != nullptr) {
         m_darkThemeAction->setChecked(themeMode == ThemeMode::Dark);
+    }
+
+    if (m_purpleThemeAction != nullptr) {
+        m_purpleThemeAction->setChecked(themeMode == ThemeMode::Purple);
     }
 }
 

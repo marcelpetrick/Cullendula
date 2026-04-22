@@ -7,7 +7,7 @@ Start it and then drag&drop a folder with the pictures or an example picture to 
 It also creates automatically a new folder named "output" inside the given path.  
 The first picture of the files is loaded automatically too.  
 Cullendula scans the dropped directory for the image file extensions currently enabled in `Main -> Extensions`. The menu offers up to ten common Qt-supported formats such as `jpg`, `jpeg`, `png`, and `webp`, and all entries are enabled by default.  
-The widget-based UI also provides `Main -> Style` with `Light` and `Dark` themes. Light mode is the default, and dark mode uses a strong high-contrast palette. The theme is applied application-wide so Qt dialogs follow the selected mode as well.  
+The widget-based UI also provides `Main -> Style` with `Light`, `Dark`, and `Purple` themes. Light mode is the default, dark mode keeps the original high-contrast palette, and Purple adds a gloomy violet/cyan variant. The theme is applied application-wide so Qt dialogs follow the selected mode as well.  
 Switch between the images via the buttons at the bottom of the app or use the arrow-keys (**LEFT** and **RIGHT**).  
 The button "save" (or **UP** arrow-key) moves the current image to the output-folder.  
 The button "trash" (or **DOWN** arrow-key) moves the current image to the trash-folder.  
@@ -210,7 +210,7 @@ In short:
 * the `.ts` update is manual; the `.qm` generation is automatic during builds
 
 ## Build information
-This is version 0.6.26.
+This is version 0.6.27.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -257,6 +257,7 @@ This is version 0.6.26.
 * v0.6.24 marks the remaining user-visible strings for Qt translation extraction and documents the TS/QM workflow in the README
 * v0.6.25 prepares the German, Croatian, and Chinese translations for the current Qt 6 localization scaffolding
 * v0.6.26 adds translator-facing Qt context comments and UI string comments so Linguist translations can distinguish ambiguous labels and status text more reliably
+* v0.6.27 adds a third gloomy purple-and-cyan style while keeping the existing light and dark themes intact
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

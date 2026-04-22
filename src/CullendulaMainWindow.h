@@ -44,7 +44,7 @@ class CullendulaMainWindow : public QMainWindow {
     /*!
      * @brief Supported application palette variants.
      */
-    enum class ThemeMode { Light, Dark };
+    enum class ThemeMode { Light, Dark, Purple };
 
     /*!
      * @brief Construct the main window and initialize actions, menus, and theme.
@@ -201,6 +201,12 @@ class CullendulaMainWindow : public QMainWindow {
 
     //! Action that activates the dark palette.
     QAction* m_darkThemeAction = nullptr;
+
+    //! Action that activates the gloomy purple palette.
+    QAction* m_purpleThemeAction = nullptr;
+
+    //! Exclusive action group backing the theme menu.
+    QActionGroup* m_themeActionGroup = nullptr;
 
     //! Exclusive action group backing the language menu.
     QActionGroup* m_languageActionGroup = nullptr;
