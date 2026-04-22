@@ -27,7 +27,7 @@ class Test_CullendulaAppBootstrap : public QObject {
     void slot_Test_EnsureQtPlatformPluginForTests_RespectsExistingValue();
 
     //! Verify English is the default application language selection.
-    void slot_Test_DefaultApplicationLanguage_IsEnglish();
+    static void slot_Test_DefaultApplicationLanguage_IsEnglish();
 
     //! Verify English intentionally maps to no translation resource.
     void slot_Test_TranslationResourcePath_EnglishIsEmpty();
@@ -36,13 +36,13 @@ class Test_CullendulaAppBootstrap : public QObject {
     void slot_Test_TranslationResourcePath_TranslatedLanguagesUseExpectedResources();
 
     //! Verify switching the application language updates the tracked selection.
-    void slot_Test_SetApplicationLanguage_UpdatesCurrentSelection();
+    static void slot_Test_SetApplicationLanguage_UpdatesCurrentSelection();
 
     //! Verify invalid language values are rejected by the low-level helper.
     void slot_Test_SetApplicationLanguage_InvalidLanguageIsRejected();
 
     //! Verify the low-level helper rejects calls without a QApplication.
-    void slot_Test_SetApplicationLanguage_RejectsNullApplication();
+    static void slot_Test_SetApplicationLanguage_RejectsNullApplication();
 
     //! Verify translator load failures are surfaced cleanly.
     void slot_Test_SetApplicationLanguage_LoadFailureIsRejected();

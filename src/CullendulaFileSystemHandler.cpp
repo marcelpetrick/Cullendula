@@ -260,7 +260,7 @@ QString CullendulaFileSystemHandler::getCurrentStatus() const {
 
 //----------------------------------------------------------------------------
 
-QString CullendulaFileSystemHandler::getLastErrorMessage() const { return m_lastErrorMessage; }
+QString const& CullendulaFileSystemHandler::getLastErrorMessage() const { return m_lastErrorMessage; }
 
 //----------------------------------------------------------------------------
 
@@ -501,10 +501,10 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const&
 //----------------------------------------------------------------------------
 
 int CullendulaFileSystemHandler::findImageIndexByPath(QString const& imagePath) const {
-    for (int index = 0; index < m_currentImages.size(); ++index) {
-        if (m_currentImages[index].absoluteFilePath() == imagePath) {
-            return index;
-        }
+    auto const match = std::find_if(m_currentImages.cbegin(), m_currentImages.cend(),
+                                    [&imagePath](QFileInfo const& fileInfo) { return fileInfo.absoluteFilePath() == imagePath; });
+    if (match != m_currentImages.cend()) {
+        return static_cast<int>(std::distance(m_currentImages.cbegin(), match));
     }
 
     return -1;
@@ -512,7 +512,7 @@ int CullendulaFileSystemHandler::findImageIndexByPath(QString const& imagePath) 
 
 //----------------------------------------------------------------------------
 
-QString CullendulaFileSystemHandler::createUniqueTargetPath(QString const& initialTargetPath) const {
+QString CullendulaFileSystemHandler::createUniqueTargetPath(QString const& initialTargetPath) {
     if (!QFileInfo::exists(initialTargetPath)) {
         return initialTargetPath;
     }

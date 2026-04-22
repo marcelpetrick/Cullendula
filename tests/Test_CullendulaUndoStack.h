@@ -28,10 +28,10 @@ class Test_CullendulaUndoStack : public QObject {
 
    private Q_SLOTS:
     //! Allocate long-lived test fixtures before the first test runs.
-    void initTestCase();
+    static void initTestCase();
 
     //! Release long-lived test fixtures after the final test.
-    void cleanupTestCase();
+    static void cleanupTestCase();
 
     //! Reset state before each individual test.
     void init();
@@ -70,7 +70,7 @@ class Test_CullendulaUndoStack : public QObject {
      * @param expectedSource Expected source path.
      * @param expectedTarget Expected target path.
      */
-    void verifyUndoItem(CullendulaUndoItem const& item, QString const& expectedSource, QString const& expectedTarget);
+    static void verifyUndoItem(CullendulaUndoItem const& item, QString const& expectedSource, QString const& expectedTarget);
 
     //! Stack instance under test.
     std::unique_ptr<CullendulaUndoStack> m_stackPtr = nullptr;

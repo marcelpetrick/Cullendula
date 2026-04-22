@@ -119,7 +119,7 @@ class CullendulaFileSystemHandler {
      * @brief Return the most recent user-facing error message.
      * @return Empty string when no actionable error is pending.
      */
-    QString getLastErrorMessage() const;
+    QString const& getLastErrorMessage() const;
 
     /*!
      * @brief Check whether an undo step is currently available.
@@ -222,7 +222,7 @@ class CullendulaFileSystemHandler {
      * @return The preferred path when unused, otherwise a suffixed alternative
      *         such as `name (1).jpg`.
      */
-    QString createUniqueTargetPath(QString const& initialTargetPath) const;
+    static QString createUniqueTargetPath(QString const& initialTargetPath);
 
     //! Clear the stored user-facing error state.
     void clearLastErrorMessage();
