@@ -185,13 +185,13 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
     QFile cmakeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.6.27"));
+    QVERIFY(cmakeContents.contains("VERSION 0.6.28"));
 
     QFile readmeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.6.27."));
-    QVERIFY(readmeContents.contains("* v0.6.27 adds a third gloomy purple-and-cyan style while keeping the existing light and dark themes intact"));
+    QVERIFY(readmeContents.contains("This is version 0.6.28."));
+    QVERIFY(readmeContents.contains("* v0.6.28 covers the real application entry point with a headless executable smoke test"));
 }
 
 //----------------------------------------------------------------------------------

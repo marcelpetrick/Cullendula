@@ -60,4 +60,14 @@ bool setApplicationLanguage(UiLanguage language);
  * @return Process exit code returned by Qt.
  */
 int runEventLoop(QApplication& app);
+
+/*!
+ * @brief Optionally schedule an automatic application exit for smoke tests.
+ * @param app QApplication whose event loop should be stopped automatically.
+ *
+ * When the environment variable `CULLENDULA_EXIT_AFTER_STARTUP_MS` is set to a
+ * non-negative integer, the application will call `quit()` after that many
+ * milliseconds. Normal production runs leave this unset and are unaffected.
+ */
+void scheduleAutoQuitForTests(QApplication& app);
 }  // namespace CullendulaAppBootstrap

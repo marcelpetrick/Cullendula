@@ -210,7 +210,7 @@ In short:
 * the `.ts` update is manual; the `.qm` generation is automatic during builds
 
 ## Build information
-This is version 0.6.27.
+This is version 0.6.28.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -258,6 +258,7 @@ This is version 0.6.27.
 * v0.6.25 prepares the German, Croatian, and Chinese translations for the current Qt 6 localization scaffolding
 * v0.6.26 adds translator-facing Qt context comments and UI string comments so Linguist translations can distinguish ambiguous labels and status text more reliably
 * v0.6.27 adds a third gloomy purple-and-cyan style while keeping the existing light and dark themes intact
+* v0.6.28 covers the real application entry point with a headless executable smoke test and includes `main.cpp` in coverage reporting
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

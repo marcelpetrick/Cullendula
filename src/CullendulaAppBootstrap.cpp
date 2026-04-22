@@ -8,6 +8,7 @@
 
 #include <QtCore/QByteArray>
 #include <QtCore/QProcessEnvironment>
+#include <QtCore/QTimer>
 #include <QtCore/QTranslator>
 #include <QtWidgets/QApplication>
 #include <memory>
@@ -100,4 +101,16 @@ bool CullendulaAppBootstrap::setApplicationLanguage(UiLanguage language) {
 int CullendulaAppBootstrap::runEventLoop(QApplication& app) {
     Q_UNUSED(app)
     return QApplication::exec();
+}
+
+//----------------------------------------------------------------------------------
+
+void CullendulaAppBootstrap::scheduleAutoQuitForTests(QApplication& app) {
+    bool parsedSuccessfully = false;
+    int const exitDelayMs = qEnvironmentVariableIntValue("CULLENDULA_EXIT_AFTER_STARTUP_MS", &parsedSuccessfully);
+    if (!parsedSuccessfully || exitDelayMs < 0) {
+        return;
+    }
+
+    QTimer::singleShot(exitDelayMs, &app, &QCoreApplication::quit);
 }
