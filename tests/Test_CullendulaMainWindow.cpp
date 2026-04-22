@@ -20,6 +20,7 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
+#include <algorithm>
 
 //----------------------------------------------------------------------------------
 
@@ -85,10 +86,9 @@ void Test_CullendulaMainWindow::sendDropWithUrls(QList<QUrl> const& urls) {
 
 QAction* Test_CullendulaMainWindow::findAction(QString const& text) const {
     QList<QAction*> const actions = m_window->findChildren<QAction*>();
-    for (QAction* action : actions) {
-        if (action->text() == text) {
-            return action;
-        }
+    auto const match = std::find_if(actions.cbegin(), actions.cend(), [&text](QAction* action) { return action->text() == text; });
+    if (match != actions.cend()) {
+        return *match;
     }
 
     return nullptr;
@@ -352,7 +352,7 @@ void Test_CullendulaMainWindow::slot_Test_LanguageMenu_AppliesTranslatedActionTe
     QVERIFY(englishAction != nullptr);
     QVERIFY(germanAction != nullptr);
 
-    QAction* undoAction = findAction("Undo");
+    QAction const* undoAction = findAction("Undo");
     QVERIFY(undoAction != nullptr);
     QCOMPARE(undoAction->text(), QString("Undo"));
 
