@@ -51,6 +51,9 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify the theme menu can switch back from dark mode to light mode.
     void slot_Test_ThemeMenu_SwitchesBackToLightMode();
 
+    //! Verify the theme menu can switch the UI into the separate purple mode.
+    void slot_Test_ThemeMenu_SwitchesToPurpleMode();
+
     //! Verify the language menu exposes all supported runtime language options.
     void slot_Test_LanguageMenu_ContainsSupportedLanguages();
 

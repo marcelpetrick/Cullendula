@@ -185,13 +185,13 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
     QFile cmakeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.6.26"));
+    QVERIFY(cmakeContents.contains("VERSION 0.6.27"));
 
     QFile readmeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.6.26."));
-    QVERIFY(readmeContents.contains("* v0.6.26 adds translator-facing Qt context comments and UI string comments"));
+    QVERIFY(readmeContents.contains("This is version 0.6.27."));
+    QVERIFY(readmeContents.contains("* v0.6.27 adds a third gloomy purple-and-cyan style while keeping the existing light and dark themes intact"));
 }
 
 //----------------------------------------------------------------------------------
@@ -199,13 +199,17 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
 void Test_CullendulaMainWindow::slot_Test_LightTheme_IsDefault() {
     QAction* lightThemeAction = findThemeAction("light");
     QAction* darkThemeAction = findThemeAction("dark");
+    QAction* purpleThemeAction = findThemeAction("purple");
 
     QVERIFY(lightThemeAction != nullptr);
     QVERIFY(darkThemeAction != nullptr);
+    QVERIFY(purpleThemeAction != nullptr);
     QVERIFY(lightThemeAction->isCheckable());
     QVERIFY(darkThemeAction->isCheckable());
+    QVERIFY(purpleThemeAction->isCheckable());
     QVERIFY(lightThemeAction->isChecked());
     QVERIFY(!darkThemeAction->isChecked());
+    QVERIFY(!purpleThemeAction->isChecked());
     QCOMPARE(m_window->getThemeMode(), CullendulaMainWindow::ThemeMode::Light);
     QVERIFY(qApp->styleSheet().contains("#f6f3ee"));
     QCOMPARE(qApp->palette().color(QPalette::Window), QColor("#f6f3ee"));
@@ -217,14 +221,17 @@ void Test_CullendulaMainWindow::slot_Test_LightTheme_IsDefault() {
 void Test_CullendulaMainWindow::slot_Test_ThemeMenu_SwitchesToDarkMode() {
     QAction* lightThemeAction = findThemeAction("light");
     QAction* darkThemeAction = findThemeAction("dark");
+    QAction* purpleThemeAction = findThemeAction("purple");
     QVERIFY(lightThemeAction != nullptr);
     QVERIFY(darkThemeAction != nullptr);
+    QVERIFY(purpleThemeAction != nullptr);
 
     darkThemeAction->trigger();
     QApplication::processEvents();
 
     QVERIFY(!lightThemeAction->isChecked());
     QVERIFY(darkThemeAction->isChecked());
+    QVERIFY(!purpleThemeAction->isChecked());
     QCOMPARE(m_window->getThemeMode(), CullendulaMainWindow::ThemeMode::Dark);
     QVERIFY(qApp->styleSheet().contains("#0b0f14"));
     QVERIFY(qApp->styleSheet().contains("#79c0ff"));
@@ -237,8 +244,10 @@ void Test_CullendulaMainWindow::slot_Test_ThemeMenu_SwitchesToDarkMode() {
 void Test_CullendulaMainWindow::slot_Test_ThemeMenu_SwitchesBackToLightMode() {
     QAction* lightThemeAction = findThemeAction("light");
     QAction* darkThemeAction = findThemeAction("dark");
+    QAction* purpleThemeAction = findThemeAction("purple");
     QVERIFY(lightThemeAction != nullptr);
     QVERIFY(darkThemeAction != nullptr);
+    QVERIFY(purpleThemeAction != nullptr);
 
     darkThemeAction->trigger();
     QApplication::processEvents();
@@ -247,8 +256,32 @@ void Test_CullendulaMainWindow::slot_Test_ThemeMenu_SwitchesBackToLightMode() {
 
     QVERIFY(lightThemeAction->isChecked());
     QVERIFY(!darkThemeAction->isChecked());
+    QVERIFY(!purpleThemeAction->isChecked());
     QCOMPARE(m_window->getThemeMode(), CullendulaMainWindow::ThemeMode::Light);
     QCOMPARE(qApp->palette().color(QPalette::Window), QColor("#f6f3ee"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_ThemeMenu_SwitchesToPurpleMode() {
+    QAction* lightThemeAction = findThemeAction("light");
+    QAction* darkThemeAction = findThemeAction("dark");
+    QAction* purpleThemeAction = findThemeAction("purple");
+    QVERIFY(lightThemeAction != nullptr);
+    QVERIFY(darkThemeAction != nullptr);
+    QVERIFY(purpleThemeAction != nullptr);
+
+    purpleThemeAction->trigger();
+    QApplication::processEvents();
+
+    QVERIFY(!lightThemeAction->isChecked());
+    QVERIFY(!darkThemeAction->isChecked());
+    QVERIFY(purpleThemeAction->isChecked());
+    QCOMPARE(m_window->getThemeMode(), CullendulaMainWindow::ThemeMode::Purple);
+    QVERIFY(qApp->styleSheet().contains("#110d1b"));
+    QVERIFY(qApp->styleSheet().contains("#63d5f7"));
+    QCOMPARE(qApp->palette().color(QPalette::Window), QColor("#110d1b"));
+    QCOMPARE(qApp->palette().color(QPalette::Button), QColor("#372454"));
 }
 
 //----------------------------------------------------------------------------------
@@ -776,7 +809,7 @@ void Test_CullendulaMainWindow::slot_Test_TrashFailure_ShowsStatusMessage() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_AboutAction_ShowsDialogAndStatus() {
-    findThemeAction("dark")->trigger();
+    findThemeAction("purple")->trigger();
     QApplication::processEvents();
 
     findAction("About Cullendula")->trigger();
@@ -784,8 +817,8 @@ void Test_CullendulaMainWindow::slot_Test_AboutAction_ShowsDialogAndStatus() {
 
     QDialog* dialog = findOpenDialog();
     QVERIFY(dialog != nullptr);
-    QCOMPARE(dialog->palette().color(QPalette::Window), qApp->palette().color(QPalette::Window));
     QVERIFY(qApp->styleSheet().contains("QMessageBox QLabel"));
+    QVERIFY(qApp->styleSheet().contains("#110d1b"));
     dialog->accept();
     QApplication::processEvents();
 
@@ -795,7 +828,7 @@ void Test_CullendulaMainWindow::slot_Test_AboutAction_ShowsDialogAndStatus() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_AboutQtAction_ShowsDialogAndStatus() {
-    findThemeAction("dark")->trigger();
+    findThemeAction("purple")->trigger();
     QApplication::processEvents();
 
     findAction("About Qt")->trigger();
@@ -803,8 +836,8 @@ void Test_CullendulaMainWindow::slot_Test_AboutQtAction_ShowsDialogAndStatus() {
 
     QDialog* dialog = findOpenDialog();
     QVERIFY(dialog != nullptr);
-    QCOMPARE(dialog->palette().color(QPalette::Window), qApp->palette().color(QPalette::Window));
     QVERIFY(qApp->styleSheet().contains("QMessageBox QLabel"));
+    QVERIFY(qApp->styleSheet().contains("#110d1b"));
     dialog->accept();
     QApplication::processEvents();
 
