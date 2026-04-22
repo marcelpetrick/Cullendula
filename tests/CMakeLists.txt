@@ -40,6 +40,16 @@ target_include_directories(CullendulaTests
 #
 add_test(NAME CullendulaUndoStackTest COMMAND CullendulaTests)
 
+add_test(
+    NAME CullendulaMainSmokeTest
+    COMMAND ${CMAKE_COMMAND} -E env
+        QT_QPA_PLATFORM=offscreen
+        CULLENDULA_EXIT_AFTER_STARTUP_MS=0
+        $<TARGET_FILE:Cullendula>
+)
+
+set_tests_properties(CullendulaMainSmokeTest PROPERTIES TIMEOUT 10)
+
 add_custom_target(check
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
     DEPENDS CullendulaTests
@@ -53,6 +63,7 @@ if(CULLENDULA_ENABLE_COVERAGE)
     find_program(CULLENDULA_GENHTML_EXECUTABLE genhtml)
 
     set(CULLENDULA_COVERAGE_OBJECTS
+        "${CMAKE_BINARY_DIR}/src/CMakeFiles/Cullendula.dir/main.cpp.gcno"
         "${CMAKE_BINARY_DIR}/src/CMakeFiles/CullendulaLib.dir/CullendulaAppBootstrap.cpp.gcno"
         "${CMAKE_BINARY_DIR}/src/CMakeFiles/CullendulaLib.dir/CullendulaMainWindow.cpp.gcno"
         "${CMAKE_BINARY_DIR}/src/CMakeFiles/CullendulaLib.dir/CullendulaFileSystemHandler.cpp.gcno"
@@ -74,7 +85,7 @@ if(CULLENDULA_ENABLE_COVERAGE)
             -DCOVERAGE_REPORT_FILE=${CMAKE_BINARY_DIR}/coverage/coverage.txt
             -DCOVERAGE_CONFIG_FILE=${CULLENDULA_COVERAGE_CONFIG_FILE}
             -P ${CMAKE_SOURCE_DIR}/cmake/GenerateCoverage.cmake
-        DEPENDS CullendulaTests
+        DEPENDS Cullendula CullendulaTests
         USES_TERMINAL
     )
 
@@ -88,7 +99,7 @@ if(CULLENDULA_ENABLE_COVERAGE)
                 --html-details ${CMAKE_BINARY_DIR}/coverage/html/index.html
                 --gcov-executable ${CULLENDULA_GCOV_EXECUTABLE}
                 ${CMAKE_BINARY_DIR}
-            DEPENDS CullendulaTests
+            DEPENDS Cullendula CullendulaTests
             USES_TERMINAL
         )
     elseif(CULLENDULA_LCOV_EXECUTABLE AND CULLENDULA_GENHTML_EXECUTABLE)
@@ -106,7 +117,7 @@ if(CULLENDULA_ENABLE_COVERAGE)
             COMMAND ${CULLENDULA_GENHTML_EXECUTABLE}
                 ${CMAKE_BINARY_DIR}/coverage/coverage.filtered.info
                 --output-directory ${CMAKE_BINARY_DIR}/coverage/html
-            DEPENDS CullendulaTests
+            DEPENDS Cullendula CullendulaTests
             USES_TERMINAL
         )
     else()

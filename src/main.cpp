@@ -16,6 +16,7 @@ int main(int argc, char* argv[]) {
     QApplication a(argc, argv);
     CullendulaMainWindow mainWindow;
     CullendulaAppBootstrap::showMainWindow(mainWindow);
+    CullendulaAppBootstrap::scheduleAutoQuitForTests(a);
 
     return CullendulaAppBootstrap::runEventLoop(a);
 }
