@@ -21,7 +21,7 @@ target_link_libraries(CullendulaLib
     Qt6::Widgets
 )
 
-# 🔴 NEW: expose src/ as public include dir for anything linking CullendulaLib
+# Expose src/ headers to targets linking CullendulaLib.
 target_include_directories(CullendulaLib
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}

@@ -49,17 +49,11 @@ void CullendulaUndoStack::commitRedo() {
 
 //----------------------------------------------------------------------------------
 
-bool CullendulaUndoStack::canUndo() const {
-    // the undo-container has items
-    return !m_undoContainer.isEmpty();
-}
+bool CullendulaUndoStack::canUndo() const { return !m_undoContainer.isEmpty(); }
 
 //----------------------------------------------------------------------------------
 
-bool CullendulaUndoStack::canRedo() const {
-    // the redo-container has items
-    return !m_redoContainer.isEmpty();
-}
+bool CullendulaUndoStack::canRedo() const { return !m_redoContainer.isEmpty(); }
 
 //----------------------------------------------------------------------------------
 

@@ -117,7 +117,6 @@ bool CullendulaFileSystemHandler::setWorkingPath(const QString& urlPath) {
     m_workingPath.setPath("");
     m_workingPath.setPath(urlPath);
 
-    // trigger now the follow-up
     returnValue = processNewPath();
 
     return returnValue;
@@ -138,14 +137,11 @@ QString CullendulaFileSystemHandler::getCurrentImagePath() {
     QString returnValue;
     qDebug() << "CullendulaFileSystemHandler::getCurrentImagePath():";
 
-    // some defensive checks
     if (checkInternalSanity()) {
-        // check for existence
         QString const path(m_currentImages[m_positionCurrentFile].absoluteFilePath());
         qDebug() << "\tpath:" << path;
         QFile const tempFile(path);
-        if (tempFile.exists() /* && tempFile.isReadable()*/)  // latter is not the case with Ext4 here ..
-        {
+        if (tempFile.exists()) {
             returnValue = path;
         }
     }
@@ -203,9 +199,7 @@ bool CullendulaFileSystemHandler::trashCurrentFile() {
 
 QString CullendulaFileSystemHandler::getCurrentStatus() const {
     //: Status bar message showing the current 1-based image position and the total number of loaded images.
-    auto returnValue = tr("showing %1 of %2")
-                           .arg(QString::number(m_positionCurrentFile + 1),  // for the regular users indexing starts at 1 ..
-                                QString::number(m_currentImages.size()));
+    auto returnValue = tr("showing %1 of %2").arg(QString::number(m_positionCurrentFile + 1), QString::number(m_currentImages.size()));
 
     return returnValue;
 }
@@ -297,11 +291,7 @@ bool CullendulaFileSystemHandler::processNewPath() {
 
     qDebug() << "CullendulaFileSystemHandler::processNewPath():";
 
-    // convert the given path (which maybe includes a filename)
-    //    qDebug() << "fileInfo gets the following path:" << m_workingPath.path();
-
-    // problem: windows shows as /c:/dir/file.suffix - linux here as /home/dir/file.suffix
-    // so cut the first character for win, but don't for linux ..
+    // Dropped file URLs can carry a leading slash before the Windows drive letter.
     QString const intermediatePath =
 #ifdef __linux__
         m_workingPath.path();
@@ -310,18 +300,10 @@ bool CullendulaFileSystemHandler::processNewPath() {
 #endif
     QFileInfo const fileInfo(intermediatePath);
 
-    //! trim the path
-    //! shall return for \Cullendula\testItemFolder --> \Cullendula\testItemFolder
-    //! and for \Cullendula\testItemFolder\cat0.jpg --> \Cullendula\testItemFolder
-    //    qDebug() << "\tfileInfo.isFile():" << fileInfo.isFile();
-    //    qDebug() << "fileInfo.path(): " << fileInfo.path();
-    //    qDebug() << "fileInfo.filePath(): " << fileInfo.filePath();
-    //    qDebug() << "fileInfo.canonicalFilePath(): " << fileInfo.canonicalFilePath();
     qDebug() << "\tfileInfo.isDir():" << fileInfo.isDir();
     qDebug() << "fileInfo.absoluteFilePath(): " << fileInfo.absoluteFilePath();
     qDebug() << "fileInfo.absolutePath(): " << fileInfo.absolutePath();
 
-    //    qDebug() << "fileInfo.fileName(): " << fileInfo.fileName();
     QDir const tempDir = QDir(fileInfo.isDir() ? fileInfo.absoluteFilePath() : fileInfo.absolutePath());
     qDebug() << "\t resulting directory:" << tempDir.path();
 
@@ -466,7 +448,7 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const&
     QString const preferredTargetPath = outputDir.path() + QDir::separator() + fileName;
     QString const targetPathAndName = createUniqueTargetPath(preferredTargetPath);
     qDebug() << "\t targetPathAndName:" << targetPathAndName;
-    bool const successfullyRenamed = outputDir.rename(sourcePathAndName, targetPathAndName);  //! this is the MOVE operation!
+    bool const successfullyRenamed = outputDir.rename(sourcePathAndName, targetPathAndName);
     qDebug() << "\t successfullyRenamed?" << successfullyRenamed;
 
     if (!successfullyRenamed) {
@@ -475,12 +457,9 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const&
         return false;
     }
 
-    //! add to the stack for possible undoing
     m_undoStack.push(sourcePathAndName, targetPathAndName);
 
-    // go to the next picture by removing the entry from the file-list, but keep the position
     m_currentImages.removeAt(m_positionCurrentFile);
-    // if this was the last item of the list (like pos 2 at list of 3; which has now just 2 elements), then modulo
     int const listSize = m_currentImages.size();
     m_positionCurrentFile = (listSize > 0) ? (m_positionCurrentFile % listSize) : -1;
     returnValue = true;

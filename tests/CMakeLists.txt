@@ -29,7 +29,7 @@ target_link_libraries(CullendulaTests
     CullendulaLib
 )
 
-# 🔴 NEW: make sure tests can #include "CullendulaUndoStack.h"
+# Allow tests to include headers from src/.
 target_include_directories(CullendulaTests
     PRIVATE
         ${CMAKE_SOURCE_DIR}/src

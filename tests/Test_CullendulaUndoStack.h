@@ -13,13 +13,7 @@
 #include <QtTest/QtTest>
 
 // std includes
-#include <memory>  // for unique_ptr
-
-// to read: http://doc.qt.io/qt-5/qtest-overview.html
-// initTestCase() will be called before the first test function is executed.
-// cleanupTestCase() will be called after the last test function was executed.
-// init() will be called before each test function is executed.
-// cleanup() will be called after every test function.
+#include <memory>
 
 /*!
  * @file

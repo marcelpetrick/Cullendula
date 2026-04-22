@@ -10,7 +10,7 @@
 #include "ui_CullendulaMainWindow.h"
 
 // Qt includes
-#include <QtCore/QDebug>  //todom maybe remove
+#include <QtCore/QDebug>
 #include <QtCore/QEvent>
 #include <QtCore/QLibraryInfo>
 #include <QtCore/QMimeData>
@@ -30,10 +30,10 @@
 namespace {
 QString applicationVersionSuffix() { return QStringLiteral(" - v" CULLENDULA_PROJECT_VERSION); }
 
-//! Determines how long the status message is visible. After timer runs out, it is removed.
+//! Determines how long the status message stays visible.
 unsigned int const c_StatusBarDelay = 5000;
 
-//! prevent pumping window because of scaling. Describes the expected size of the frame.
+//! Accounts for the window frame when fitting the preview area.
 int const c_extraPixelsBecauseOfFraming = 2;
 
 struct ThemeDefinition {
@@ -412,7 +412,7 @@ void CullendulaMainWindow::slotButtonSaveTriggered() {
 void CullendulaMainWindow::slotButtonTrashTriggered() {
     qDebug() << "CullendulaMainWindow::slotButtonTrashTriggered()";
 
-    // move the current file to the output-folder
+    // Move the current file into the trash folder.
     bool const success = m_fileSystemHandler.trashCurrentFile();
     if (success) {
         refreshLabel();
@@ -456,7 +456,6 @@ void CullendulaMainWindow::showCachedPhoto() {
     // scale while keeping the aspect ratio
     int width = ui->centerLabel->width() - c_extraPixelsBecauseOfFraming;
     int height = ui->centerLabel->height() - c_extraPixelsBecauseOfFraming;
-    qDebug() << "label-size:" << width << "*" << height;
 
     // prevent upscaling of smaller photos
     if (m_cachedPhoto.width() < width) {
@@ -488,8 +487,7 @@ void CullendulaMainWindow::refreshLabel() {
     qDebug() << "CullendulaMainWindow::refreshLabel():";
 
     QString const path = m_fileSystemHandler.getCurrentImagePath();
-    if (path.isEmpty())  // just the case if no valid images found
-    {
+    if (path.isEmpty()) {
         clearCachedPhoto();
         //: Center label placeholder when no further images match the current extension filter in the active directory.
         ui->centerLabel->setText(
@@ -620,7 +618,6 @@ void CullendulaMainWindow::createActions() {
     connect(m_chineseLanguageAction, &QAction::triggered, this, [this]() { applyLanguage(CullendulaAppBootstrap::UiLanguage::Chinese); });
     m_languageActionGroup->addAction(m_chineseLanguageAction);
 
-    // edit menu
     //: Edit menu action label that reverses the most recent file move.
     m_undoAction = new QAction(tr("Undo"), this);
     //: Tooltip for the Undo action that moves the previously moved image back to its original location.
