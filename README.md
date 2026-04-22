@@ -22,7 +22,7 @@ When you are done, then close the app. The result (the best photos) are inside t
 ## Build
 
 ### tl;dr
-Use the `localPipeline.sh` to handle all steps for building, test-runs, documentation, coverage generation, and a final interactive launch of the built `Cullendula` app.
+Use the `localPipeline.sh` to handle all steps for building, test-runs, coverage generation, documentation, Cppcheck analysis, and a final interactive launch of the built `Cullendula` app.
 
 ```sh
 time ./localPipeline.sh
@@ -43,6 +43,9 @@ time ./localPipeline.sh
 [INFO] Doxygen warnings file is empty.
 [INFO] Doxygen HTML entry point: /home/mpetrick/repos/Cullendula/build/doxygen/html/index.html
 [INFO] Opening generated documentation with 'xdg-open'.
+[INFO] Running Cppcheck static analysis.
+[INFO] Cppcheck XML report: /home/mpetrick/repos/Cullendula/reports/cppcheck/cppcheck.xml
+[INFO] Cppcheck HTML entry point: /home/mpetrick/repos/Cullendula/reports/cppcheck/html/index.html
 [INFO] Running clang-format on project C++ sources.
 [INFO] clang-format left all tracked source files unchanged.
 [INFO] Launching Cullendula as the final pipeline step.
@@ -57,6 +60,7 @@ Open Coverage      : PASS Coverage index.html was handed to the desktop opener
 Doxygen            : PASS Documentation generated successfully
 Doxygen Warnings   : PASS warnings.txt is empty
 Open Docs          : PASS index.html was handed to the desktop opener
+Cppcheck           : PASS XML and HTML reports generated in /home/mpetrick/repos/Cullendula/reports/cppcheck
 clang-format       : PASS Formatting completed without changing files
 Launch App         : PASS Cullendula was started; the script resumed after the window was closed
 ============================================
@@ -99,6 +103,54 @@ The generated HTML entry point is:
 * `build/doxygen/warnings.txt`
 
 The configured Doxygen project version follows the current CMake project version automatically.
+
+## Run Cppcheck
+
+Cppcheck is integrated through the compilation database that CMake now exports automatically as `build/compile_commands.json`.
+
+Run it from the repository root like this:
+
+```bash
+cmake -S . -B build
+cmake --build build --parallel $(nproc)
+./scripts/run_cppcheck.sh --build-dir build
+```
+
+This produces:
+
+* `reports/cppcheck/cppcheck.xml`
+* `reports/cppcheck/html/index.html` when `cppcheck-htmlreport` is installed
+
+The default Cppcheck run is intentionally conservative:
+
+* it uses `--project=compile_commands.json`
+* it enables `warning`, `style`, `performance`, and `portability`
+* it uses the bundled Qt library model via `--library=qt`
+* it limits analysis to project sources in `src/` and `tests/`
+* it keeps findings informational in phase 1 by generating reports without failing purely because findings exist
+
+Tool/setup failures still fail the script and the local pipeline.
+
+## HTML Cppcheck report
+
+The optional HTML report is available when `cppcheck-htmlreport` is installed before running the analysis.
+
+Run the same command as above:
+
+```bash
+cmake -S . -B build
+cmake --build build --parallel $(nproc)
+./scripts/run_cppcheck.sh --build-dir build
+```
+
+This writes:
+
+* `reports/cppcheck/html/index.html`
+
+The local pipeline also prints that path and tries to open the generated `index.html` automatically, just like the coverage and Doxygen reports.
+
+### Current state of the Cppcheck report:
+![](media/cppcheck_report.png)
 
 ## Run the tests after building
 
@@ -210,7 +262,7 @@ In short:
 * the `.ts` update is manual; the `.qm` generation is automatic during builds
 
 ## Build information
-This is version 0.6.29.
+This is version 0.6.30.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -260,10 +312,10 @@ This is version 0.6.29.
 * v0.6.27 adds a third gloomy purple-and-cyan style while keeping the existing light and dark themes intact
 * v0.6.28 covers the real application entry point with a headless executable smoke test and includes `main.cpp` in coverage reporting
 * v0.6.29 pushes bootstrap and filesystem coverage further with deterministic helper seams, stronger edge-case tests, and improved coverage of failure-path handling
+* v0.6.30 adds repository-local Cppcheck infrastructure with compilation-database input, XML and HTML reports, pipeline integration, and usage documentation
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
 * show position and amount: like: "3/234 output: 7 trash: 10" - maybe in the status-bar?
 * add an icon for the program - started as feature-branch, but problematic for Linux/Wayland
 * important: add a file-existance_check before loading to QPixmap
-* add cppcheck for linting; do a run and fix ..

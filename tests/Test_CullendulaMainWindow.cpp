@@ -185,13 +185,13 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
     QFile cmakeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.6.29"));
+    QVERIFY(cmakeContents.contains("VERSION 0.6.30"));
 
     QFile readmeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.6.29."));
-    QVERIFY(readmeContents.contains("* v0.6.29 pushes bootstrap and filesystem coverage further with deterministic helper seams"));
+    QVERIFY(readmeContents.contains("This is version 0.6.30."));
+    QVERIFY(readmeContents.contains("* v0.6.30 adds repository-local Cppcheck infrastructure with compilation-database input"));
 }
 
 //----------------------------------------------------------------------------------

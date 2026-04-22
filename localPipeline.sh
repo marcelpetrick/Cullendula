@@ -16,11 +16,12 @@
 #   6. Generate Doxygen documentation
 #   7. Verify that the Doxygen warnings file exists and is empty
 #   8. Print the generated Doxygen index.html path and try to open it
-#   9. Run clang-format on the C++ sources in src/ and tests/
-#   10. Detect whether clang-format changed any files
-#   11. Launch the built Cullendula application by default as the final interactive step
-#   12. Suppress application launch when --noRun is provided, which is intended for CI
-#   13. Print a final stage-by-stage summary and exit with a useful status code
+#   9. Run Cppcheck and generate XML plus optional HTML reports
+#   10. Run clang-format on the C++ sources in src/ and tests/
+#   11. Detect whether clang-format changed any files
+#   12. Launch the built Cullendula application by default as the final interactive step
+#   13. Suppress application launch when --noRun is provided, which is intended for CI
+#   14. Print a final stage-by-stage summary and exit with a useful status code
 #
 # Invocation:
 #   ./localPipeline.sh
@@ -49,6 +50,7 @@ readonly PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly DEFAULT_BUILD_DIR="${PROJECT_ROOT}/build"
 readonly DEFAULT_COVERAGE_BUILD_DIR="${PROJECT_ROOT}/build-coverage"
 readonly STAGE_LOG_DIR="${PROJECT_ROOT}/.localPipeline"
+readonly DEFAULT_CPPCHECK_REPORT_DIR="${PROJECT_ROOT}/reports/cppcheck"
 
 VERBOSE=0
 NO_RUN=0
@@ -60,6 +62,9 @@ GCOV_COMMAND=""
 GCOVR_COMMAND=""
 readonly COVERAGE_MIN_LINE_PERCENT="90.0"
 PYTHON3_COMMAND=""
+CPPCHECK_COMMAND=""
+CPPCHECK_HTMLREPORT_COMMAND=""
+CPPCHECK_REPORT_DIR="${DEFAULT_CPPCHECK_REPORT_DIR}"
 
 declare -a SUMMARY_LINES=()
 declare -a FORMAT_TARGETS=()
@@ -73,6 +78,8 @@ OPEN_COVERAGE_OK=0
 DOXYGEN_OK=0
 DOXYGEN_WARNINGS_OK=0
 OPEN_DOCS_OK=0
+CPPCHECK_OK=0
+OPEN_CPPCHECK_OK=0
 FORMAT_OK=0
 FORMAT_CHANGED=0
 COVERAGE_LINE_PERCENT=""
@@ -88,9 +95,10 @@ Local project pipeline:
   4. Generate Doxygen documentation
   5. Check that the Doxygen warning log is empty
   6. Open the generated HTML reports when possible
-  7. Run clang-format on project C++ sources
-  8. Report whether formatting changed any files
-  9. Launch the built Cullendula app by default and wait for the user to close it
+  7. Run Cppcheck with XML output and optional HTML report generation
+  8. Run clang-format on project C++ sources
+  9. Report whether formatting changed any files
+  10. Launch the built Cullendula app by default and wait for the user to close it
      Use --noRun to suppress the application launch (intended for CI)
 EOF
 }
@@ -453,6 +461,51 @@ generate_doxygen() {
     return 0
 }
 
+run_cppcheck() {
+    local xml_report="${CPPCHECK_REPORT_DIR}/cppcheck.xml"
+    local html_index="${CPPCHECK_REPORT_DIR}/html/index.html"
+    local open_command=""
+    local cppcheck_args=(
+        --build-dir "${BUILD_DIR}"
+        --report-dir "${CPPCHECK_REPORT_DIR}"
+    )
+
+    if [[ "${VERBOSE}" -eq 1 ]]; then
+        cppcheck_args+=(--verbose)
+    fi
+
+    log "Running Cppcheck static analysis."
+    if ! run_command "Running Cppcheck" "${PROJECT_ROOT}/scripts/run_cppcheck.sh" "${cppcheck_args[@]}"; then
+        error "Cppcheck execution failed."
+        return 1
+    fi
+
+    if [[ ! -f "${xml_report}" ]]; then
+        error "Expected Cppcheck XML report was not created: ${xml_report}"
+        return 1
+    fi
+
+    log "Cppcheck XML report: ${xml_report}"
+
+    if [[ -f "${html_index}" ]]; then
+        log "Cppcheck HTML entry point: ${html_index}"
+        if open_command="$(detect_open_command)"; then
+            log "Opening Cppcheck report with '${open_command}'."
+            if run_command "Opening Cppcheck index.html" "${open_command}" "${html_index}"; then
+                OPEN_CPPCHECK_OK=1
+            else
+                warn "Could not open the generated Cppcheck report automatically."
+            fi
+        else
+            warn "No supported open command was found. Cppcheck report will not be opened automatically."
+        fi
+    else
+        warn "Cppcheck HTML report was not generated. XML output is still available."
+    fi
+
+    return 0
+}
+
 run_clang_format() {
     local before_checksums_file
     local after_checksums_file
@@ -611,6 +664,7 @@ main() {
     require_command gcov || missing_prerequisites=1
     require_command gcovr || missing_prerequisites=1
     require_command python3 || missing_prerequisites=1
+    require_command cppcheck || missing_prerequisites=1
 
     if ! CTEST_COMMAND="$(resolve_ctest_command)"; then
         error "Could not resolve a usable CTest executable."
@@ -622,6 +676,8 @@ main() {
     GCOV_COMMAND="$(command -v gcov 2>/dev/null || true)"
     GCOVR_COMMAND="$(command -v gcovr 2>/dev/null || true)"
     PYTHON3_COMMAND="$(command -v python3 2>/dev/null || true)"
+    CPPCHECK_COMMAND="$(command -v cppcheck 2>/dev/null || true)"
+    CPPCHECK_HTMLREPORT_COMMAND="$(command -v cppcheck-htmlreport 2>/dev/null || true)"
 
     if ! PARALLEL_JOBS="$(detect_parallel_jobs)"; then
         missing_prerequisites=1
@@ -713,6 +769,35 @@ main() {
         mark_result "Open Docs" "SKIP" "Skipped because Doxygen generation failed"
     fi
 
+    if [[ "${BUILD_OK}" -eq 1 ]]; then
+        if run_cppcheck; then
+            CPPCHECK_OK=1
+            if [[ -n "${CPPCHECK_HTMLREPORT_COMMAND}" ]]; then
+                mark_result "Cppcheck" "PASS" "XML and HTML reports generated in ${CPPCHECK_REPORT_DIR}"
+            else
+                mark_result "Cppcheck" "PASS" "XML report generated in ${CPPCHECK_REPORT_DIR}; HTML generation unavailable"
+            fi
+        else
+            mark_result "Cppcheck" "FAIL" "Static-analysis execution or report generation failed"
+        fi
+    else
+        mark_result "Cppcheck" "SKIP" "Skipped because build failed"
+    fi
+
+    if [[ "${CPPCHECK_OK}" -eq 1 ]]; then
+        if [[ -n "${CPPCHECK_HTMLREPORT_COMMAND}" ]]; then
+            if [[ "${OPEN_CPPCHECK_OK}" -eq 1 ]]; then
+                mark_result "Open Cppcheck" "PASS" "index.html was handed to the desktop opener"
+            else
+                mark_result "Open Cppcheck" "WARN" "index.html path was printed but auto-open was unavailable or failed"
+            fi
+        else
+            mark_result "Open Cppcheck" "SKIP" "Skipped because HTML report generation is unavailable"
+        fi
+    else
+        mark_result "Open Cppcheck" "SKIP" "Skipped because Cppcheck did not complete successfully"
+    fi
+
     if run_clang_format; then
         FORMAT_OK=1
         if [[ "${FORMAT_CHANGED}" -eq 1 ]]; then
@@ -725,7 +810,7 @@ main() {
     fi
 
     local exit_code=1
-    if [[ "${BUILD_OK}" -eq 1 && "${TESTS_OK}" -eq 1 && "${COVERAGE_OK}" -eq 1 && "${COVERAGE_THRESHOLD_OK}" -eq 1 && "${DOXYGEN_OK}" -eq 1 && "${DOXYGEN_WARNINGS_OK}" -eq 1 && "${FORMAT_OK}" -eq 1 ]]; then
+    if [[ "${BUILD_OK}" -eq 1 && "${TESTS_OK}" -eq 1 && "${COVERAGE_OK}" -eq 1 && "${COVERAGE_THRESHOLD_OK}" -eq 1 && "${DOXYGEN_OK}" -eq 1 && "${DOXYGEN_WARNINGS_OK}" -eq 1 && "${CPPCHECK_OK}" -eq 1 && "${FORMAT_OK}" -eq 1 ]]; then
         exit_code=0
     fi
 
