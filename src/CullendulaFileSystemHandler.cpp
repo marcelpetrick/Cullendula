@@ -34,8 +34,7 @@ QSet<QString> getSupportedImageSuffixes() {
     return suffixes;
 }
 
-QStringList normalizeExtensions(QStringList const& extensions) {
-    QSet<QString> const supportedSuffixes = getSupportedImageSuffixes();
+QStringList normalizeExtensions(QStringList const& extensions, QSet<QString> const& supportedSuffixes) {
     QStringList normalizedExtensions;
 
     for (QString const& extension : extensions) {
@@ -48,6 +47,8 @@ QStringList normalizeExtensions(QStringList const& extensions) {
     return normalizedExtensions;
 }
 
+QStringList normalizeExtensions(QStringList const& extensions) { return normalizeExtensions(extensions, getSupportedImageSuffixes()); }
+
 QString formatMoveErrorMessage(QString const& fileName, QString const& subdir, QString const& details) {
     //: Error message after moving a file into a named subdirectory such as "output", "trash", "undo", or "redo" failed.
     return CullendulaFileSystemHandler::tr("Could not move '%1' to '%2': %3").arg(fileName, subdir, details);
@@ -57,6 +58,14 @@ QString formatDirectorySetupErrorMessage(QString const& subdir, QString const& d
     //: Error message after preparing an application-managed subdirectory such as "output" or "trash" failed.
     return CullendulaFileSystemHandler::tr("Could not prepare '%1' directory at '%2': %3").arg(subdir, directoryPath, details);
 }
+
+bool pathExists(QString const& path) { return QFileInfo(path).exists(); }
+
+bool pathIsDirectory(QString const& path) { return QFileInfo(path).isDir(); }
+
+bool directoryExists(QString const& path) { return QDir(path).exists(); }
+
+bool mkdirInDirectory(QDir& parentDir, QString const& subdir) { return parentDir.mkdir(subdir); }
 }  // namespace
 
 //----------------------------------------------------------------------------
@@ -69,15 +78,21 @@ CullendulaFileSystemHandler::CullendulaFileSystemHandler() : m_workingPath("") {
 //----------------------------------------------------------------------------
 
 QStringList CullendulaFileSystemHandler::getSuggestedImageExtensions() {
+    return CullendulaFileSystemHandlerDetail::getSuggestedImageExtensions(getSupportedImageSuffixes());
+}
+
+//----------------------------------------------------------------------------
+
+QStringList CullendulaFileSystemHandlerDetail::getSuggestedImageExtensions(QSet<QString> const& supportedSuffixes) {
     QStringList const preferredExtensions = {"png", "jpg", "jpeg", "webp", "gif", "bmp", "tif", "tiff", "svg", "ico"};
 
-    QStringList suggestedExtensions = normalizeExtensions(preferredExtensions);
+    QStringList suggestedExtensions = normalizeExtensions(preferredExtensions, supportedSuffixes);
     if (suggestedExtensions.size() >= c_maxSuggestedExtensions) {
         suggestedExtensions.resize(c_maxSuggestedExtensions);
         return suggestedExtensions;
     }
 
-    QStringList additionalExtensions = getSupportedImageSuffixes().values();
+    QStringList additionalExtensions = supportedSuffixes.values();
     std::sort(additionalExtensions.begin(), additionalExtensions.end());
 
     for (QString const& extension : additionalExtensions) {
@@ -90,6 +105,45 @@ QStringList CullendulaFileSystemHandler::getSuggestedImageExtensions() {
     }
 
     return suggestedExtensions;
+}
+
+//----------------------------------------------------------------------------
+
+CullendulaFileSystemHandlerDetail::OutputFolderHooks CullendulaFileSystemHandlerDetail::defaultOutputFolderHooks() {
+    return OutputFolderHooks{pathExists, pathIsDirectory, directoryExists, mkdirInDirectory};
+}
+
+//----------------------------------------------------------------------------
+
+bool CullendulaFileSystemHandlerDetail::createOutputFolder(QDir& workingPath, QString const& subdir, QString& errorMessage, OutputFolderHooks const& hooks) {
+    QString const outputDirPath = workingPath.path() + QDir::separator() + subdir;
+
+    if (hooks.pathExists(outputDirPath) && !hooks.pathIsDirectory(outputDirPath)) {
+        errorMessage = formatDirectorySetupErrorMessage(subdir, outputDirPath,
+                                                        CullendulaFileSystemHandler::tr("the path is already occupied by a non-directory filesystem entry"));
+        return false;
+    }
+
+    if (hooks.directoryExists(outputDirPath)) {
+        qDebug() << "output-folder exists already :) - nothing to do";
+        return true;
+    }
+
+    bool const creationSuccessful = hooks.mkdir(workingPath, subdir);
+    if (!creationSuccessful) {
+        errorMessage = formatDirectorySetupErrorMessage(subdir, outputDirPath, CullendulaFileSystemHandler::tr("creating the directory failed"));
+        return false;
+    }
+
+    if (!hooks.directoryExists(outputDirPath)) {
+        qDebug() << "very severe error - could not create output-dir :(";
+        errorMessage =
+            formatDirectorySetupErrorMessage(subdir, outputDirPath, CullendulaFileSystemHandler::tr("the directory is still missing after creation"));
+        return false;
+    }
+
+    qDebug() << "output-folder exists after creation!";
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -388,36 +442,13 @@ bool CullendulaFileSystemHandler::rebuildImageFileList(QString const& preferredI
 
 bool CullendulaFileSystemHandler::createOutputFolder(QString const& subdir) {
     qDebug() << "CullendulaFileSystemHandler::createOutputFolder():" << subdir;
-    QString const outputDirPath = m_workingPath.path() + QDir::separator() + subdir;
-    QFileInfo const outputPathInfo(outputDirPath);
-    QDir outputDirTest(outputDirPath);
-
-    if (outputPathInfo.exists() && !outputPathInfo.isDir()) {
-        //: Failure detail for a managed output directory path that already exists as a regular file or another non-directory entry.
-        setLastErrorMessage(formatDirectorySetupErrorMessage(subdir, outputDirPath, tr("the path is already occupied by a non-directory filesystem entry")));
+    QString errorMessage;
+    bool const success = CullendulaFileSystemHandlerDetail::createOutputFolder(m_workingPath, subdir, errorMessage,
+                                                                               CullendulaFileSystemHandlerDetail::defaultOutputFolderHooks());
+    if (!success) {
+        setLastErrorMessage(errorMessage);
         return false;
     }
-
-    if (outputDirTest.exists()) {
-        qDebug() << "output-folder exists already :) - nothing to do";
-        return true;
-    }
-
-    bool const creationSuccessful = m_workingPath.mkdir(subdir);
-    if (!creationSuccessful) {
-        //: Failure detail for a managed output directory that Qt could not create on disk.
-        setLastErrorMessage(formatDirectorySetupErrorMessage(subdir, outputDirPath, tr("creating the directory failed")));
-        return false;
-    }
-
-    if (!outputDirTest.exists()) {
-        qDebug() << "very severe error - could not create output-dir :(";
-        //: Failure detail for a managed output directory that still does not exist after a reported creation attempt.
-        setLastErrorMessage(formatDirectorySetupErrorMessage(subdir, outputDirPath, tr("the directory is still missing after creation")));
-        return false;
-    }
-
-    qDebug() << "output-folder exists after creation!";
     return true;
 }
 

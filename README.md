@@ -52,7 +52,7 @@ time ./localPipeline.sh
 Configure+Build    : PASS Project configured and built in /home/mpetrick/repos/Cullendula/build
 Unit Tests         : PASS CTest completed without failures
 Coverage           : PASS Coverage HTML generated successfully in /home/mpetrick/repos/Cullendula/build-coverage
-Coverage Gate      : PASS Line coverage is 94.4% (threshold 90.0%)
+Coverage Gate      : PASS Line coverage is 98.6% (threshold 90.0%)
 Open Coverage      : PASS Coverage index.html was handed to the desktop opener
 Doxygen            : PASS Documentation generated successfully
 Doxygen Warnings   : PASS warnings.txt is empty
@@ -210,7 +210,7 @@ In short:
 * the `.ts` update is manual; the `.qm` generation is automatic during builds
 
 ## Build information
-This is version 0.6.28.
+This is version 0.6.29.
 
 ### Builds and runs with:
 * Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
@@ -259,6 +259,7 @@ This is version 0.6.28.
 * v0.6.26 adds translator-facing Qt context comments and UI string comments so Linguist translations can distinguish ambiguous labels and status text more reliably
 * v0.6.27 adds a third gloomy purple-and-cyan style while keeping the existing light and dark themes intact
 * v0.6.28 covers the real application entry point with a headless executable smoke test and includes `main.cpp` in coverage reporting
+* v0.6.29 pushes bootstrap and filesystem coverage further with deterministic helper seams, stronger edge-case tests, and improved coverage of failure-path handling
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

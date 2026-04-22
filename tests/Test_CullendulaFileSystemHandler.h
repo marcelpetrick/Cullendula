@@ -38,6 +38,12 @@ class Test_CullendulaFileSystemHandler : public QObject {
     //! Verify normalization and upper bound of suggested extensions.
     void slot_Test_GetSuggestedImageExtensions_IsNormalizedAndBounded();
 
+    //! Verify suggested extensions append additional supported formats when preferred ones do not fill the limit.
+    void slot_Test_GetSuggestedImageExtensions_AppendsAdditionalSupportedFormats();
+
+    //! Verify suggested extensions stop appending once the helper reaches its hard cap.
+    void slot_Test_GetSuggestedImageExtensions_StopsWhenAdditionalFormatsReachLimit();
+
     //! Verify invalid extension entries are removed during normalization.
     void slot_Test_SetAllowedImageExtensions_NormalizesAndDropsUnsupportedValues();
 
@@ -74,11 +80,17 @@ class Test_CullendulaFileSystemHandler : public QObject {
     //! Verify failed reloads clear the previous in-memory state.
     void slot_Test_SetWorkingPath_ClearsStateOnReloadFailure();
 
+    //! Verify missing current files are reported as no current image path.
+    void slot_Test_GetCurrentImagePath_ReturnsEmptyWhenCurrentFileWasDeleted();
+
     //! Verify navigation wraps around at both ends of the list.
     void slot_Test_NavigationWrapsAround();
 
     //! Verify saving moves the file and advances the session state.
     void slot_Test_SaveCurrentFile_MovesFileAndUpdatesState();
+
+    //! Verify saving the final remaining image clears the current selection.
+    void slot_Test_SaveCurrentFile_LastImageClearsCurrentSelection();
 
     //! Verify trashing moves the file and advances the session state.
     void slot_Test_TrashCurrentFile_MovesFileAndUpdatesState();
@@ -121,6 +133,21 @@ class Test_CullendulaFileSystemHandler : public QObject {
 
     //! Verify failed redo operations keep history intact for a retry.
     void slot_Test_Redo_FailurePreservesUndoAndRedoHistory();
+
+    //! Verify rebuilding the image list falls back when a preferred image path is gone.
+    void slot_Test_RebuildImageFileList_MissingPreferredPathUsesFallbackPosition();
+
+    //! Verify redo keeps the current fallback position when the restored source is no longer listed.
+    void slot_Test_Redo_MissingSourceIndexUsesCurrentFallbackPosition();
+
+    //! Verify createOutputFolder reports mkdir failures through the helper seam.
+    void slot_Test_CreateOutputFolder_HelperReportsMkdirFailure();
+
+    //! Verify createOutputFolder reports missing directories after a reported creation success.
+    void slot_Test_CreateOutputFolder_HelperReportsMissingDirectoryAfterCreation();
+
+    //! Verify internal sanity rejects an out-of-range current image index.
+    void slot_Test_CheckInternalSanity_FailsForOutOfRangeIndex();
 
    private:
     /*!

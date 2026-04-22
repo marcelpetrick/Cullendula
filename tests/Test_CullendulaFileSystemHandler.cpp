@@ -10,6 +10,16 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 
+namespace {
+bool pathDoesNotExist(QString const&) { return false; }
+
+bool pathIsNotDirectory(QString const&) { return false; }
+
+bool mkdirFails(QDir&, QString const&) { return false; }
+
+bool mkdirSucceeds(QDir&, QString const&) { return true; }
+}  // namespace
+
 //----------------------------------------------------------------------------------
 
 QString Test_CullendulaFileSystemHandler::createFile(QString const& relativePath) {
@@ -92,6 +102,30 @@ void Test_CullendulaFileSystemHandler::slot_Test_GetSuggestedImageExtensions_IsN
         QVERIFY(!seenExtensions.contains(extension));
         seenExtensions.insert(extension);
     }
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_GetSuggestedImageExtensions_AppendsAdditionalSupportedFormats() {
+    QSet<QString> const supportedSuffixes = {"png", "jpg", "avif", "heic"};
+
+    QStringList const suggestedExtensions = CullendulaFileSystemHandlerDetail::getSuggestedImageExtensions(supportedSuffixes);
+
+    QCOMPARE(suggestedExtensions, QStringList({"png", "jpg", "avif", "heic"}));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_GetSuggestedImageExtensions_StopsWhenAdditionalFormatsReachLimit() {
+    QSet<QString> const supportedSuffixes = {"png", "jpg", "avif", "heic", "jxl", "pbm", "pgm", "ppm", "xbm", "xpm", "cur"};
+
+    QStringList const suggestedExtensions = CullendulaFileSystemHandlerDetail::getSuggestedImageExtensions(supportedSuffixes);
+
+    QCOMPARE(suggestedExtensions.size(), 10);
+    QVERIFY(suggestedExtensions.contains("png"));
+    QVERIFY(suggestedExtensions.contains("jpg"));
+    QVERIFY(suggestedExtensions.contains("cur"));
+    QVERIFY(!suggestedExtensions.contains("xpm"));
 }
 
 //----------------------------------------------------------------------------------
@@ -258,6 +292,19 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_ClearsStateOnRel
 
 //----------------------------------------------------------------------------------
 
+void Test_CullendulaFileSystemHandler::slot_Test_GetCurrentImagePath_ReturnsEmptyWhenCurrentFileWasDeleted() {
+    createImageSet();
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+
+    QString const currentPath = m_handler->getCurrentImagePath();
+    QVERIFY(!currentPath.isEmpty());
+    QVERIFY(QFile::remove(currentPath));
+
+    QVERIFY(m_handler->getCurrentImagePath().isEmpty());
+}
+
+//----------------------------------------------------------------------------------
+
 void Test_CullendulaFileSystemHandler::slot_Test_NavigationWrapsAround() {
     createImageSet();
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
@@ -286,6 +333,18 @@ void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_MovesFileAndUpd
     QCOMPARE(m_handler->getCurrentStatus(), QString("showing 1 of 1"));
     QVERIFY(m_handler->canUndo());
     QVERIFY(!m_handler->canRedo());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_LastImageClearsCurrentSelection() {
+    createFile("alpha.jpg");
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+
+    QVERIFY(m_handler->saveCurrentFile());
+    QVERIFY(m_handler->getCurrentImagePath().isEmpty());
+    QCOMPARE(m_handler->m_positionCurrentFile, -1);
+    QVERIFY(m_handler->canUndo());
 }
 
 //----------------------------------------------------------------------------------
@@ -514,4 +573,64 @@ void Test_CullendulaFileSystemHandler::slot_Test_Redo_FailurePreservesUndoAndRed
     QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg"));
     QVERIFY(m_handler->canUndo());
     QVERIFY(!m_handler->canRedo());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_RebuildImageFileList_MissingPreferredPathUsesFallbackPosition() {
+    createImageSet();
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+
+    QVERIFY(m_handler->rebuildImageFileList(m_tempDir->path() + QDir::separator() + "missing.jpg", 1));
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_Redo_MissingSourceIndexUsesCurrentFallbackPosition() {
+    createImageSet();
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+    QVERIFY(m_handler->saveCurrentFile());
+    QVERIFY(m_handler->undo());
+
+    m_handler->m_currentImages = {QFileInfo(m_tempDir->path() + QDir::separator() + "beta.jpeg")};
+    m_handler->m_positionCurrentFile = 0;
+
+    QVERIFY(m_handler->redo());
+    QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_CreateOutputFolder_HelperReportsMkdirFailure() {
+    QDir workingDir(m_tempDir->path());
+    QString errorMessage;
+    CullendulaFileSystemHandlerDetail::OutputFolderHooks const hooks{pathDoesNotExist, pathIsNotDirectory, pathDoesNotExist, mkdirFails};
+
+    QVERIFY(!CullendulaFileSystemHandlerDetail::createOutputFolder(workingDir, "output", errorMessage, hooks));
+    QVERIFY(errorMessage.contains("Could not prepare 'output' directory"));
+    QVERIFY(errorMessage.contains("creating the directory failed"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_CreateOutputFolder_HelperReportsMissingDirectoryAfterCreation() {
+    QDir workingDir(m_tempDir->path());
+    QString errorMessage;
+    CullendulaFileSystemHandlerDetail::OutputFolderHooks const hooks{pathDoesNotExist, pathIsNotDirectory, pathDoesNotExist, mkdirSucceeds};
+
+    QVERIFY(!CullendulaFileSystemHandlerDetail::createOutputFolder(workingDir, "trash", errorMessage, hooks));
+    QVERIFY(errorMessage.contains("Could not prepare 'trash' directory"));
+    QVERIFY(errorMessage.contains("still missing after creation"));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_CheckInternalSanity_FailsForOutOfRangeIndex() {
+    createImageSet();
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+
+    m_handler->m_positionCurrentFile = m_handler->m_currentImages.size();
+
+    QVERIFY(!m_handler->checkInternalSanity());
 }
