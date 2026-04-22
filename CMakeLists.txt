@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.28)
 set(QT_CREATOR_SKIP_MAINTENANCE_TOOL_PROVIDER ON)
 
 project(Cullendula
-    VERSION 0.6.29
+    VERSION 0.6.30
     LANGUAGES CXX
 )
 
@@ -16,6 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Allow configuring without tests if desired (useful for IDE/GUIs)
 option(CULLENDULA_BUILD_TESTS "Build tests" ON)
