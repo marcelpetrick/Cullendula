@@ -2,6 +2,12 @@
 A program to pick out the best shots of the vast amount of taken pictures per photo session.  
 The name itself is a wordplay of the plant `Calendula` and the activity `to cull` (slang for filtering photos).
 
+**Author: Marcel Petrick <mail@marcelpetrick.it>**
+
+**Note: projected is generated with AI.**
+
+**License: GPLv3 or later. See `LICENSE`.**
+
 ## How to use?
 Start it and then drag&drop a folder with the pictures or an example picture to the central area of the app. Cullendula figures out itself which path to use.  
 It also creates automatically a new folder named "output" inside the given path.  
