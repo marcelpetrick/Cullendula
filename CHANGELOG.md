@@ -68,3 +68,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.7.3 lets each test object write its own report when CULLENDULA_TEST_REPORT_DIR is set, so the results are readable on platforms where the test executable writes nothing to the console
 * v0.7.4 stops mangling every path on platforms other than Linux: the leading slash of a dropped file URL is now removed only when it really precedes a drive letter, which is what made the application unable to open any folder on Windows
 * v0.7.5 builds the paths in the filesystem tests with the canonical separator, so the last test that compared a test-built path against a handler-returned one also passes where the native separator is not a slash
+* v0.7.6 joins every path in the tests with the canonical separator, which removes the last cross-platform failures and the whole class of comparisons that only held where the native separator is a slash

@@ -74,8 +74,8 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FromDirectory() 
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
     QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("alpha.jpg"));
     QCOMPARE(m_handler->getCurrentStatus(), QString("showing 1 of 2"));
-    QVERIFY(QDir(m_tempDir->path() + QDir::separator() + "output").exists());
-    QVERIFY(QDir(m_tempDir->path() + QDir::separator() + "trash").exists());
+    QVERIFY(QDir(QDir(m_tempDir->path()).filePath("output")).exists());
+    QVERIFY(QDir(QDir(m_tempDir->path()).filePath("trash")).exists());
 }
 
 //----------------------------------------------------------------------------------
@@ -87,8 +87,8 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FromImageFile() 
     QVERIFY(m_handler->setWorkingPath(imagePath));
     QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).absolutePath(), QFileInfo(imagePath).absolutePath());
     QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("alpha.jpg"));
-    QVERIFY(QDir(QFileInfo(imagePath).absolutePath() + QDir::separator() + "output").exists());
-    QVERIFY(QDir(QFileInfo(imagePath).absolutePath() + QDir::separator() + "trash").exists());
+    QVERIFY(QDir(QDir(QFileInfo(imagePath).absolutePath()).filePath("output")).exists());
+    QVERIFY(QDir(QDir(QFileInfo(imagePath).absolutePath()).filePath("trash")).exists());
 }
 
 //----------------------------------------------------------------------------------
@@ -172,14 +172,14 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FindsPngAndUpper
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_InvalidPath() {
-    QVERIFY(!m_handler->setWorkingPath(m_tempDir->path() + QDir::separator() + "missing"));
+    QVERIFY(!m_handler->setWorkingPath(QDir(m_tempDir->path()).filePath("missing")));
     QVERIFY(m_handler->getCurrentImagePath().isEmpty());
 }
 
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_PathWithMissingParentDirectory_ReturnsError() {
-    QString const missingPath = m_tempDir->path() + QDir::separator() + "missing" + QDir::separator() + "alpha.jpg";
+    QString const missingPath = QDir(m_tempDir->path()).filePath("missing/alpha.jpg");
 
     QVERIFY(!m_handler->setWorkingPath(missingPath));
     QVERIFY(m_handler->getCurrentImagePath().isEmpty());
@@ -193,8 +193,8 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FailsWhenOutputD
     createFile("output");
 
     QVERIFY(!m_handler->setWorkingPath(m_tempDir->path()));
-    QVERIFY(QFileInfo(m_tempDir->path() + QDir::separator() + "output").isFile());
-    QVERIFY(QDir(m_tempDir->path() + QDir::separator() + "trash").exists());
+    QVERIFY(QFileInfo(QDir(m_tempDir->path()).filePath("output")).isFile());
+    QVERIFY(QDir(QDir(m_tempDir->path()).filePath("trash")).exists());
     QVERIFY(m_handler->getLastErrorMessage().contains("Could not prepare 'output' directory"));
     QVERIFY(m_handler->getLastErrorMessage().contains("non-directory"));
 }
@@ -206,8 +206,8 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FailsWhenTrashDi
     createFile("trash");
 
     QVERIFY(!m_handler->setWorkingPath(m_tempDir->path()));
-    QVERIFY(QDir(m_tempDir->path() + QDir::separator() + "output").exists());
-    QVERIFY(QFileInfo(m_tempDir->path() + QDir::separator() + "trash").isFile());
+    QVERIFY(QDir(QDir(m_tempDir->path()).filePath("output")).exists());
+    QVERIFY(QFileInfo(QDir(m_tempDir->path()).filePath("trash")).isFile());
     QVERIFY(m_handler->getLastErrorMessage().contains("Could not prepare 'trash' directory"));
     QVERIFY(m_handler->getLastErrorMessage().contains("non-directory"));
 }
@@ -218,13 +218,13 @@ void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_RecreatesMissin
     createImageSet();
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
 
-    QDir outputDir(m_tempDir->path() + QDir::separator() + "output");
+    QDir outputDir(QDir(m_tempDir->path()).filePath("output"));
     QVERIFY(outputDir.removeRecursively());
     QVERIFY(!outputDir.exists());
 
     QVERIFY(m_handler->saveCurrentFile());
     QVERIFY(outputDir.exists());
-    QVERIFY(QFile::exists(outputDir.path() + QDir::separator() + "alpha.jpg"));
+    QVERIFY(QFile::exists(QDir(outputDir.path()).filePath("alpha.jpg")));
     QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
 }
 
@@ -234,13 +234,13 @@ void Test_CullendulaFileSystemHandler::slot_Test_TrashCurrentFile_RecreatesMissi
     createImageSet();
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
 
-    QDir trashDir(m_tempDir->path() + QDir::separator() + "trash");
+    QDir trashDir(QDir(m_tempDir->path()).filePath("trash"));
     QVERIFY(trashDir.removeRecursively());
     QVERIFY(!trashDir.exists());
 
     QVERIFY(m_handler->trashCurrentFile());
     QVERIFY(trashDir.exists());
-    QVERIFY(QFile::exists(trashDir.path() + QDir::separator() + "alpha.jpg"));
+    QVERIFY(QFile::exists(QDir(trashDir.path()).filePath("alpha.jpg")));
     QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
 }
 
@@ -250,9 +250,9 @@ void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_FailsWhenOutput
     createImageSet();
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
 
-    QDir outputDir(m_tempDir->path() + QDir::separator() + "output");
+    QDir outputDir(QDir(m_tempDir->path()).filePath("output"));
     QVERIFY(outputDir.removeRecursively());
-    QVERIFY(createFile("output") == m_tempDir->path() + QDir::separator() + "output");
+    QVERIFY(createFile("output") == QDir(m_tempDir->path()).filePath("output"));
 
     QString const originalCurrent = m_handler->getCurrentImagePath();
     QVERIFY(!originalCurrent.isEmpty());
@@ -271,8 +271,8 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_NoImages() {
 
     QVERIFY(!m_handler->setWorkingPath(m_tempDir->path()));
     QVERIFY(m_handler->getCurrentImagePath().isEmpty());
-    QVERIFY(QDir(m_tempDir->path() + QDir::separator() + "output").exists());
-    QVERIFY(QDir(m_tempDir->path() + QDir::separator() + "trash").exists());
+    QVERIFY(QDir(QDir(m_tempDir->path()).filePath("output")).exists());
+    QVERIFY(QDir(QDir(m_tempDir->path()).filePath("trash")).exists());
 }
 
 //----------------------------------------------------------------------------------
@@ -331,7 +331,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_MovesFileAndUpd
     QVERIFY(m_handler->saveCurrentFile());
 
     QVERIFY(!QFile::exists(originalCurrent));
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("output/alpha.jpg")));
     QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
     QCOMPARE(m_handler->getCurrentStatus(), QString("showing 1 of 1"));
     QVERIFY(m_handler->canUndo());
@@ -358,7 +358,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_TrashCurrentFile_MovesFileAndUp
 
     QVERIFY(m_handler->trashCurrentFile());
 
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "trash" + QDir::separator() + "alpha.jpg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("trash/alpha.jpg")));
     QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
     QCOMPARE(m_handler->getCurrentStatus(), QString("showing 1 of 1"));
     QVERIFY(m_handler->canUndo());
@@ -371,7 +371,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_UndoRedo_MoveFilesOnDisk() {
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
 
     QString const originalPath = m_handler->getCurrentImagePath();
-    QString const movedPath = m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg";
+    QString const movedPath = QDir(m_tempDir->path()).filePath("output/alpha.jpg");
 
     QVERIFY(m_handler->saveCurrentFile());
     QVERIFY(QFile::exists(movedPath));
@@ -406,8 +406,8 @@ void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_UsesUniqueNameO
     QVERIFY(m_handler->saveCurrentFile());
 
     QVERIFY(!QFile::exists(originalCurrent));
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg"));
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha (1).jpg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("output/alpha.jpg")));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("output/alpha (1).jpg")));
     QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
     QVERIFY(m_handler->canUndo());
     QVERIFY(!m_handler->canRedo());
@@ -424,7 +424,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_UsesNextFreeCol
 
     QVERIFY(m_handler->saveCurrentFile());
 
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha (3).jpg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("output/alpha (3).jpg")));
 }
 
 //----------------------------------------------------------------------------------
@@ -448,7 +448,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_SaveCurrentFile_RenameFailure_R
     QVERIFY(m_handler->getLastErrorMessage().contains("Could not move 'alpha.jpg' to 'output'"));
     QVERIFY(m_handler->getLastErrorMessage().contains("rename operation failed"));
     QVERIFY(!m_handler->canUndo());
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "beta.jpeg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("beta.jpeg")));
 }
 
 //----------------------------------------------------------------------------------
@@ -460,8 +460,8 @@ void Test_CullendulaFileSystemHandler::slot_Test_TrashCurrentFile_UsesUniqueName
 
     QVERIFY(m_handler->trashCurrentFile());
 
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "trash" + QDir::separator() + "alpha.jpg"));
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "trash" + QDir::separator() + "alpha (1).jpg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("trash/alpha.jpg")));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("trash/alpha (1).jpg")));
     QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
 }
 
@@ -479,7 +479,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_TrashCurrentFile_RenameFailure_
     QVERIFY(m_handler->getLastErrorMessage().contains("Could not move 'alpha.jpg' to 'trash'"));
     QVERIFY(m_handler->getLastErrorMessage().contains("rename operation failed"));
     QVERIFY(!m_handler->canUndo());
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "beta.jpeg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("beta.jpeg")));
 }
 
 //----------------------------------------------------------------------------------
@@ -503,13 +503,13 @@ void Test_CullendulaFileSystemHandler::slot_Test_Undo_WhenMovedFileIsMissing_Ret
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
     QVERIFY(m_handler->saveCurrentFile());
 
-    QString const movedPath = m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg";
+    QString const movedPath = QDir(m_tempDir->path()).filePath("output/alpha.jpg");
     QVERIFY(QFile::exists(movedPath));
     QVERIFY(QFile::remove(movedPath));
 
     QVERIFY(!m_handler->undo());
     QVERIFY(m_handler->getLastErrorMessage().contains("Could not move 'alpha.jpg' to 'undo'"));
-    QVERIFY(!QFile::exists(m_tempDir->path() + QDir::separator() + "alpha.jpg"));
+    QVERIFY(!QFile::exists(QDir(m_tempDir->path()).filePath("alpha.jpg")));
 }
 
 //----------------------------------------------------------------------------------
@@ -519,7 +519,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_Undo_FailurePreservesUndoAndRed
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
     QVERIFY(m_handler->saveCurrentFile());
 
-    QString const movedPath = m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg";
+    QString const movedPath = QDir(m_tempDir->path()).filePath("output/alpha.jpg");
     QVERIFY(QFile::exists(movedPath));
     QVERIFY(QFile::remove(movedPath));
 
@@ -531,7 +531,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_Undo_FailurePreservesUndoAndRed
 
     QVERIFY(createFile("output/alpha.jpg") == movedPath);
     QVERIFY(m_handler->undo());
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "alpha.jpg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("alpha.jpg")));
     QVERIFY(!m_handler->canUndo());
     QVERIFY(m_handler->canRedo());
 }
@@ -544,13 +544,13 @@ void Test_CullendulaFileSystemHandler::slot_Test_Redo_WhenRestoredFileIsMissing_
     QVERIFY(m_handler->saveCurrentFile());
     QVERIFY(m_handler->undo());
 
-    QString const restoredPath = m_tempDir->path() + QDir::separator() + "alpha.jpg";
+    QString const restoredPath = QDir(m_tempDir->path()).filePath("alpha.jpg");
     QVERIFY(QFile::exists(restoredPath));
     QVERIFY(QFile::remove(restoredPath));
 
     QVERIFY(!m_handler->redo());
     QVERIFY(m_handler->getLastErrorMessage().contains("Could not move 'alpha.jpg' to 'redo'"));
-    QVERIFY(!QFile::exists(m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg"));
+    QVERIFY(!QFile::exists(QDir(m_tempDir->path()).filePath("output/alpha.jpg")));
 }
 
 //----------------------------------------------------------------------------------
@@ -561,7 +561,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_Redo_FailurePreservesUndoAndRed
     QVERIFY(m_handler->saveCurrentFile());
     QVERIFY(m_handler->undo());
 
-    QString const restoredPath = m_tempDir->path() + QDir::separator() + "alpha.jpg";
+    QString const restoredPath = QDir(m_tempDir->path()).filePath("alpha.jpg");
     QVERIFY(QFile::exists(restoredPath));
     QVERIFY(QFile::remove(restoredPath));
 
@@ -573,7 +573,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_Redo_FailurePreservesUndoAndRed
 
     QVERIFY(createFile("alpha.jpg") == restoredPath);
     QVERIFY(m_handler->redo());
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("output/alpha.jpg")));
     QVERIFY(m_handler->canUndo());
     QVERIFY(!m_handler->canRedo());
 }
@@ -584,7 +584,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_RebuildImageFileList_MissingPre
     createImageSet();
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
 
-    QVERIFY(m_handler->rebuildImageFileList(m_tempDir->path() + QDir::separator() + "missing.jpg", 1));
+    QVERIFY(m_handler->rebuildImageFileList(QDir(m_tempDir->path()).filePath("missing.jpg"), 1));
     QCOMPARE(QFileInfo(m_handler->getCurrentImagePath()).fileName(), QString("beta.jpeg"));
 }
 
@@ -596,7 +596,7 @@ void Test_CullendulaFileSystemHandler::slot_Test_Redo_MissingSourceIndexUsesCurr
     QVERIFY(m_handler->saveCurrentFile());
     QVERIFY(m_handler->undo());
 
-    m_handler->m_currentImages = {QFileInfo(m_tempDir->path() + QDir::separator() + "beta.jpeg")};
+    m_handler->m_currentImages = {QFileInfo(QDir(m_tempDir->path()).filePath("beta.jpeg"))};
     m_handler->m_positionCurrentFile = 0;
 
     QVERIFY(m_handler->redo());

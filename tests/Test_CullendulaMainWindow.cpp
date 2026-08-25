@@ -36,7 +36,7 @@ class TestableCullendulaMainWindow : public CullendulaMainWindow {
 //----------------------------------------------------------------------------------
 
 QString Test_CullendulaMainWindow::createImage(QString const& relativePath, QColor const& color) {
-    QString const absolutePath = m_tempDir->path() + QDir::separator() + relativePath;
+    QString const absolutePath = QDir(m_tempDir->path()).filePath(relativePath);
     QFileInfo const fileInfo(absolutePath);
     QDir().mkpath(fileInfo.absolutePath());
 
@@ -53,7 +53,7 @@ QString Test_CullendulaMainWindow::createImage(QString const& relativePath, QCol
 //----------------------------------------------------------------------------------
 
 QString Test_CullendulaMainWindow::createInvalidImageFile(QString const& relativePath) {
-    QString const absolutePath = m_tempDir->path() + QDir::separator() + relativePath;
+    QString const absolutePath = QDir(m_tempDir->path()).filePath(relativePath);
     QFileInfo const fileInfo(absolutePath);
     QDir().mkpath(fileInfo.absolutePath());
 
@@ -185,17 +185,17 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
     QFile cmakeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.7.5"));
+    QVERIFY(cmakeContents.contains("VERSION 0.7.6"));
 
     QFile readmeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.7.5."));
+    QVERIFY(readmeContents.contains("This is version 0.7.6."));
 
     QFile changelogFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/CHANGELOG.md"));
     QVERIFY(changelogFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const changelogContents = QString::fromUtf8(changelogFile.readAll());
-    QVERIFY(changelogContents.contains("* v0.7.5 builds the paths in the filesystem tests with the canonical separator"));
+    QVERIFY(changelogContents.contains("* v0.7.6 joins every path in the tests with the canonical separator"));
 }
 
 //----------------------------------------------------------------------------------
@@ -522,7 +522,7 @@ void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_AffectsNextDroppedDirec
     createImage("dir2/alpha.jpg", Qt::green);
     createImage("dir2/beta.png", Qt::yellow);
 
-    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "dir1")});
+    sendDropWithUrls({QUrl::fromLocalFile(QDir(m_tempDir->path()).filePath("dir1"))});
     QVERIFY(findStatusBar()->currentMessage().contains("alpha.jpg"));
 
     QAction* jpgAction = findExtensionAction("jpg");
@@ -538,7 +538,7 @@ void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_AffectsNextDroppedDirec
 
     QVERIFY(findStatusBar()->currentMessage().contains("alpha.jpg"));
 
-    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "dir2")});
+    sendDropWithUrls({QUrl::fromLocalFile(QDir(m_tempDir->path()).filePath("dir2"))});
     QVERIFY(findStatusBar()->currentMessage().contains("showing 1 of 1"));
     QVERIFY(findStatusBar()->currentMessage().contains("beta.png"));
 }
@@ -548,13 +548,13 @@ void Test_CullendulaMainWindow::slot_Test_ExtensionsMenu_AffectsNextDroppedDirec
 void Test_CullendulaMainWindow::slot_Test_DroppingEmptyDirectory_ClearsPreviousSessionState() {
     createImage("loaded/alpha.jpg", Qt::red);
     createImage("loaded/beta.jpeg", Qt::blue);
-    QDir().mkpath(m_tempDir->path() + QDir::separator() + "empty");
+    QDir().mkpath(QDir(m_tempDir->path()).filePath("empty"));
 
-    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "loaded")});
+    sendDropWithUrls({QUrl::fromLocalFile(QDir(m_tempDir->path()).filePath("loaded"))});
     QVERIFY(findButton("savePB")->isEnabled());
     QVERIFY(findStatusBar()->currentMessage().contains("alpha.jpg"));
 
-    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "empty")});
+    sendDropWithUrls({QUrl::fromLocalFile(QDir(m_tempDir->path()).filePath("empty"))});
     QVERIFY(!findButton("leftPB")->isEnabled());
     QVERIFY(!findButton("rightPB")->isEnabled());
     QVERIFY(!findButton("savePB")->isEnabled());
@@ -568,12 +568,12 @@ void Test_CullendulaMainWindow::slot_Test_DroppingEmptyDirectory_ClearsPreviousS
 void Test_CullendulaMainWindow::slot_Test_DroppingDirectoryWithBlockedOutput_ShowsFilesystemError() {
     createImage("loaded/alpha.jpg", Qt::red);
 
-    QFile blockedOutput(m_tempDir->path() + QDir::separator() + "loaded" + QDir::separator() + "output");
+    QFile blockedOutput(QDir(m_tempDir->path()).filePath("loaded/output"));
     QVERIFY(blockedOutput.open(QIODevice::WriteOnly));
     blockedOutput.write("blocked");
     blockedOutput.close();
 
-    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "loaded")});
+    sendDropWithUrls({QUrl::fromLocalFile(QDir(m_tempDir->path()).filePath("loaded"))});
 
     QVERIFY(findStatusBar()->currentMessage().contains("Could not prepare 'output' directory"));
     QVERIFY(findStatusBar()->currentMessage().contains("non-directory"));
@@ -625,8 +625,7 @@ void Test_CullendulaMainWindow::slot_Test_DropMultipleUrls_UsesFirstEntry() {
     createImage("first/alpha.jpg", Qt::red);
     createImage("second/beta.jpeg", Qt::blue);
 
-    sendDropWithUrls(
-        {QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "second"), QUrl::fromLocalFile(m_tempDir->path() + QDir::separator() + "first")});
+    sendDropWithUrls({QUrl::fromLocalFile(QDir(m_tempDir->path()).filePath("second")), QUrl::fromLocalFile(QDir(m_tempDir->path()).filePath("first"))});
 
     QVERIFY(findStatusBar()->currentMessage().contains("beta.jpeg"));
     QVERIFY(!findStatusBar()->currentMessage().contains("alpha.jpg"));
@@ -657,7 +656,7 @@ void Test_CullendulaMainWindow::slot_Test_ButtonNavigationAndSaveFlow() {
     QVERIFY(findStatusBar()->currentMessage().contains("beta.jpeg"));
 
     QTest::mouseClick(findButton("savePB"), Qt::LeftButton);
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "beta.jpeg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("output/beta.jpeg")));
     QVERIFY(findAction("Undo")->isEnabled());
     QVERIFY(!findAction("Redo")->isEnabled());
     QVERIFY(findStatusBar()->currentMessage().contains("showing 1 of 1"));
@@ -673,7 +672,7 @@ void Test_CullendulaMainWindow::slot_Test_ButtonTrashFlow() {
 
     QTest::mouseClick(findButton("trashPB"), Qt::LeftButton);
 
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "trash" + QDir::separator() + "alpha.jpg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("trash/alpha.jpg")));
     QVERIFY(findAction("Undo")->isEnabled());
     QVERIFY(!findAction("Redo")->isEnabled());
     QVERIFY(findStatusBar()->currentMessage().contains("showing 1 of 1"));
@@ -688,8 +687,8 @@ void Test_CullendulaMainWindow::slot_Test_UndoRedoActions_MoveFilesOnDisk() {
     sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
 
     QTest::mouseClick(findButton("savePB"), Qt::LeftButton);
-    QString const originalPath = m_tempDir->path() + QDir::separator() + "alpha.jpg";
-    QString const movedPath = m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg";
+    QString const originalPath = QDir(m_tempDir->path()).filePath("alpha.jpg");
+    QString const movedPath = QDir(m_tempDir->path()).filePath("output/alpha.jpg");
 
     QVERIFY(QFile::exists(movedPath));
     QVERIFY(findAction("Undo")->isEnabled());
@@ -729,7 +728,7 @@ void Test_CullendulaMainWindow::slot_Test_UndoFailure_ShowsStatusMessageAndKeeps
     sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
 
     QTest::mouseClick(findButton("savePB"), Qt::LeftButton);
-    QString const movedPath = m_tempDir->path() + QDir::separator() + "output" + QDir::separator() + "alpha.jpg";
+    QString const movedPath = QDir(m_tempDir->path()).filePath("output/alpha.jpg");
     QVERIFY(QFile::exists(movedPath));
     QVERIFY(QFile::remove(movedPath));
 
@@ -752,7 +751,7 @@ void Test_CullendulaMainWindow::slot_Test_RedoFailure_ShowsStatusMessageAndKeeps
     findAction("Undo")->trigger();
     QApplication::processEvents();
 
-    QString const restoredPath = m_tempDir->path() + QDir::separator() + "alpha.jpg";
+    QString const restoredPath = QDir(m_tempDir->path()).filePath("alpha.jpg");
     QVERIFY(QFile::exists(restoredPath));
     QVERIFY(QFile::remove(restoredPath));
 
@@ -770,7 +769,7 @@ void Test_CullendulaMainWindow::slot_Test_SaveFailure_ShowsStatusMessage() {
     createImage("alpha.jpg", Qt::red);
     sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
 
-    QString const outputPath = m_tempDir->path() + QDir::separator() + "output";
+    QString const outputPath = QDir(m_tempDir->path()).filePath("output");
     QVERIFY(QDir(outputPath).removeRecursively());
 
     QFile replacement(outputPath);
@@ -780,7 +779,7 @@ void Test_CullendulaMainWindow::slot_Test_SaveFailure_ShowsStatusMessage() {
 
     QTest::mouseClick(findButton("savePB"), Qt::LeftButton);
 
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "alpha.jpg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("alpha.jpg")));
     QVERIFY(findStatusBar()->currentMessage().contains("Could not prepare 'output' directory"));
     QVERIFY(findStatusBar()->currentMessage().contains("non-directory"));
     QVERIFY(!findAction("Undo")->isEnabled());
@@ -793,7 +792,7 @@ void Test_CullendulaMainWindow::slot_Test_TrashFailure_ShowsStatusMessage() {
     createImage("alpha.jpg", Qt::red);
     sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
 
-    QString const trashPath = m_tempDir->path() + QDir::separator() + "trash";
+    QString const trashPath = QDir(m_tempDir->path()).filePath("trash");
     QVERIFY(QDir(trashPath).removeRecursively());
 
     QFile replacement(trashPath);
@@ -803,7 +802,7 @@ void Test_CullendulaMainWindow::slot_Test_TrashFailure_ShowsStatusMessage() {
 
     QTest::mouseClick(findButton("trashPB"), Qt::LeftButton);
 
-    QVERIFY(QFile::exists(m_tempDir->path() + QDir::separator() + "alpha.jpg"));
+    QVERIFY(QFile::exists(QDir(m_tempDir->path()).filePath("alpha.jpg")));
     QVERIFY(findStatusBar()->currentMessage().contains("Could not prepare 'trash' directory"));
     QVERIFY(findStatusBar()->currentMessage().contains("non-directory"));
     QVERIFY(!findAction("Undo")->isEnabled());
