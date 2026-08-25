@@ -204,6 +204,9 @@ jobs:
     name: Windows package
     needs: verify
     runs-on: windows-2022
+    # A Qt fatal error appears as a modal dialog on Windows, and nothing dismisses it
+    # on a runner, so any mistake here blocks until the job limit unless it is capped.
+    timeout-minutes: 30
 
     env:
       CULLENDULA_VERSION: ${{ needs.verify.outputs.version }}
@@ -292,6 +295,12 @@ jobs:
           # windeployqt copies the Qt runtime, the platform and image format plugins and
           # the MSVC runtime next to the executable, which makes the folder self-contained.
           & "$env:QT_ROOT_DIR\bin\windeployqt.exe" --release --compiler-runtime dist/Cullendula.exe
+          # windeployqt deploys the windows platform plugin only. The smoke test below
+          # runs offscreen, and a missing platform plugin is a fatal Qt error, which on
+          # Windows means a modal dialog that hangs the job instead of an exit code.
+          Copy-Item "$env:QT_ROOT_DIR\plugins\platforms\qoffscreen.dll" dist/platforms/
+          if (-not (Test-Path dist/platforms/qwindows.dll))  { throw "qwindows.dll was not deployed" }
+          if (-not (Test-Path dist/platforms/qoffscreen.dll)) { throw "qoffscreen.dll was not deployed" }
           Get-ChildItem -Recurse dist | Select-Object -ExpandProperty FullName
 
       - name: Smoke-test the package
@@ -304,7 +313,13 @@ jobs:
           # sets $LASTEXITCODE. Start-Process -Wait -PassThru does wait and reports the
           # real exit code.
           $dist = (Resolve-Path dist).Path
-          $proc = Start-Process -FilePath "$dist\Cullendula.exe" -WorkingDirectory $dist -Wait -PassThru
+          $proc = Start-Process -FilePath "$dist\Cullendula.exe" -WorkingDirectory $dist -PassThru
+          # Bounded wait: a Qt startup failure shows a modal dialog that never closes on
+          # a runner, so waiting without a limit would block the job for hours.
+          if (-not $proc.WaitForExit(60000)) {
+            $proc.Kill()
+            throw "the packaged application did not exit within 60s - it is most likely blocked on a startup error dialog"
+          }
           if ($proc.ExitCode -ne 0) { throw "the packaged application failed to start (exit $($proc.ExitCode))" }
           Write-Host "the packaged application starts and exits cleanly (exit $($proc.ExitCode))"
 
