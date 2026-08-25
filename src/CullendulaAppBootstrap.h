@@ -92,7 +92,7 @@ bool setApplicationLanguage(UiLanguage language);
  * @param app QApplication that owns the event loop.
  * @return Process exit code returned by Qt.
  */
-int runEventLoop(QApplication& app);
+int runEventLoop(QApplication const& app);
 
 /*!
  * @brief Optionally schedule an automatic application exit for smoke tests.

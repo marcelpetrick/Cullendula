@@ -112,7 +112,7 @@ bool CullendulaAppBootstrap::setApplicationLanguage(UiLanguage language) {
 
 //----------------------------------------------------------------------------------
 
-int CullendulaAppBootstrap::runEventLoop(QApplication& app) {
+int CullendulaAppBootstrap::runEventLoop(QApplication const& app) {
     Q_UNUSED(app)
     return QApplication::exec();
 }

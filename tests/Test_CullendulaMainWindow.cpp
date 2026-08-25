@@ -86,7 +86,7 @@ void Test_CullendulaMainWindow::sendDropWithUrls(QList<QUrl> const& urls) {
 
 QAction* Test_CullendulaMainWindow::findAction(QString const& text) const {
     QList<QAction*> const actions = m_window->findChildren<QAction*>();
-    auto const match = std::find_if(actions.cbegin(), actions.cend(), [&text](QAction* action) { return action->text() == text; });
+    auto const match = std::find_if(actions.cbegin(), actions.cend(), [&text](QAction const* action) { return action->text() == text; });
     if (match != actions.cend()) {
         return *match;
     }
@@ -185,13 +185,13 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
     QFile cmakeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.6.37"));
+    QVERIFY(cmakeContents.contains("VERSION 0.6.38"));
 
     QFile readmeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.6.37."));
-    QVERIFY(readmeContents.contains("* v0.6.37 installs the qtimageformats and qtsvg Qt components in CI"));
+    QVERIFY(readmeContents.contains("This is version 0.6.38."));
+    QVERIFY(readmeContents.contains("* v0.6.38 declares the two parameters that older Cppcheck releases flag as const"));
 }
 
 //----------------------------------------------------------------------------------
