@@ -279,10 +279,12 @@ jobs:
           $test = Get-ChildItem -Recurse -Filter CullendulaTests.exe build |
                   Select-Object -First 1 -ExpandProperty FullName
           Write-Host "running $test"
-          # -o -,txt makes QtTest write a plain text report to stdout. Without it the
-          # results are invisible in the runner log and only the exit code survives.
-          & $test -o -,txt
+          # QtTest writes its report to a file here rather than to stdout: passing
+          # '-,txt' on the command line does not survive PowerShell, whose comma is an
+          # array operator, and the results never reach the log.
+          & $test -o "$PWD\unit-tests.txt,txt" 2>&1 | Out-Host
           Write-Host "unit test exit code: $LASTEXITCODE"
+          if (Test-Path unit-tests.txt) { Get-Content unit-tests.txt } else { Write-Host "no report file produced" }
 
       - name: Assemble the portable package
         run: |

@@ -119,7 +119,7 @@ CullendulaFileSystemHandlerDetail::OutputFolderHooks CullendulaFileSystemHandler
 //----------------------------------------------------------------------------
 
 bool CullendulaFileSystemHandlerDetail::createOutputFolder(QDir& workingPath, QString const& subdir, QString& errorMessage, OutputFolderHooks const& hooks) {
-    QString const outputDirPath = workingPath.path() + QDir::separator() + subdir;
+    QString const outputDirPath = workingPath.filePath(subdir);
 
     if (hooks.pathExists(outputDirPath) && !hooks.pathIsDirectory(outputDirPath)) {
         errorMessage = formatDirectorySetupErrorMessage(subdir, outputDirPath,
@@ -470,13 +470,13 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const&
         return false;
     }
 
-    QDir outputDir(m_workingPath.path() + QDir::separator() + subdir);
+    QDir outputDir(m_workingPath.filePath(subdir));
 
     QString const sourcePathAndName(m_currentImages[m_positionCurrentFile].absoluteFilePath());
     qDebug() << "\t sourcePathAndName:" << sourcePathAndName;
     QFileInfo const fileInfo(sourcePathAndName);
     QString const fileName(fileInfo.fileName());
-    QString const preferredTargetPath = outputDir.path() + QDir::separator() + fileName;
+    QString const preferredTargetPath = outputDir.filePath(fileName);
     QString const targetPathAndName = createUniqueTargetPath(preferredTargetPath);
     qDebug() << "\t targetPathAndName:" << targetPathAndName;
     bool const successfullyRenamed = outputDir.rename(sourcePathAndName, targetPathAndName);
@@ -501,7 +501,12 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const&
 //----------------------------------------------------------------------------
 
 int CullendulaFileSystemHandler::findImageIndexByPath(QString const& imagePath) const {
-    auto const match = std::ranges::find_if(m_currentImages, [&imagePath](QFileInfo const& fileInfo) { return fileInfo.absoluteFilePath() == imagePath; });
+    // Compare canonical forms. QFileInfo::absoluteFilePath() always separates with '/',
+    // while a caller may hand in a path that uses the native separator, so comparing the
+    // raw strings would never match on a platform whose separator is not '/'.
+    QString const normalizedPath = QFileInfo(imagePath).absoluteFilePath();
+    auto const match =
+        std::ranges::find_if(m_currentImages, [&normalizedPath](QFileInfo const& fileInfo) { return fileInfo.absoluteFilePath() == normalizedPath; });
     if (match != m_currentImages.cend()) {
         return static_cast<int>(std::ranges::distance(m_currentImages.cbegin(), match));
     }
@@ -524,7 +529,7 @@ QString CullendulaFileSystemHandler::createUniqueTargetPath(QString const& initi
 
     for (int counter = 1;; ++counter) {
         QString const candidateFileName = QString("%1 (%2)%3").arg(completeBaseName, QString::number(counter), suffixPrefix);
-        QString const candidatePath = directoryPath + QDir::separator() + candidateFileName;
+        QString const candidatePath = QDir(directoryPath).filePath(candidateFileName);
         if (!QFileInfo::exists(candidatePath)) {
             return candidatePath;
         }
