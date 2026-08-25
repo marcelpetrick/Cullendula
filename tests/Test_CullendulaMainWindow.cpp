@@ -185,13 +185,13 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
     QFile cmakeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.6.36"));
+    QVERIFY(cmakeContents.contains("VERSION 0.6.37"));
 
     QFile readmeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.6.36."));
-    QVERIFY(readmeContents.contains("* v0.6.36 resolves the repository paths in the version-metadata test"));
+    QVERIFY(readmeContents.contains("This is version 0.6.37."));
+    QVERIFY(readmeContents.contains("* v0.6.37 installs the qtimageformats and qtsvg Qt components in CI"));
 }
 
 //----------------------------------------------------------------------------------

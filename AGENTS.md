@@ -158,6 +158,16 @@ The workflow's own job is only to install the pinned toolchain and to publish re
 
 All action versions are pinned to exact releases, never to a floating major tag.
 
+CI must install the Qt **components** the application needs at run time, not only the
+ones it needs to compile. The Extensions menu is built from
+`QImageReader::supportedImageFormats()`, so image-format plugins change observable
+behaviour and therefore test results: `qtimageformats` provides webp and tiff, `qtsvg`
+provides svg, and `qtdeclarative` is required merely because `lrelease` links against
+libQt6Qml. A runner with a thinner Qt than a desktop installation produces failures that
+cannot be reproduced locally. To reproduce one deliberately, copy the Qt plugin directory,
+delete the plugins in question, and point the test binary at the copy with a `qt.conf`
+containing a `[Paths]` `Plugins=` entry.
+
 ---
 
 ## 6. Code style

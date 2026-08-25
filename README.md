@@ -285,7 +285,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.6.36.
+This is version 0.6.37.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
@@ -365,6 +365,7 @@ Not supported nor tested anymore:
 * v0.6.34 documents the working agreements in AGENTS.md, covering the quality gate, atomic conventional commits, the per-commit version bump, the exact dependency pins, and the code, test and localization conventions
 * v0.6.35 installs the qtdeclarative archive in CI, because the lrelease binary used to build the translations links against libQt6Qml and cannot start without it
 * v0.6.36 resolves the repository paths in the version-metadata test from the CMake source directory instead of a hardcoded home path, so the test also runs on CI and in any other checkout
+* v0.6.37 installs the qtimageformats and qtsvg Qt components in CI, so the runner supports the same image formats as a desktop installation and the Extensions menu is populated identically
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

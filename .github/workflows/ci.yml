@@ -92,7 +92,12 @@ jobs:
           # the lrelease binary from qttools links against libQt6Qml.so.6 and
           # cannot start without it. icu is a separate archive that qtbase links
           # against on Linux, so leaving it out breaks the Qt tools as well.
-          archives: qtbase qttools qtdeclarative icu
+          archives: qtbase qttools qtdeclarative qtsvg icu
+          # The Extensions menu is built from the image formats Qt actually
+          # supports at run time, so the plugins decide the product behaviour and
+          # not just the build. qtbase alone has no webp, tiff or svg reader,
+          # which makes the menu differ from a normal desktop installation.
+          modules: qtimageformats
           cache: true
 
       - name: Install the pinned gcovr
