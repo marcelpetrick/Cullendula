@@ -172,7 +172,10 @@ containing a `[Paths]` `Plugins=` entry.
 
 ## 6. Code style
 
-* C++17, enforced by `CMAKE_CXX_STANDARD_REQUIRED`.
+* C++23, enforced by `CMAKE_CXX_STANDARD_REQUIRED`. It is the most recent published
+  standard; C++26 is still a working draft and the CI compiler does not offer it.
+* Capture `this` explicitly in lambdas (`[this]`), never through `[=]`: the implicit
+  capture of `this` via `[=]` is deprecated since C++20 and warns on the CI compiler.
 * Formatting is `clang-format` with the checked-in `.clang-format` (Google style, 4-space
   indent, 160 column limit). Never hand-format against it; let the pipeline format.
 * Headers start with the four-line banner comment (description, author, repo) and use

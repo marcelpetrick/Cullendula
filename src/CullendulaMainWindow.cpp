@@ -623,7 +623,7 @@ void CullendulaMainWindow::createActions() {
     //: Tooltip for the Undo action that moves the previously moved image back to its original location.
     m_undoAction->setStatusTip(tr("Revert the last file-move-operation"));
     m_undoAction->setShortcut(Qt::CTRL | Qt::Key_Y);
-    connect(m_undoAction, &QAction::triggered, this, [=]() {
+    connect(m_undoAction, &QAction::triggered, this, [this]() {
         qDebug("pressed Undo");
         if (m_fileSystemHandler.undo()) {
             refreshLabel();
@@ -640,7 +640,7 @@ void CullendulaMainWindow::createActions() {
     //: Tooltip for the Redo action. "undo undo" here means reapplied after an Undo.
     m_redoQtAction->setStatusTip(tr("Redo the last file-move-operation (means: undo undo)"));
     m_redoQtAction->setShortcut(Qt::CTRL | Qt::Key_Z);
-    connect(m_redoQtAction, &QAction::triggered, this, [=]() {
+    connect(m_redoQtAction, &QAction::triggered, this, [this]() {
         qDebug("pressed Redo");
         if (m_fileSystemHandler.redo()) {
             refreshLabel();

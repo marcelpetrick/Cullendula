@@ -4,7 +4,7 @@
 [![License: GPL v3 or later](https://img.shields.io/badge/license-GPLv3%20or%20later-blue.svg)](LICENSE)
 [![Qt 6.11.1](https://img.shields.io/badge/Qt-6.11.1-41cd52.svg)](https://www.qt.io/)
 [![CMake 4.4.2](https://img.shields.io/badge/CMake-4.4.2-064f8c.svg)](https://cmake.org/)
-[![C++17](https://img.shields.io/badge/C%2B%2B-17-00599c.svg)](https://en.cppreference.com/w/cpp/17)
+[![C++23](https://img.shields.io/badge/C%2B%2B-23-00599c.svg)](https://en.cppreference.com/w/cpp/23)
 
 A program to pick out the best shots of the vast amount of taken pictures per photo session.  
 The name itself is a wordplay of the plant `Calendula` and the activity `to cull` (slang for filtering photos).
@@ -285,7 +285,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.6.39.
+This is version 0.6.40.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
@@ -300,7 +300,7 @@ set(CULLENDULA_EXPECTED_QT_VERSION "6.11.1")
 | --- | --- | --- |
 | CMake | 4.4.2 | `CMakeLists.txt` aborts with a `FATAL_ERROR` on any other version |
 | Qt | 6.11.1 | `find_package(Qt6 ... EXACT REQUIRED)`, so a different patch release fails to configure |
-| C++ standard | C++17 | `CMAKE_CXX_STANDARD` with `CMAKE_CXX_STANDARD_REQUIRED` |
+| C++ standard | C++23 | `CMAKE_CXX_STANDARD` with `CMAKE_CXX_STANDARD_REQUIRED` |
 | gcovr | 8.6 | installed as `gcovr==8.6` in CI |
 | GCC | 16.2.1 | verified, not enforced |
 | Cppcheck | 2.21.1 | verified, not enforced |
@@ -368,6 +368,7 @@ Not supported nor tested anymore:
 * v0.6.37 installs the qtimageformats and qtsvg Qt components in CI, so the runner supports the same image formats as a desktop installation and the Extensions menu is populated identically
 * v0.6.38 declares the two parameters that older Cppcheck releases flag as const, so the static analysis reports zero findings on the CI image as well as locally
 * v0.6.39 skips the report auto-open step when no graphical session is present, so headless runs such as CI report it as skipped instead of warning and no longer probe for a text browser
+* v0.6.40 raises the language standard from C++17 to C++23, the most recent published standard, and replaces the two remaining implicit `[=]` lambda captures of `this`, which are deprecated since C++20
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

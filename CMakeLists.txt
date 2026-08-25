@@ -23,12 +23,12 @@ if(NOT CMAKE_VERSION VERSION_EQUAL CULLENDULA_EXPECTED_CMAKE_VERSION)
 endif()
 
 project(Cullendula
-    VERSION 0.6.39
+    VERSION 0.6.40
     LANGUAGES CXX
 )
 
-# Use C++17
-set(CMAKE_CXX_STANDARD 17)
+# Use C++23, the most recent published standard (ISO/IEC 14882:2024)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Qt auto-processing for MOC/UIC/RCC
