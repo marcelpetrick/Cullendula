@@ -147,6 +147,29 @@ jobs:
             "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/${LINUXDEPLOY_PLUGIN_QT_VERSION}/linuxdeploy-plugin-qt-x86_64.AppImage"
           chmod +x linuxdeploy.AppImage linuxdeploy-plugin-qt.AppImage
 
+      - name: Drop Qt image plugins whose dependencies the build image cannot satisfy
+        run: |
+          set -euo pipefail
+          # The official Qt binaries are built on RHEL 9, so some image format plugins
+          # link against sonames that Ubuntu does not carry, for example libtiff.so.5
+          # against Ubuntu's libtiff.so.6. linuxdeploy aborts when it cannot resolve a
+          # dependency, so drop exactly those plugins instead of failing the release.
+          # The Extensions menu is built from the formats Qt reports at run time, so a
+          # dropped plugin simply does not appear there.
+          dropped=0
+          for plugin in "${QT_ROOT_DIR}"/plugins/imageformats/*.so; do
+            missing="$(ldd "${plugin}" 2>/dev/null | awk '/not found/ {printf "%s ", $1}')"
+            if [ -n "${missing}" ]; then
+              echo "dropping $(basename "${plugin}") - unresolvable: ${missing}"
+              rm -f "${plugin}"
+              dropped=$((dropped + 1))
+            fi
+          done
+          echo "dropped ${dropped} plugin(s)"
+          echo "remaining: $(ls "${QT_ROOT_DIR}"/plugins/imageformats/ | tr '\n' ' ')"
+          # webp is a documented feature of the Extensions menu, so it must survive.
+          test -f "${QT_ROOT_DIR}/plugins/imageformats/libqwebp.so"
+
       - name: Build the AppImage
         env:
           # Runners have no FUSE, so the tools have to unpack themselves instead.
@@ -182,6 +205,12 @@ jobs:
           # a release.
           QT_QPA_PLATFORM=offscreen CULLENDULA_EXIT_AFTER_STARTUP_MS=0 "./${appimage}"
           echo "the packaged application starts and exits cleanly"
+          # The smoke test runs offscreen, which would also pass if the package had no
+          # usable desktop platform plugin at all, so check for that separately.
+          "./${appimage}" --appimage-extract >/dev/null
+          test -f squashfs-root/usr/plugins/platforms/libqxcb.so
+          echo "bundled image formats: $(ls squashfs-root/usr/plugins/imageformats/ | tr '\n' ' ')"
+          rm -rf squashfs-root
 
       - name: Publish the release
         env:

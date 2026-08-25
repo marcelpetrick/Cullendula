@@ -101,14 +101,16 @@ The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated cov
 Pushing a version tag publishes a release:
 
 ```bash
-git tag v0.6.45
-git push origin v0.6.45
+git tag v0.6.46
+git push origin v0.6.46
 ```
 
 `.github/workflows/release.yml` refuses to publish unless the tag matches the version in `CMakeLists.txt` and `CHANGELOG.md` has an entry for it, then runs the full pipeline, builds an AppImage, and starts that AppImage headless once to prove the packaged application actually runs.
 The release notes are generated from the matching changelog entry.
 
 Each release carries an **AppImage** for x86-64 Linux: download it, `chmod +x` it, and run it. It bundles Qt, so nothing has to be installed. The generated API documentation is attached as a second archive.
+
+The AppImage carries the image format plugins whose system libraries exist on the build image. A few of the official Qt plugins link against sonames Ubuntu does not ship, so they are dropped from the package and the corresponding formats simply do not appear in `Main -> Extensions` there; a build from source on your own distribution offers them.
 
 ## Format the code
 This repository ships a `.clang-format` using the default Google C++ style.
@@ -298,7 +300,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.6.45.
+This is version 0.6.46.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
