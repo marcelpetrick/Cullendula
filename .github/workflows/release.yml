@@ -262,19 +262,13 @@ jobs:
           cmake -S . -B build -DCULLENDULA_BUILD_TESTS=ON
           cmake --build build --config Release --parallel
 
-      - name: Run the startup smoke test
+      - name: Run the tests
         env:
           QT_QPA_PLATFORM: offscreen
-        # This is the gate for the Windows package: it starts the real application
-        # executable and requires a clean exit. The full unit suite is the Linux gate;
-        # this project has never claimed Windows support, so parts of the suite make
-        # POSIX assumptions and are reported below rather than blocking the package.
-        run: ctest --test-dir build -C Release -R CullendulaMainSmokeTest --output-on-failure
-
-      - name: Run the unit tests for the record
-        continue-on-error: true
-        env:
-          QT_QPA_PLATFORM: offscreen
+        # The whole suite passes on Windows since the path handling was fixed, so it
+        # gates the package like it gates the Linux build. The reports are printed
+        # afterwards either way, because this executable writes nothing to the console
+        # here and a bare exit code would say nothing about what broke.
         run: |
           $test = Get-ChildItem -Recurse -Filter CullendulaTests.exe build |
                   Select-Object -First 1 -ExpandProperty FullName
@@ -287,10 +281,13 @@ jobs:
           New-Item -ItemType Directory -Force -Path $env:CULLENDULA_TEST_REPORT_DIR | Out-Null
           & $test
           Write-Host "unit test exit code: $LASTEXITCODE"
+          $failed = $LASTEXITCODE
           Get-ChildItem $env:CULLENDULA_TEST_REPORT_DIR -Filter *.txt | ForEach-Object {
             Write-Host "----- $($_.Name) -----"
             Get-Content $_.FullName
           }
+          ctest --test-dir build -C Release -R CullendulaMainSmokeTest --output-on-failure
+          if ($failed -ne 0) { throw "the unit suite reported failures (status $failed)" }
 
       - name: Assemble the portable package
         run: |

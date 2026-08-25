@@ -101,8 +101,8 @@ The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated cov
 Pushing a version tag publishes a release:
 
 ```bash
-git tag v0.7.6
-git push origin v0.7.6
+git tag v0.7.7
+git push origin v0.7.7
 ```
 
 `.github/workflows/release.yml` refuses to publish unless the tag matches the version in `CMakeLists.txt` and `CHANGELOG.md` has an entry for it, then runs the full pipeline, builds an AppImage, and starts that AppImage headless once to prove the packaged application actually runs.
@@ -115,7 +115,7 @@ Each release carries a package for both desktop platforms, plus the generated AP
 
 Both packages are started once by the release workflow before anything is published, so a package that cannot start never becomes a release.
 
-The full test suite, the coverage gate and the static analysis run on Linux, which is the supported development platform. The Windows job builds the application and requires the packaged executable to start cleanly; it also runs the unit suite for the record, without gating on it, because parts of that suite still assume POSIX filesystem behaviour.
+The coverage gate, the documentation check and the static analysis run on Linux, which is the development platform. The Windows job builds the application, runs the same unit suite, and requires the packaged executable to start cleanly, so both platforms have to be green before a release is published.
 
 The AppImage carries the image format plugins whose system libraries exist on the build image. A few of the official Qt plugins link against sonames Ubuntu does not ship, so they are dropped from the package and the corresponding formats simply do not appear in `Main -> Extensions` there; a build from source on your own distribution offers them.
 
@@ -307,7 +307,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.7.6.
+This is version 0.7.7.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.

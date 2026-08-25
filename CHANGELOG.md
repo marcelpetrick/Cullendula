@@ -69,3 +69,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.7.4 stops mangling every path on platforms other than Linux: the leading slash of a dropped file URL is now removed only when it really precedes a drive letter, which is what made the application unable to open any folder on Windows
 * v0.7.5 builds the paths in the filesystem tests with the canonical separator, so the last test that compared a test-built path against a handler-returned one also passes where the native separator is not a slash
 * v0.7.6 joins every path in the tests with the canonical separator, which removes the last cross-platform failures and the whole class of comparisons that only held where the native separator is a slash
+* v0.7.7 makes the Windows unit suite a release gate now that it passes there, so a regression on either platform stops a release instead of being reported and ignored
