@@ -1,0 +1,196 @@
+# -----------------------------------------------------------------------------
+# Cullendula release
+#
+# Triggered by pushing a version tag, for example:
+#
+#     git tag v0.6.44 && git push origin v0.6.44
+#
+# The workflow refuses to publish anything that does not pass the project's own
+# quality gate, and it refuses to publish a tag that disagrees with the version
+# in CMakeLists.txt, so a release always matches a verified state of the tree.
+# The release notes are taken from the matching CHANGELOG.md entry.
+# -----------------------------------------------------------------------------
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # Keep these in sync with CULLENDULA_EXPECTED_*_VERSION in CMakeLists.txt.
+  CULLENDULA_EXPECTED_CMAKE_VERSION: 4.4.2
+  CULLENDULA_EXPECTED_QT_VERSION: 6.11.1
+  CULLENDULA_EXPECTED_GCOVR_VERSION: 8.6
+  # Newest non-prerelease tags; linuxdeploy's "continuous" tag is a moving target.
+  LINUXDEPLOY_VERSION: 1-alpha-20251107-1
+  LINUXDEPLOY_PLUGIN_QT_VERSION: 1-alpha-20250213-1
+
+jobs:
+  release:
+    name: Verify and publish
+    runs-on: ubuntu-24.04
+
+    env:
+      QT_QPA_PLATFORM: offscreen
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Check that the tag matches the project version
+        run: |
+          set -euo pipefail
+          tag_version="${GITHUB_REF_NAME#v}"
+          project_version="$(sed -n 's/^[[:space:]]*VERSION[[:space:]]\+\([0-9.]\+\)[[:space:]]*$/\1/p' CMakeLists.txt | head -1)"
+          echo "tag: ${tag_version}, CMakeLists.txt: ${project_version}"
+          if [[ "${tag_version}" != "${project_version}" ]]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match the project version ${project_version} in CMakeLists.txt."
+            exit 1
+          fi
+          if ! grep -q "^\* v${project_version} " CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no entry for v${project_version}."
+            exit 1
+          fi
+
+      - name: Install build and quality tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes \
+            build-essential \
+            clang-format \
+            cppcheck \
+            python3-pygments \
+            doxygen \
+            graphviz \
+            libgl1-mesa-dev \
+            libegl1 \
+            libdbus-1-3 \
+            libfontconfig1 \
+            libfreetype6 \
+            libxkbcommon-x11-0 \
+            libxcb-cursor0 \
+            libxcb-icccm4 \
+            libxcb-image0 \
+            libxcb-keysyms1 \
+            libxcb-randr0 \
+            libxcb-render-util0 \
+            libxcb-shape0 \
+            libxcb-xinerama0 \
+            libxcb-xkb1
+
+      - name: Install the pinned CMake
+        uses: lukka/get-cmake@v4.4.2
+        with:
+          cmakeVersion: ${{ env.CULLENDULA_EXPECTED_CMAKE_VERSION }}
+
+      - name: Install the pinned Qt
+        uses: jurplel/install-qt-action@v4.3.1
+        with:
+          version: ${{ env.CULLENDULA_EXPECTED_QT_VERSION }}
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          # qtwayland is added on top of the CI set: CI only ever runs offscreen,
+          # but the AppImage ships platform plugins and should run natively on
+          # Wayland as well as through XWayland.
+          archives: qtbase qttools qtdeclarative qtsvg qtwayland icu
+          modules: qtimageformats
+          cache: true
+
+      - name: Install the pinned gcovr
+        run: |
+          pipx install "gcovr==${CULLENDULA_EXPECTED_GCOVR_VERSION}"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Run the local pipeline
+        run: ./localPipeline.sh --noRun --verbose
+
+      - name: Build the release notes from CHANGELOG.md
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          {
+            printf '%s\n\n' "$(grep "^\* v${version} " CHANGELOG.md | sed "s/^\* v${version} //")"
+            printf 'Verified by the project pipeline on this tag: build, unit tests, the 90%% line-coverage gate, an empty Doxygen warning log, Cppcheck and clang-format.\n\n'
+            printf 'Download the AppImage below, make it executable with `chmod +x`, and run it. It bundles Qt %s, so nothing else has to be installed.\n\n' "${CULLENDULA_EXPECTED_QT_VERSION}"
+            printf 'To build from source instead you need exactly Qt %s and CMake %s; see the README for the full expected toolchain.\n\n' \
+              "${CULLENDULA_EXPECTED_QT_VERSION}" "${CULLENDULA_EXPECTED_CMAKE_VERSION}"
+            printf 'The full history is in [CHANGELOG.md](https://github.com/%s/blob/master/CHANGELOG.md).\n' "${GITHUB_REPOSITORY}"
+          } > release-notes.md
+          cat release-notes.md
+
+      - name: Package the generated API documentation
+        run: |
+          set -euo pipefail
+          tar -czf "cullendula-${GITHUB_REF_NAME}-doxygen-html.tar.gz" -C build/doxygen html
+
+      - name: Install into an AppDir
+        run: |
+          set -euo pipefail
+          cmake --install build --prefix AppDir/usr
+          find AppDir -type f | sort
+
+      - name: Fetch the pinned AppImage tooling
+        run: |
+          set -euo pipefail
+          curl -sSLo linuxdeploy.AppImage \
+            "https://github.com/linuxdeploy/linuxdeploy/releases/download/${LINUXDEPLOY_VERSION}/linuxdeploy-x86_64.AppImage"
+          curl -sSLo linuxdeploy-plugin-qt.AppImage \
+            "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/${LINUXDEPLOY_PLUGIN_QT_VERSION}/linuxdeploy-plugin-qt-x86_64.AppImage"
+          chmod +x linuxdeploy.AppImage linuxdeploy-plugin-qt.AppImage
+
+      - name: Build the AppImage
+        env:
+          # Runners have no FUSE, so the tools have to unpack themselves instead.
+          APPIMAGE_EXTRACT_AND_RUN: 1
+          # The strip binary bundled in linuxdeploy cannot read the newer .relr.dyn
+          # relocation sections that current system libraries use, and aborts the
+          # build when it meets one. Skipping the strip costs some size, nothing else.
+          NO_STRIP: 1
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          export QMAKE="${QT_ROOT_DIR}/bin/qmake"
+          test -x "${QMAKE}" || export QMAKE="$(command -v qmake6)"
+          export OUTPUT="Cullendula-${version}-x86_64.AppImage"
+          ./linuxdeploy.AppImage \
+            --appdir AppDir \
+            --plugin qt \
+            --output appimage \
+            --desktop-file AppDir/usr/share/applications/it.marcelpetrick.Cullendula.desktop \
+            --icon-file AppDir/usr/share/icons/hicolor/32x32/apps/it.marcelpetrick.Cullendula.png
+          ls -la "${OUTPUT}"
+
+      - name: Smoke-test the AppImage
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          appimage="Cullendula-${version}-x86_64.AppImage"
+          chmod +x "${appimage}"
+          # Start the packaged application exactly like the pipeline smoke test does:
+          # headless, quitting as soon as it is up. A package that cannot start is not
+          # a release.
+          QT_QPA_PLATFORM=offscreen CULLENDULA_EXIT_AFTER_STARTUP_MS=0 "./${appimage}"
+          echo "the packaged application starts and exits cleanly"
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "Cullendula ${GITHUB_REF_NAME}" \
+            --notes-file release-notes.md \
+            --verify-tag \
+            "Cullendula-${GITHUB_REF_NAME#v}-x86_64.AppImage" \
+            "cullendula-${GITHUB_REF_NAME}-doxygen-html.tar.gz"

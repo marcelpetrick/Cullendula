@@ -185,17 +185,17 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
     QFile cmakeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.6.44"));
+    QVERIFY(cmakeContents.contains("VERSION 0.6.45"));
 
     QFile readmeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.6.44."));
+    QVERIFY(readmeContents.contains("This is version 0.6.45."));
 
     QFile changelogFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/CHANGELOG.md"));
     QVERIFY(changelogFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const changelogContents = QString::fromUtf8(changelogFile.readAll());
-    QVERIFY(changelogContents.contains("* v0.6.44 adds install rules plus a desktop entry, an icon and AppStream metainfo"));
+    QVERIFY(changelogContents.contains("* v0.6.45 adds a tag-triggered release workflow"));
 }
 
 //----------------------------------------------------------------------------------

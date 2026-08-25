@@ -158,6 +158,12 @@ The workflow's own job is only to install the pinned toolchain and to publish re
 
 All action versions are pinned to exact releases, never to a floating major tag.
 
+`.github/workflows/release.yml` publishes a release when a `v*` tag is pushed. It refuses
+a tag that disagrees with the version in `CMakeLists.txt` or that has no `CHANGELOG.md`
+entry, runs the same gate, builds an AppImage and starts it headless before publishing.
+Packaging metadata lives in `packaging/`; the AppStream version is generated from the
+CMake project version, so never hardcode a version there.
+
 CI must install the Qt **components** the application needs at run time, not only the
 ones it needs to compile. The Extensions menu is built from
 `QImageReader::supportedImageFormats()`, so image-format plugins change observable

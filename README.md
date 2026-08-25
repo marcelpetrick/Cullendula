@@ -97,6 +97,19 @@ The workflow in `.github/workflows/ci.yml` calls `./localPipeline.sh --noRun`, s
 CI installs the exact pinned dependencies from the table above, and a dedicated step fails the run if the installed CMake or gcovr is not the expected release; a wrong Qt release already fails the CMake configure step.
 The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated coverage, Doxygen and Cppcheck reports are attached to every run as the `cullendula-reports` artifact.
 
+### Releases
+Pushing a version tag publishes a release:
+
+```bash
+git tag v0.6.45
+git push origin v0.6.45
+```
+
+`.github/workflows/release.yml` refuses to publish unless the tag matches the version in `CMakeLists.txt` and `CHANGELOG.md` has an entry for it, then runs the full pipeline, builds an AppImage, and starts that AppImage headless once to prove the packaged application actually runs.
+The release notes are generated from the matching changelog entry.
+
+Each release carries an **AppImage** for x86-64 Linux: download it, `chmod +x` it, and run it. It bundles Qt, so nothing has to be installed. The generated API documentation is attached as a second archive.
+
 ## Format the code
 This repository ships a `.clang-format` using the default Google C++ style.
 
@@ -285,7 +298,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.6.44.
+This is version 0.6.45.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.

@@ -59,3 +59,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.6.42 caches the supported-image-format lookup, drops the per-file logging from the directory rescan that runs after every move, scales the displayed photo smoothly, and adopts C++20 ranges, designated initializers and `[[nodiscard]]` getters
 * v0.6.43 corrects the sample pipeline output in the README, which quoted two different coverage percentages from two different runs in the same block
 * v0.6.44 adds install rules plus a desktop entry, an icon and AppStream metainfo whose version is generated from the CMake project version, so the application can be packaged for Linux desktops
+* v0.6.45 adds a tag-triggered release workflow that verifies the tag against the project version, runs the full pipeline, builds an AppImage bundling Qt, smoke-tests that AppImage headless, and publishes it with notes taken from this changelog
