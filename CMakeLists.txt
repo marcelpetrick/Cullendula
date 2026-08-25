@@ -1,10 +1,29 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 4.4.2)
 
 # Silence Qt Creator MaintenanceTool provider message (must be set early)
 set(QT_CREATOR_SKIP_MAINTENANCE_TOOL_PROVIDER ON)
 
+# -----------------------------------------------------------------------------
+# Expected dependencies.
+#
+# These are exact pins: not floors, not ranges. Cullendula is built and verified
+# against precisely these releases, and CI installs the very same ones, so a
+# local run and a CI run use an identical toolchain.
+#
+# Bumping one of them is a deliberate change: update the value here, the
+# dependency table in README.md, and AGENTS.md in the same commit.
+# -----------------------------------------------------------------------------
+set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.4.2")
+set(CULLENDULA_EXPECTED_QT_VERSION "6.11.1")
+
+if(NOT CMAKE_VERSION VERSION_EQUAL CULLENDULA_EXPECTED_CMAKE_VERSION)
+    message(FATAL_ERROR
+        "Cullendula expects CMake exactly ${CULLENDULA_EXPECTED_CMAKE_VERSION}, but this is CMake ${CMAKE_VERSION}. "
+        "Install the expected release, or change CULLENDULA_EXPECTED_CMAKE_VERSION together with README.md and AGENTS.md.")
+endif()
+
 project(Cullendula
-    VERSION 0.6.30
+    VERSION 0.6.31
     LANGUAGES CXX
 )
 
@@ -35,8 +54,8 @@ if(CULLENDULA_ENABLE_COVERAGE)
     endif()
 endif()
 
-# Find Qt 6.10
-find_package(Qt6 6.10 REQUIRED COMPONENTS
+# Find the exact expected Qt release
+find_package(Qt6 ${CULLENDULA_EXPECTED_QT_VERSION} EXACT REQUIRED COMPONENTS
     Core
     Gui
     LinguistTools
@@ -44,7 +63,7 @@ find_package(Qt6 6.10 REQUIRED COMPONENTS
 )
 
 if(CULLENDULA_BUILD_TESTS)
-    find_package(Qt6 6.10 REQUIRED COMPONENTS Test)
+    find_package(Qt6 ${CULLENDULA_EXPECTED_QT_VERSION} EXACT REQUIRED COMPONENTS Test)
 endif()
 
 find_package(Doxygen)

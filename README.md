@@ -268,13 +268,36 @@ In short:
 * the `.ts` update is manual; the `.qm` generation is automatic during builds
 
 ## Build information
-This is version 0.6.30.
+This is version 0.6.31.
 
-### Builds and runs with:
-* Linux, cmake 4.1, GCC 15.2.1, Qt 6.10 (and QtCreator 17)
-* not supported nor tested anymore:
-  * Windows 7, Qt 5.5 and QtCreator 4.6
-  * Win 10, Qt 5.15.1 and Qt 6.0 beta with MinGW 8.1 and QtCreator 4.13.2
+### Expected dependencies
+Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
+The buildsystem carries the two enforced pins in one place, at the top of `CMakeLists.txt`:
+
+```cmake
+set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.4.2")
+set(CULLENDULA_EXPECTED_QT_VERSION "6.11.1")
+```
+
+| Dependency | Exact expected version | How it is enforced |
+| --- | --- | --- |
+| CMake | 4.4.2 | `CMakeLists.txt` aborts with a `FATAL_ERROR` on any other version |
+| Qt | 6.11.1 | `find_package(Qt6 ... EXACT REQUIRED)`, so a different patch release fails to configure |
+| C++ standard | C++17 | `CMAKE_CXX_STANDARD` with `CMAKE_CXX_STANDARD_REQUIRED` |
+| gcovr | 8.6 | installed as `gcovr==8.6` in CI |
+| GCC | 16.2.1 | verified, not enforced |
+| Cppcheck | 2.21.1 | verified, not enforced |
+| Doxygen | 1.18.0 | verified, not enforced |
+| clang-format | 22.1.8 | verified, not enforced |
+
+The last four are deliberately *not* hard-pinned: they are distribution packages whose exact release differs between a rolling Linux desktop and the CI image, and a `FATAL_ERROR` on them would make the project unbuildable on most machines without improving the produced binary. Their versions are recorded here so a behavioural difference in a report can be traced back to a tool version. The upstream Qt 6.11.2 patch release exists but is not yet packaged for the development machine; the pin moves to it once it is, in its own commit.
+
+Everything above is what CI installs too, so a local pipeline run and a CI run use the same toolchain.
+
+Not supported nor tested anymore:
+
+* Windows 7, Qt 5.5 and QtCreator 4.6
+* Win 10, Qt 5.15.1 and Qt 6.0 beta with MinGW 8.1 and QtCreator 4.13.2
 
 ## History
 * v0.1 was the basic release; working, but ugly
@@ -319,6 +342,7 @@ This is version 0.6.30.
 * v0.6.28 covers the real application entry point with a headless executable smoke test and includes `main.cpp` in coverage reporting
 * v0.6.29 pushes bootstrap and filesystem coverage further with deterministic helper seams, stronger edge-case tests, and improved coverage of failure-path handling
 * v0.6.30 adds repository-local Cppcheck infrastructure with compilation-database input, XML and HTML reports, pipeline integration, and usage documentation
+* v0.6.31 pins the exact expected toolchain with CMake 4.4.2 and Qt 6.11.1 as hard requirements instead of version floors, and documents every dependency in the README
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
