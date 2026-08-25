@@ -276,7 +276,9 @@ jobs:
           $test = Get-ChildItem -Recurse -Filter CullendulaTests.exe build |
                   Select-Object -First 1 -ExpandProperty FullName
           Write-Host "running $test"
-          & $test
+          # -o -,txt makes QtTest write a plain text report to stdout. Without it the
+          # results are invisible in the runner log and only the exit code survives.
+          & $test -o -,txt
           Write-Host "unit test exit code: $LASTEXITCODE"
 
       - name: Assemble the portable package
@@ -298,11 +300,13 @@ jobs:
           CULLENDULA_EXIT_AFTER_STARTUP_MS: 0
         run: |
           # Run from inside the package folder so only the DLLs shipped with it are used.
-          Push-Location dist
-          .\Cullendula.exe
-          if ($LASTEXITCODE -ne 0) { throw "the packaged application failed to start (exit $LASTEXITCODE)" }
-          Pop-Location
-          Write-Host "the packaged application starts and exits cleanly"
+          # Cullendula is a WIN32_EXECUTABLE, so PowerShell does not wait for it and never
+          # sets $LASTEXITCODE. Start-Process -Wait -PassThru does wait and reports the
+          # real exit code.
+          $dist = (Resolve-Path dist).Path
+          $proc = Start-Process -FilePath "$dist\Cullendula.exe" -WorkingDirectory $dist -Wait -PassThru
+          if ($proc.ExitCode -ne 0) { throw "the packaged application failed to start (exit $($proc.ExitCode))" }
+          Write-Host "the packaged application starts and exits cleanly (exit $($proc.ExitCode))"
 
       - name: Create the zip
         run: Compress-Archive -Path dist/* -DestinationPath "Cullendula-$env:CULLENDULA_VERSION-windows-x64.zip"
