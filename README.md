@@ -1,4 +1,11 @@
 # Cullendula
+
+[![CI](https://github.com/marcelpetrick/Cullendula/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/marcelpetrick/Cullendula/actions/workflows/ci.yml)
+[![License: GPL v3 or later](https://img.shields.io/badge/license-GPLv3%20or%20later-blue.svg)](LICENSE)
+[![Qt 6.11.1](https://img.shields.io/badge/Qt-6.11.1-41cd52.svg)](https://www.qt.io/)
+[![CMake 4.4.2](https://img.shields.io/badge/CMake-4.4.2-064f8c.svg)](https://cmake.org/)
+[![C++17](https://img.shields.io/badge/C%2B%2B-17-00599c.svg)](https://en.cppreference.com/w/cpp/17)
+
 A program to pick out the best shots of the vast amount of taken pictures per photo session.  
 The name itself is a wordplay of the plant `Calendula` and the activity `to cull` (slang for filtering photos).
 
@@ -274,7 +281,7 @@ In short:
 * the `.ts` update is manual; the `.qm` generation is automatic during builds
 
 ## Build information
-This is version 0.6.32.
+This is version 0.6.33.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
@@ -350,6 +357,7 @@ Not supported nor tested anymore:
 * v0.6.30 adds repository-local Cppcheck infrastructure with compilation-database input, XML and HTML reports, pipeline integration, and usage documentation
 * v0.6.31 pins the exact expected toolchain with CMake 4.4.2 and Qt 6.11.1 as hard requirements instead of version floors, and documents every dependency in the README
 * v0.6.32 adds a GitHub Actions workflow that runs the local pipeline on every push and pull request with the same exactly pinned CMake, Qt and gcovr releases
+* v0.6.33 adds the CI status badge and badges for the pinned license, Qt, CMake and C++ standard to the top of the README
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
