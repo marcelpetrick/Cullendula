@@ -23,7 +23,10 @@ bool mkdirSucceeds(QDir&, QString const&) { return true; }
 //----------------------------------------------------------------------------------
 
 QString Test_CullendulaFileSystemHandler::createFile(QString const& relativePath) {
-    QString const absolutePath = m_tempDir->path() + QDir::separator() + relativePath;
+    // QDir::filePath separates with '/' on every platform, which is also what the handler
+    // returns through QFileInfo. Joining with the native separator instead would make the
+    // two spellings of the same path compare unequal wherever that separator is not '/'.
+    QString const absolutePath = QDir(m_tempDir->path()).filePath(relativePath);
 
     QFileInfo const fileInfo(absolutePath);
     QDir().mkpath(fileInfo.absolutePath());
