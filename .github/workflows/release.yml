@@ -217,17 +217,42 @@ jobs:
         with:
           cmakeVersion: ${{ env.CULLENDULA_EXPECTED_CMAKE_VERSION }}
 
-      - name: Install the pinned Qt
-        uses: jurplel/install-qt-action@v4.3.1
-        with:
-          version: ${{ env.CULLENDULA_EXPECTED_QT_VERSION }}
-          host: windows
-          target: desktop
-          arch: win64_msvc2022_64
-          # No icu archive on Windows; the rest mirrors the Linux job.
-          archives: qtbase qttools qtdeclarative qtsvg
-          modules: qtimageformats
-          cache: true
+      - name: Install the pinned Qt from the official archives
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          # install-qt-action cannot be used here. It drives aqtinstall, and 3.3.0, the
+          # newest release, looks for .../qt6_6111/qt6_6111/Updates.xml on Windows, which
+          # is a 404: Qt publishes the Windows packages under an architecture-suffixed
+          # folder (qt6_6111_msvc2022_64). The official archives are fetched directly
+          # instead, which keeps the exactly pinned Qt version.
+          $base = "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt6_6111/qt6_6111_msvc2022_64"
+          $packages = [ordered]@{
+            "qt.qt6.6111.win64_msvc2022_64" = @("qtbase", "qttools", "qtdeclarative", "qtsvg", "qttranslations", "d3dcompiler_47", "opengl32sw")
+            "qt.qt6.6111.addons.qtimageformats.win64_msvc2022_64" = @("qtimageformats")
+          }
+          New-Item -ItemType Directory -Force -Path qt-win | Out-Null
+          foreach ($package in $packages.Keys) {
+            $listing = (Invoke-WebRequest -Uri "$base/$package/" -UseBasicParsing).Content
+            $links = [regex]::Matches($listing, 'href="([^"]+\.7z)"') | ForEach-Object { $_.Groups[1].Value }
+            foreach ($component in $packages[$package]) {
+              $file = $links |
+                Where-Object { $_ -like "*$component*" -and $_ -notmatch 'debug|doc|example' } |
+                Select-Object -First 1
+              if (-not $file) { throw "no archive found for '$component' in $package" }
+              Write-Host "downloading $file"
+              Invoke-WebRequest -Uri "$base/$package/$file" -OutFile "$component.7z" -UseBasicParsing
+              & 7z x -y "$component.7z" -oqt-win | Out-Null
+              if ($LASTEXITCODE -ne 0) { throw "extracting $component failed" }
+            }
+          }
+          $qt = (Resolve-Path qt-win).Path
+          if (-not (Test-Path "$qt\bin\windeployqt.exe")) { throw "windeployqt.exe missing from the extracted Qt" }
+          if (-not (Test-Path "$qt\lib\cmake\Qt6\Qt6Config.cmake")) { throw "Qt6Config.cmake missing from the extracted Qt" }
+          # The tests link against the Qt DLLs, so the Qt bin directory has to be on PATH.
+          "QT_ROOT_DIR=$qt" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "CMAKE_PREFIX_PATH=$qt" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "$qt\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
 
       - name: Configure and build
         run: |
