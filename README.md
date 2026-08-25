@@ -84,6 +84,12 @@ cmake --build build --parallel $(nproc)
 ./build/src/Cullendula
 ```
 
+### Continuous integration
+Every push to `master`, every pull request against `master`, and every manual dispatch runs the same gate on GitHub Actions.
+The workflow in `.github/workflows/ci.yml` calls `./localPipeline.sh --noRun`, so CI and the local run cannot drift apart: build, CTest, the 90% line-coverage threshold, an empty Doxygen warning log, Cppcheck and clang-format are all checked by one script.
+CI installs the exact pinned dependencies from the table above, and a dedicated step fails the run if the installed CMake or gcovr is not the expected release; a wrong Qt release already fails the CMake configure step.
+The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated coverage, Doxygen and Cppcheck reports are attached to every run as the `cullendula-reports` artifact.
+
 ## Format the code
 This repository ships a `.clang-format` using the default Google C++ style.
 
@@ -268,7 +274,7 @@ In short:
 * the `.ts` update is manual; the `.qm` generation is automatic during builds
 
 ## Build information
-This is version 0.6.31.
+This is version 0.6.32.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
@@ -343,6 +349,7 @@ Not supported nor tested anymore:
 * v0.6.29 pushes bootstrap and filesystem coverage further with deterministic helper seams, stronger edge-case tests, and improved coverage of failure-path handling
 * v0.6.30 adds repository-local Cppcheck infrastructure with compilation-database input, XML and HTML reports, pipeline integration, and usage documentation
 * v0.6.31 pins the exact expected toolchain with CMake 4.4.2 and Qt 6.11.1 as hard requirements instead of version floors, and documents every dependency in the README
+* v0.6.32 adds a GitHub Actions workflow that runs the local pipeline on every push and pull request with the same exactly pinned CMake, Qt and gcovr releases
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
