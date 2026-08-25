@@ -50,7 +50,7 @@ time ./localPipeline.sh
 [INFO] Building coverage configuration with 20 parallel job(s).
 [INFO] Generating coverage report.
 [INFO] Coverage HTML entry point: /home/mpetrick/repos/Cullendula/build-coverage/coverage/html/index.html
-[INFO] Total line coverage: 94.4%
+[INFO] Total line coverage: 98.6%
 [INFO] Opening coverage report with 'xdg-open'.
 [INFO] Generating Doxygen documentation.
 [INFO] Doxygen warnings file is empty.
@@ -285,7 +285,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.6.42.
+This is version 0.6.43.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
