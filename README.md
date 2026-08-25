@@ -115,6 +115,8 @@ Each release carries a package for both desktop platforms, plus the generated AP
 
 Both packages are started once by the release workflow before anything is published, so a package that cannot start never becomes a release.
 
+The full test suite, the coverage gate and the static analysis run on Linux, which is the supported development platform. The Windows job builds the application and requires the packaged executable to start cleanly; it also runs the unit suite for the record, without gating on it, because parts of that suite still assume POSIX filesystem behaviour.
+
 The AppImage carries the image format plugins whose system libraries exist on the build image. A few of the official Qt plugins link against sonames Ubuntu does not ship, so they are dropped from the package and the corresponding formats simply do not appear in `Main -> Extensions` there; a build from source on your own distribution offers them.
 
 ## Format the code
