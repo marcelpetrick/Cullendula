@@ -61,7 +61,7 @@ class CullendulaFileSystemHandler {
      * @brief Return the currently active image suffix filter.
      * @return Sorted list of normalized suffixes without a leading dot.
      */
-    QStringList getAllowedImageExtensions() const;
+    [[nodiscard]] QStringList getAllowedImageExtensions() const;
 
     /*!
      * @brief Load a new working directory or a file inside that directory.
@@ -113,13 +113,13 @@ class CullendulaFileSystemHandler {
      * @brief Return a user-facing description of the current selection.
      * @return Status text in the form `showing X of Y`.
      */
-    QString getCurrentStatus() const;
+    [[nodiscard]] QString getCurrentStatus() const;
 
     /*!
      * @brief Return the most recent user-facing error message.
      * @return Empty string when no actionable error is pending.
      */
-    QString const& getLastErrorMessage() const;
+    [[nodiscard]] QString const& getLastErrorMessage() const;
 
     /*!
      * @brief Check whether an undo step is currently available.
@@ -200,7 +200,7 @@ class CullendulaFileSystemHandler {
      * @brief Validate the internal working directory, image list, and selection.
      * @return `true` when the handler can safely access the current image.
      */
-    bool checkInternalSanity() const;
+    [[nodiscard]] bool checkInternalSanity() const;
 
     /*!
      * @brief Shift the current image selection by a signed offset.

@@ -471,7 +471,7 @@ void CullendulaMainWindow::showCachedPhoto() {
     height = std::max(0, height);
 
     // set a scaled pixmap keeping its aspect ratio
-    ui->centerLabel->setPixmap(m_cachedPhoto.scaled(width, height, Qt::KeepAspectRatio));
+    ui->centerLabel->setPixmap(m_cachedPhoto.scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
 //----------------------------------------------------------------------------

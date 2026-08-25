@@ -56,3 +56,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.6.39 skips the report auto-open step when no graphical session is present, so headless runs such as CI report it as skipped instead of warning and no longer probe for a text browser
 * v0.6.40 raises the language standard from C++17 to C++23, the most recent published standard, and replaces the two remaining implicit `[=]` lambda captures of `this`, which are deprecated since C++20
 * v0.6.41 moves the version history out of the README into this changelog, so the README stays about using and building the program
+* v0.6.42 caches the supported-image-format lookup, drops the per-file logging from the directory rescan that runs after every move, scales the displayed photo smoothly, and adopts C++20 ranges, designated initializers and `[[nodiscard]]` getters

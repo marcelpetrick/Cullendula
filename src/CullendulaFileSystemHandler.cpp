@@ -23,13 +23,16 @@ QString const c_hardcodedOutput = "output";
 QString const c_hardcodedTrash = "trash";
 int const c_maxSuggestedExtensions = 10;
 
-QSet<QString> getSupportedImageSuffixes() {
-    QSet<QString> suffixes;
-
-    QList<QByteArray> const supportedFormats = QImageReader::supportedImageFormats();
-    for (QByteArray const& format : supportedFormats) {
-        suffixes.insert(QString::fromLatin1(format).toLower());
-    }
+QSet<QString> const& getSupportedImageSuffixes() {
+    // QImageReader walks the image format plugins on every call, and the answer cannot
+    // change while the process runs, so build the set once instead of on every rescan.
+    static QSet<QString> const suffixes = [] {
+        QSet<QString> result;
+        for (QByteArray const& format : QImageReader::supportedImageFormats()) {
+            result.insert(QString::fromLatin1(format).toLower());
+        }
+        return result;
+    }();
 
     return suffixes;
 }
@@ -93,7 +96,7 @@ QStringList CullendulaFileSystemHandlerDetail::getSuggestedImageExtensions(QSet<
     }
 
     QStringList additionalExtensions = supportedSuffixes.values();
-    std::sort(additionalExtensions.begin(), additionalExtensions.end());
+    std::ranges::sort(additionalExtensions);
 
     for (QString const& extension : additionalExtensions) {
         if (!suggestedExtensions.contains(extension)) {
@@ -110,7 +113,7 @@ QStringList CullendulaFileSystemHandlerDetail::getSuggestedImageExtensions(QSet<
 //----------------------------------------------------------------------------
 
 CullendulaFileSystemHandlerDetail::OutputFolderHooks CullendulaFileSystemHandlerDetail::defaultOutputFolderHooks() {
-    return OutputFolderHooks{pathExists, pathIsDirectory, directoryExists, mkdirInDirectory};
+    return OutputFolderHooks{.pathExists = pathExists, .pathIsDirectory = pathIsDirectory, .directoryExists = directoryExists, .mkdir = mkdirInDirectory};
 }
 
 //----------------------------------------------------------------------------
@@ -157,7 +160,7 @@ void CullendulaFileSystemHandler::setAllowedImageExtensions(QStringList const& e
 
 QStringList CullendulaFileSystemHandler::getAllowedImageExtensions() const {
     QStringList extensions = m_allowedImageExtensions.values();
-    std::sort(extensions.begin(), extensions.end());
+    std::ranges::sort(extensions);
     return extensions;
 }
 
@@ -398,7 +401,7 @@ bool CullendulaFileSystemHandler::rebuildImageFileList(QString const& preferredI
     m_currentImages.clear();
     m_positionCurrentFile = -1;
 
-    QSet<QString> const supportedImageSuffixes = getSupportedImageSuffixes();
+    QSet<QString> const& supportedImageSuffixes = getSupportedImageSuffixes();
     QFileInfoList const availableFiles = m_workingPath.entryInfoList(QDir::Files, QDir::Name);
     QFileInfoList availableImages;
 
@@ -414,10 +417,7 @@ bool CullendulaFileSystemHandler::rebuildImageFileList(QString const& preferredI
         return false;
     }
 
-    qDebug() << "found the following image files:";
-    for (QFileInfo const& file : availableImages) {
-        qDebug() << "\t" << file.absoluteFilePath();
-    }
+    qDebug() << "found" << availableImages.size() << "image files";
 
     m_currentImages = availableImages.toVector();
 
@@ -501,10 +501,9 @@ bool CullendulaFileSystemHandler::moveCurrentFileToGivenSubfolder(QString const&
 //----------------------------------------------------------------------------
 
 int CullendulaFileSystemHandler::findImageIndexByPath(QString const& imagePath) const {
-    auto const match = std::find_if(m_currentImages.cbegin(), m_currentImages.cend(),
-                                    [&imagePath](QFileInfo const& fileInfo) { return fileInfo.absoluteFilePath() == imagePath; });
+    auto const match = std::ranges::find_if(m_currentImages, [&imagePath](QFileInfo const& fileInfo) { return fileInfo.absoluteFilePath() == imagePath; });
     if (match != m_currentImages.cend()) {
-        return static_cast<int>(std::distance(m_currentImages.cbegin(), match));
+        return static_cast<int>(std::ranges::distance(m_currentImages.cbegin(), match));
     }
 
     return -1;
