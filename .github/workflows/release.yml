@@ -279,12 +279,14 @@ jobs:
           $test = Get-ChildItem -Recurse -Filter CullendulaTests.exe build |
                   Select-Object -First 1 -ExpandProperty FullName
           Write-Host "running $test"
-          # QtTest writes its report to a file here rather than to stdout: passing
-          # '-,txt' on the command line does not survive PowerShell, whose comma is an
-          # array operator, and the results never reach the log.
-          & $test -o "$PWD\unit-tests.txt,txt" 2>&1 | Out-Host
+          # The binary runs four QTest objects in sequence. Giving it -o <file> makes each
+          # of them truncate that file, so only the last report survives, which is why the
+          # previous run showed a single "10 passed" block for a suite that reported 29
+          # failures. Let it log normally instead and capture the console through cmd,
+          # whose redirection does not go through PowerShell's stream handling.
+          cmd /c "`"$test`" > unit-tests.txt 2>&1"
           Write-Host "unit test exit code: $LASTEXITCODE"
-          if (Test-Path unit-tests.txt) { Get-Content unit-tests.txt } else { Write-Host "no report file produced" }
+          if (Test-Path unit-tests.txt) { Get-Content unit-tests.txt } else { Write-Host "no output captured" }
 
       - name: Assemble the portable package
         run: |
