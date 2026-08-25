@@ -35,6 +35,14 @@ target_include_directories(CullendulaTests
         ${CMAKE_SOURCE_DIR}/src
 )
 
+# The version-metadata test reads CMakeLists.txt and README.md from the
+# repository, so it needs the source location of the current configuration
+# instead of a path that only exists on one machine.
+target_compile_definitions(CullendulaTests
+    PRIVATE
+        CULLENDULA_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+)
+
 #
 # Register test with CTest
 #

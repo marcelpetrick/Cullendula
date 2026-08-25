@@ -182,16 +182,16 @@ void Test_CullendulaMainWindow::slot_Test_InitialState() {
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistently() {
-    QFile cmakeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/CMakeLists.txt"));
+    QFile cmakeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.6.35"));
+    QVERIFY(cmakeContents.contains("VERSION 0.6.36"));
 
-    QFile readmeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/README.md"));
+    QFile readmeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.6.35."));
-    QVERIFY(readmeContents.contains("* v0.6.35 installs the qtdeclarative archive in CI"));
+    QVERIFY(readmeContents.contains("This is version 0.6.36."));
+    QVERIFY(readmeContents.contains("* v0.6.36 resolves the repository paths in the version-metadata test"));
 }
 
 //----------------------------------------------------------------------------------
