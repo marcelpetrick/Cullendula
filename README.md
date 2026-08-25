@@ -285,7 +285,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.6.34.
+This is version 0.6.35.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
@@ -363,6 +363,7 @@ Not supported nor tested anymore:
 * v0.6.32 adds a GitHub Actions workflow that runs the local pipeline on every push and pull request with the same exactly pinned CMake, Qt and gcovr releases
 * v0.6.33 adds the CI status badge and badges for the pinned license, Qt, CMake and C++ standard to the top of the README
 * v0.6.34 documents the working agreements in AGENTS.md, covering the quality gate, atomic conventional commits, the per-commit version bump, the exact dependency pins, and the code, test and localization conventions
+* v0.6.35 installs the qtdeclarative archive in CI, because the lrelease binary used to build the translations links against libQt6Qml and cannot start without it
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

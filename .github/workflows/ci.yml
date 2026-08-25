@@ -87,10 +87,12 @@ jobs:
           target: desktop
           arch: linux_gcc_64
           # qtbase covers Core/Gui/Widgets/Test and qttools provides the
-          # LinguistTools package that qt_add_translations() requires. icu is a
-          # separate archive that qtbase links against on Linux, so leaving it
-          # out would install a Qt whose tools cannot start.
-          archives: qtbase qttools icu
+          # LinguistTools package that qt_add_translations() requires.
+          # qtdeclarative is needed even though this application ships no QML:
+          # the lrelease binary from qttools links against libQt6Qml.so.6 and
+          # cannot start without it. icu is a separate archive that qtbase links
+          # against on Linux, so leaving it out breaks the Qt tools as well.
+          archives: qtbase qttools qtdeclarative icu
           cache: true
 
       - name: Install the pinned gcovr
