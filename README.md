@@ -285,7 +285,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.6.38.
+This is version 0.6.39.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
@@ -367,6 +367,7 @@ Not supported nor tested anymore:
 * v0.6.36 resolves the repository paths in the version-metadata test from the CMake source directory instead of a hardcoded home path, so the test also runs on CI and in any other checkout
 * v0.6.37 installs the qtimageformats and qtsvg Qt components in CI, so the runner supports the same image formats as a desktop installation and the Extensions menu is populated identically
 * v0.6.38 declares the two parameters that older Cppcheck releases flag as const, so the static analysis reports zero findings on the CI image as well as locally
+* v0.6.39 skips the report auto-open step when no graphical session is present, so headless runs such as CI report it as skipped instead of warning and no longer probe for a text browser
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow

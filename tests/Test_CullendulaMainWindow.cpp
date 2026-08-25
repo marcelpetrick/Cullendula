@@ -185,13 +185,13 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
     QFile cmakeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.6.38"));
+    QVERIFY(cmakeContents.contains("VERSION 0.6.39"));
 
     QFile readmeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.6.38."));
-    QVERIFY(readmeContents.contains("* v0.6.38 declares the two parameters that older Cppcheck releases flag as const"));
+    QVERIFY(readmeContents.contains("This is version 0.6.39."));
+    QVERIFY(readmeContents.contains("* v0.6.39 skips the report auto-open step when no graphical session is present"));
 }
 
 //----------------------------------------------------------------------------------

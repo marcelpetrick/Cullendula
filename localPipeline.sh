@@ -21,6 +21,7 @@
 #   11. Detect whether clang-format changed any files
 #   12. Launch the built Cullendula application by default as the final interactive step
 #   13. Suppress application launch when --noRun is provided, which is intended for CI
+#   13a. Skip opening reports when no graphical session is present, as on CI
 #   14. Print a final stage-by-stage summary and exit with a useful status code
 #
 # Invocation:
@@ -248,7 +249,17 @@ detect_parallel_jobs() {
     return 0
 }
 
+is_headless_session() {
+    [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]
+}
+
 detect_open_command() {
+    # Without a graphical session the desktop opener cannot succeed, and calling
+    # it anyway only produces console noise while it probes for text browsers.
+    if is_headless_session; then
+        return 1
+    fi
+
     if command -v xdg-open >/dev/null 2>&1; then
         printf '%s\n' "xdg-open"
         return 0
@@ -411,7 +422,11 @@ generate_coverage() {
             warn "Could not open the generated coverage report automatically."
         fi
     else
-        warn "No supported open command was found. Coverage report will not be opened automatically."
+        if is_headless_session; then
+            log "No graphical session detected. Coverage report will not be opened automatically."
+        else
+            warn "No supported open command was found. Coverage report will not be opened automatically."
+        fi
     fi
 
     return 0
@@ -455,7 +470,11 @@ generate_doxygen() {
             warn "Could not open the generated documentation automatically."
         fi
     else
-        warn "No supported open command was found. Documentation will not be opened automatically."
+        if is_headless_session; then
+            log "No graphical session detected. Documentation will not be opened automatically."
+        else
+            warn "No supported open command was found. Documentation will not be opened automatically."
+        fi
     fi
 
     return 0
@@ -497,7 +516,11 @@ run_cppcheck() {
                 warn "Could not open the generated Cppcheck report automatically."
             fi
         else
+            if is_headless_session; then
+            log "No graphical session detected. Cppcheck report will not be opened automatically."
+        else
             warn "No supported open command was found. Cppcheck report will not be opened automatically."
+        fi
         fi
     else
         warn "Cppcheck HTML report was not generated. XML output is still available."
@@ -733,6 +756,8 @@ main() {
 
         if [[ "${OPEN_COVERAGE_OK}" -eq 1 ]]; then
             mark_result "Open Coverage" "PASS" "Coverage index.html was handed to the desktop opener"
+        elif is_headless_session; then
+            mark_result "Open Coverage" "SKIP" "No graphical session; the coverage index.html path was printed instead"
         else
             mark_result "Open Coverage" "WARN" "Coverage index.html path was printed but auto-open was unavailable or failed"
         fi
@@ -761,6 +786,8 @@ main() {
 
         if [[ "${OPEN_DOCS_OK}" -eq 1 ]]; then
             mark_result "Open Docs" "PASS" "index.html was handed to the desktop opener"
+        elif is_headless_session; then
+            mark_result "Open Docs" "SKIP" "No graphical session; the index.html path was printed instead"
         else
             mark_result "Open Docs" "WARN" "index.html path was printed but auto-open was unavailable or failed"
         fi
@@ -788,6 +815,8 @@ main() {
         if [[ -n "${CPPCHECK_HTMLREPORT_COMMAND}" ]]; then
             if [[ "${OPEN_CPPCHECK_OK}" -eq 1 ]]; then
                 mark_result "Open Cppcheck" "PASS" "index.html was handed to the desktop opener"
+            elif is_headless_session; then
+                mark_result "Open Cppcheck" "SKIP" "No graphical session; the index.html path was printed instead"
             else
                 mark_result "Open Cppcheck" "WARN" "index.html path was printed but auto-open was unavailable or failed"
             fi
