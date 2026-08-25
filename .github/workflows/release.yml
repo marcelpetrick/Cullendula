@@ -3,12 +3,16 @@
 #
 # Triggered by pushing a version tag, for example:
 #
-#     git tag v0.6.44 && git push origin v0.6.44
+#     git tag v0.7.0 && git push origin v0.7.0
 #
-# The workflow refuses to publish anything that does not pass the project's own
-# quality gate, and it refuses to publish a tag that disagrees with the version
-# in CMakeLists.txt, so a release always matches a verified state of the tree.
-# The release notes are taken from the matching CHANGELOG.md entry.
+# Nothing is published that has not been verified: the tag has to agree with the
+# version in CMakeLists.txt, the Linux job runs the project's full quality gate,
+# and both packages are started once before the release is created.
+#
+# Artifacts:
+#   * Cullendula-<version>-x86_64.AppImage   - Linux, bundles Qt, just run it
+#   * Cullendula-<version>-windows-x64.zip   - Windows 11 x64, unpack and run
+#   * cullendula-<tag>-doxygen-html.tar.gz   - generated API documentation
 # -----------------------------------------------------------------------------
 name: Release
 
@@ -34,18 +38,17 @@ env:
   LINUXDEPLOY_PLUGIN_QT_VERSION: 1-alpha-20250213-1
 
 jobs:
-  release:
-    name: Verify and publish
+  verify:
+    name: Verify the tag
     runs-on: ubuntu-24.04
-
-    env:
-      QT_QPA_PLATFORM: offscreen
-
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7.0.1
 
       - name: Check that the tag matches the project version
+        id: version
         run: |
           set -euo pipefail
           tag_version="${GITHUB_REF_NAME#v}"
@@ -59,32 +62,30 @@ jobs:
             echo "::error::CHANGELOG.md has no entry for v${project_version}."
             exit 1
           fi
+          echo "version=${tag_version}" >> "${GITHUB_OUTPUT}"
+
+  linux:
+    name: Linux AppImage
+    needs: verify
+    runs-on: ubuntu-24.04
+
+    env:
+      QT_QPA_PLATFORM: offscreen
+      CULLENDULA_VERSION: ${{ needs.verify.outputs.version }}
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7.0.1
 
       - name: Install build and quality tooling
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends --yes \
-            build-essential \
-            clang-format \
-            cppcheck \
-            python3-pygments \
-            doxygen \
-            graphviz \
-            libgl1-mesa-dev \
-            libegl1 \
-            libdbus-1-3 \
-            libfontconfig1 \
-            libfreetype6 \
-            libxkbcommon-x11-0 \
-            libxcb-cursor0 \
-            libxcb-icccm4 \
-            libxcb-image0 \
-            libxcb-keysyms1 \
-            libxcb-randr0 \
-            libxcb-render-util0 \
-            libxcb-shape0 \
-            libxcb-xinerama0 \
-            libxcb-xkb1
+            build-essential clang-format cppcheck python3-pygments doxygen graphviz \
+            libgl1-mesa-dev libegl1 libdbus-1-3 libfontconfig1 libfreetype6 \
+            libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-image0 \
+            libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 \
+            libxcb-xinerama0 libxcb-xkb1
 
       - name: Install the pinned CMake
         uses: lukka/get-cmake@v4.4.2
@@ -98,10 +99,7 @@ jobs:
           host: linux
           target: desktop
           arch: linux_gcc_64
-          # qtwayland is added on top of the CI set: CI only ever runs offscreen,
-          # but the AppImage ships platform plugins and should run natively on
-          # Wayland as well as through XWayland.
-          archives: qtbase qttools qtdeclarative qtsvg qtwayland icu
+          archives: qtbase qttools qtdeclarative qtsvg icu
           modules: qtimageformats
           cache: true
 
@@ -113,30 +111,11 @@ jobs:
       - name: Run the local pipeline
         run: ./localPipeline.sh --noRun --verbose
 
-      - name: Build the release notes from CHANGELOG.md
-        run: |
-          set -euo pipefail
-          version="${GITHUB_REF_NAME#v}"
-          {
-            printf '%s\n\n' "$(grep "^\* v${version} " CHANGELOG.md | sed "s/^\* v${version} //")"
-            printf 'Verified by the project pipeline on this tag: build, unit tests, the 90%% line-coverage gate, an empty Doxygen warning log, Cppcheck and clang-format.\n\n'
-            printf 'Download the AppImage below, make it executable with `chmod +x`, and run it. It bundles Qt %s, so nothing else has to be installed.\n\n' "${CULLENDULA_EXPECTED_QT_VERSION}"
-            printf 'To build from source instead you need exactly Qt %s and CMake %s; see the README for the full expected toolchain.\n\n' \
-              "${CULLENDULA_EXPECTED_QT_VERSION}" "${CULLENDULA_EXPECTED_CMAKE_VERSION}"
-            printf 'The full history is in [CHANGELOG.md](https://github.com/%s/blob/master/CHANGELOG.md).\n' "${GITHUB_REPOSITORY}"
-          } > release-notes.md
-          cat release-notes.md
-
       - name: Package the generated API documentation
-        run: |
-          set -euo pipefail
-          tar -czf "cullendula-${GITHUB_REF_NAME}-doxygen-html.tar.gz" -C build/doxygen html
+        run: tar -czf "cullendula-${GITHUB_REF_NAME}-doxygen-html.tar.gz" -C build/doxygen html
 
       - name: Install into an AppDir
-        run: |
-          set -euo pipefail
-          cmake --install build --prefix AppDir/usr
-          find AppDir -type f | sort
+        run: cmake --install build --prefix AppDir/usr
 
       - name: Fetch the pinned AppImage tooling
         run: |
@@ -151,21 +130,18 @@ jobs:
         run: |
           set -euo pipefail
           # The official Qt binaries are built on RHEL 9, so some image format plugins
-          # link against sonames that Ubuntu does not carry, for example libtiff.so.5
-          # against Ubuntu's libtiff.so.6. linuxdeploy aborts when it cannot resolve a
-          # dependency, so drop exactly those plugins instead of failing the release.
-          # The Extensions menu is built from the formats Qt reports at run time, so a
-          # dropped plugin simply does not appear there.
-          dropped=0
+          # link against sonames Ubuntu does not carry, for example libtiff.so.5 against
+          # Ubuntu's libtiff.so.6. linuxdeploy aborts when it cannot resolve a dependency,
+          # so drop exactly those instead of failing the release. The Extensions menu is
+          # built from the formats Qt reports at run time, so a dropped plugin simply does
+          # not appear there.
           for plugin in "${QT_ROOT_DIR}"/plugins/imageformats/*.so; do
             missing="$(ldd "${plugin}" 2>/dev/null | awk '/not found/ {printf "%s ", $1}')"
             if [ -n "${missing}" ]; then
               echo "dropping $(basename "${plugin}") - unresolvable: ${missing}"
               rm -f "${plugin}"
-              dropped=$((dropped + 1))
             fi
           done
-          echo "dropped ${dropped} plugin(s)"
           echo "remaining: $(ls "${QT_ROOT_DIR}"/plugins/imageformats/ | tr '\n' ' ')"
           # webp is a documented feature of the Extensions menu, so it must survive.
           test -f "${QT_ROOT_DIR}/plugins/imageformats/libqwebp.so"
@@ -174,21 +150,17 @@ jobs:
         env:
           # Runners have no FUSE, so the tools have to unpack themselves instead.
           APPIMAGE_EXTRACT_AND_RUN: 1
-          # The strip binary bundled in linuxdeploy cannot read the newer .relr.dyn
-          # relocation sections that current system libraries use, and aborts the
-          # build when it meets one. Skipping the strip costs some size, nothing else.
+          # The strip bundled in linuxdeploy cannot read the newer .relr.dyn relocation
+          # sections current system libraries use, and aborts when it meets one.
           NO_STRIP: 1
+          # linuxdeploy deploys only the xcb platform plugin. offscreen is needed so the
+          # package can be started without a display, which is how it is tested below.
+          EXTRA_PLATFORM_PLUGINS: libqoffscreen.so
         run: |
           set -euo pipefail
-          version="${GITHUB_REF_NAME#v}"
           export QMAKE="${QT_ROOT_DIR}/bin/qmake"
           test -x "${QMAKE}" || export QMAKE="$(command -v qmake6)"
-          export OUTPUT="Cullendula-${version}-x86_64.AppImage"
-          # linuxdeploy deploys only the xcb platform plugin by default. offscreen is
-          # needed so the package can be started without a display, which is how it is
-          # smoke-tested below; wayland lets it run natively on a Wayland session
-          # instead of through XWayland.
-          export EXTRA_PLATFORM_PLUGINS="libqoffscreen.so;libqwayland-generic.so"
+          export OUTPUT="Cullendula-${CULLENDULA_VERSION}-x86_64.AppImage"
           ./linuxdeploy.AppImage \
             --appdir AppDir \
             --plugin qt \
@@ -202,17 +174,12 @@ jobs:
           APPIMAGE_EXTRACT_AND_RUN: 1
         run: |
           set -euo pipefail
-          version="${GITHUB_REF_NAME#v}"
-          appimage="Cullendula-${version}-x86_64.AppImage"
+          appimage="Cullendula-${CULLENDULA_VERSION}-x86_64.AppImage"
           chmod +x "${appimage}"
-          # Start the packaged application exactly like the pipeline smoke test does:
-          # headless, quitting as soon as it is up. A package that cannot start is not
-          # a release.
-          #
-          # QT_PLUGIN_PATH and QT_ROOT_DIR are unset for this run. install-qt-action
-          # exports them, and with them set the package happily loads the runner's Qt
-          # plugins instead of its own, which makes this test pass for a package that
-          # would fail on a user's machine.
+          # QT_PLUGIN_PATH and QT_ROOT_DIR are removed for this run. install-qt-action
+          # exports them, and with them set the package loads the runner's Qt plugins
+          # instead of its own, which would make this test pass for a package that fails
+          # on a user's machine.
           env -u QT_PLUGIN_PATH -u QT_ROOT_DIR -u LD_LIBRARY_PATH \
             QT_QPA_PLATFORM=offscreen CULLENDULA_EXIT_AFTER_STARTUP_MS=0 "./${appimage}"
           echo "the packaged application starts and exits cleanly on its own plugins"
@@ -220,10 +187,130 @@ jobs:
           "./${appimage}" --appimage-extract >/dev/null
           echo "bundled platforms:     $(ls squashfs-root/usr/plugins/platforms/ | tr '\n' ' ')"
           echo "bundled image formats: $(ls squashfs-root/usr/plugins/imageformats/ | tr '\n' ' ')"
-          # xcb is what a desktop user needs, offscreen is what the test above proved.
           test -f squashfs-root/usr/plugins/platforms/libqxcb.so
           test -f squashfs-root/usr/plugins/platforms/libqoffscreen.so
           rm -rf squashfs-root
+
+      - name: Upload the Linux artifacts
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: linux-artifacts
+          if-no-files-found: error
+          path: |
+            Cullendula-${{ needs.verify.outputs.version }}-x86_64.AppImage
+            cullendula-${{ github.ref_name }}-doxygen-html.tar.gz
+
+  windows:
+    name: Windows package
+    needs: verify
+    runs-on: windows-2022
+
+    env:
+      CULLENDULA_VERSION: ${{ needs.verify.outputs.version }}
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Install the pinned CMake
+        uses: lukka/get-cmake@v4.4.2
+        with:
+          cmakeVersion: ${{ env.CULLENDULA_EXPECTED_CMAKE_VERSION }}
+
+      - name: Install the pinned Qt
+        uses: jurplel/install-qt-action@v4.3.1
+        with:
+          version: ${{ env.CULLENDULA_EXPECTED_QT_VERSION }}
+          host: windows
+          target: desktop
+          arch: win64_msvc2022_64
+          # No icu archive on Windows; the rest mirrors the Linux job.
+          archives: qtbase qttools qtdeclarative qtsvg
+          modules: qtimageformats
+          cache: true
+
+      - name: Configure and build
+        run: |
+          cmake -S . -B build -DCULLENDULA_BUILD_TESTS=ON
+          cmake --build build --config Release --parallel
+
+      - name: Run the tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Assemble the portable package
+        run: |
+          cmake --install build --config Release --prefix staging
+          New-Item -ItemType Directory -Path dist | Out-Null
+          Copy-Item staging/bin/Cullendula.exe dist/
+          Copy-Item LICENSE dist/
+          Copy-Item README.md dist/
+          Copy-Item CHANGELOG.md dist/
+          # windeployqt copies the Qt runtime, the platform and image format plugins and
+          # the MSVC runtime next to the executable, which makes the folder self-contained.
+          & "$env:QT_ROOT_DIR\bin\windeployqt.exe" --release --compiler-runtime dist/Cullendula.exe
+          Get-ChildItem -Recurse dist | Select-Object -ExpandProperty FullName
+
+      - name: Smoke-test the package
+        env:
+          QT_QPA_PLATFORM: offscreen
+          CULLENDULA_EXIT_AFTER_STARTUP_MS: 0
+        run: |
+          # Run from inside the package folder so only the DLLs shipped with it are used.
+          Push-Location dist
+          .\Cullendula.exe
+          if ($LASTEXITCODE -ne 0) { throw "the packaged application failed to start (exit $LASTEXITCODE)" }
+          Pop-Location
+          Write-Host "the packaged application starts and exits cleanly"
+
+      - name: Create the zip
+        run: Compress-Archive -Path dist/* -DestinationPath "Cullendula-$env:CULLENDULA_VERSION-windows-x64.zip"
+
+      - name: Upload the Windows artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: windows-artifacts
+          if-no-files-found: error
+          path: Cullendula-${{ needs.verify.outputs.version }}-windows-x64.zip
+
+  publish:
+    name: Publish the release
+    needs: [verify, linux, windows]
+    runs-on: ubuntu-24.04
+
+    env:
+      CULLENDULA_VERSION: ${{ needs.verify.outputs.version }}
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Download the built packages
+        uses: actions/download-artifact@v8.0.1
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Build the release notes from CHANGELOG.md
+        run: |
+          set -euo pipefail
+          {
+            printf '%s\n\n' "$(grep "^\* v${CULLENDULA_VERSION} " CHANGELOG.md | sed "s/^\* v${CULLENDULA_VERSION} //")"
+            printf '## Downloads\n\n'
+            printf '* **Linux (x86-64):** `Cullendula-%s-x86_64.AppImage` - make it executable with `chmod +x` and run it. It bundles Qt %s, so nothing else has to be installed.\n' \
+              "${CULLENDULA_VERSION}" "${CULLENDULA_EXPECTED_QT_VERSION}"
+            printf '* **Windows 11 (x64):** `Cullendula-%s-windows-x64.zip` - unpack it anywhere and run `Cullendula.exe`. The Qt runtime and the MSVC runtime are included.\n' \
+              "${CULLENDULA_VERSION}"
+            printf '* **API documentation:** `cullendula-%s-doxygen-html.tar.gz`\n\n' "${GITHUB_REF_NAME}"
+            printf 'Both packages were started once by the release workflow before publishing. '
+            printf 'The Linux build additionally passed the full project pipeline: unit tests, the 90%% line-coverage gate, an empty Doxygen warning log, Cppcheck and clang-format.\n\n'
+            printf 'To build from source you need exactly Qt %s and CMake %s; see the README for the full expected toolchain.\n\n' \
+              "${CULLENDULA_EXPECTED_QT_VERSION}" "${CULLENDULA_EXPECTED_CMAKE_VERSION}"
+            printf 'The full history is in [CHANGELOG.md](https://github.com/%s/blob/master/CHANGELOG.md).\n' "${GITHUB_REPOSITORY}"
+          } > release-notes.md
+          cat release-notes.md
+          ls -la artifacts
 
       - name: Publish the release
         env:
@@ -234,5 +321,4 @@ jobs:
             --title "Cullendula ${GITHUB_REF_NAME}" \
             --notes-file release-notes.md \
             --verify-tag \
-            "Cullendula-${GITHUB_REF_NAME#v}-x86_64.AppImage" \
-            "cullendula-${GITHUB_REF_NAME}-doxygen-html.tar.gz"
+            artifacts/*

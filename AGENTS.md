@@ -160,7 +160,13 @@ All action versions are pinned to exact releases, never to a floating major tag.
 
 `.github/workflows/release.yml` publishes a release when a `v*` tag is pushed. It refuses
 a tag that disagrees with the version in `CMakeLists.txt` or that has no `CHANGELOG.md`
-entry, runs the same gate, builds an AppImage and starts it headless before publishing.
+entry, then builds a Linux AppImage and a Windows zip in parallel and starts each of
+them once before publishing. A package that cannot start is not a release.
+
+When testing a package, remove `QT_PLUGIN_PATH`, `QT_ROOT_DIR` and `LD_LIBRARY_PATH`
+from the environment first, or on Windows run from inside the package folder. The Qt
+install action exports those, and a package will happily use the build machine's Qt
+instead of its own, which makes a broken package look fine.
 Packaging metadata lives in `packaging/`; the AppStream version is generated from the
 CMake project version, so never hardcode a version there.
 
