@@ -91,11 +91,11 @@ partial bump fails the pipeline:
 | --- | --- | --- |
 | 1 | `CMakeLists.txt` | `project(Cullendula VERSION x.y.z ...)` |
 | 2 | `README.md` | the line `This is version x.y.z.` |
-| 3 | `README.md` | append a new `* vx.y.z <what changed>` bullet at the end of the `## History` list |
+| 3 | `CHANGELOG.md` | append a new `* vx.y.z <what changed>` bullet at the end of the list |
 | 4 | `tests/Test_CullendulaMainWindow.cpp` | the three `QVERIFY` lines in `slot_Test_VersionMetadata_IsDocumentedConsistently()` |
 
 The test in place 4 reads the other three files and asserts they contain the new version,
-including a prefix of the new History bullet. Keep the asserted prefix short enough that
+including a prefix of the new changelog bullet. Keep the asserted prefix short enough that
 minor rewording of the bullet does not break it.
 
 `CULLENDULA_PROJECT_VERSION` is compiled from the CMake project version and shown in the
