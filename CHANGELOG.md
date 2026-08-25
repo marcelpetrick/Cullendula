@@ -65,3 +65,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.7.0 releases ready-to-run packages for both desktop platforms: the Linux AppImage now also carries the offscreen platform plugin, a Windows 11 x64 zip with the Qt and MSVC runtimes is built alongside it, and each package is started once from its own files before the release is published
 * v0.7.1 fixes the path comparison that made the application lose the selected image after every move on platforms whose directory separator is not a slash, and builds all internal paths with the canonical separator
 * v0.7.2 captures the whole Windows unit test console instead of a single overwritten report file, so the failures that the packaging run reports can be read and fixed
+* v0.7.3 lets each test object write its own report when CULLENDULA_TEST_REPORT_DIR is set, so the results are readable on platforms where the test executable writes nothing to the console

@@ -279,14 +279,18 @@ jobs:
           $test = Get-ChildItem -Recurse -Filter CullendulaTests.exe build |
                   Select-Object -First 1 -ExpandProperty FullName
           Write-Host "running $test"
-          # The binary runs four QTest objects in sequence. Giving it -o <file> makes each
-          # of them truncate that file, so only the last report survives, which is why the
-          # previous run showed a single "10 passed" block for a suite that reported 29
-          # failures. Let it log normally instead and capture the console through cmd,
-          # whose redirection does not go through PowerShell's stream handling.
-          cmd /c "`"$test`" > unit-tests.txt 2>&1"
+          # This executable writes nothing to the console on Windows, so redirecting it
+          # captured an empty file. CULLENDULA_TEST_REPORT_DIR makes each test object
+          # write its own report instead, which is the only way to see the results here:
+          # a single -o file would be truncated by each object in turn.
+          $env:CULLENDULA_TEST_REPORT_DIR = "$PWD\test-reports"
+          New-Item -ItemType Directory -Force -Path $env:CULLENDULA_TEST_REPORT_DIR | Out-Null
+          & $test
           Write-Host "unit test exit code: $LASTEXITCODE"
-          if (Test-Path unit-tests.txt) { Get-Content unit-tests.txt } else { Write-Host "no output captured" }
+          Get-ChildItem $env:CULLENDULA_TEST_REPORT_DIR -Filter *.txt | ForEach-Object {
+            Write-Host "----- $($_.Name) -----"
+            Get-Content $_.FullName
+          }
 
       - name: Assemble the portable package
         run: |
