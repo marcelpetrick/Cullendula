@@ -184,6 +184,11 @@ jobs:
           export QMAKE="${QT_ROOT_DIR}/bin/qmake"
           test -x "${QMAKE}" || export QMAKE="$(command -v qmake6)"
           export OUTPUT="Cullendula-${version}-x86_64.AppImage"
+          # linuxdeploy deploys only the xcb platform plugin by default. offscreen is
+          # needed so the package can be started without a display, which is how it is
+          # smoke-tested below; wayland lets it run natively on a Wayland session
+          # instead of through XWayland.
+          export EXTRA_PLATFORM_PLUGINS="libqoffscreen.so;libqwayland-generic.so"
           ./linuxdeploy.AppImage \
             --appdir AppDir \
             --plugin qt \
@@ -203,13 +208,21 @@ jobs:
           # Start the packaged application exactly like the pipeline smoke test does:
           # headless, quitting as soon as it is up. A package that cannot start is not
           # a release.
-          QT_QPA_PLATFORM=offscreen CULLENDULA_EXIT_AFTER_STARTUP_MS=0 "./${appimage}"
-          echo "the packaged application starts and exits cleanly"
-          # The smoke test runs offscreen, which would also pass if the package had no
-          # usable desktop platform plugin at all, so check for that separately.
+          #
+          # QT_PLUGIN_PATH and QT_ROOT_DIR are unset for this run. install-qt-action
+          # exports them, and with them set the package happily loads the runner's Qt
+          # plugins instead of its own, which makes this test pass for a package that
+          # would fail on a user's machine.
+          env -u QT_PLUGIN_PATH -u QT_ROOT_DIR -u LD_LIBRARY_PATH \
+            QT_QPA_PLATFORM=offscreen CULLENDULA_EXIT_AFTER_STARTUP_MS=0 "./${appimage}"
+          echo "the packaged application starts and exits cleanly on its own plugins"
+
           "./${appimage}" --appimage-extract >/dev/null
-          test -f squashfs-root/usr/plugins/platforms/libqxcb.so
+          echo "bundled platforms:     $(ls squashfs-root/usr/plugins/platforms/ | tr '\n' ' ')"
           echo "bundled image formats: $(ls squashfs-root/usr/plugins/imageformats/ | tr '\n' ' ')"
+          # xcb is what a desktop user needs, offscreen is what the test above proved.
+          test -f squashfs-root/usr/plugins/platforms/libqxcb.so
+          test -f squashfs-root/usr/plugins/platforms/libqoffscreen.so
           rm -rf squashfs-root
 
       - name: Publish the release
