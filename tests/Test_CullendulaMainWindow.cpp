@@ -185,13 +185,13 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
     QFile cmakeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.6.33"));
+    QVERIFY(cmakeContents.contains("VERSION 0.6.34"));
 
     QFile readmeFile(QStringLiteral("/home/mpetrick/repos/Cullendula/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.6.33."));
-    QVERIFY(readmeContents.contains("* v0.6.33 adds the CI status badge and badges for the pinned license, Qt, CMake"));
+    QVERIFY(readmeContents.contains("This is version 0.6.34."));
+    QVERIFY(readmeContents.contains("* v0.6.34 documents the working agreements in AGENTS.md"));
 }
 
 //----------------------------------------------------------------------------------

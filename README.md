@@ -280,8 +280,12 @@ In short:
 * a normal build regenerates the `.qm` files from the current `.ts` files
 * the `.ts` update is manual; the `.qm` generation is automatic during builds
 
+## Contributing
+The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the quality gate that has to be green before any commit, the atomic-commit and conventional-commit rules, the rule that every commit bumps the project version, how to bump that version across the four places a unit test checks, how the exact dependency pins are changed, and the code, test, Cppcheck, Doxygen and localization conventions.
+They apply to human contributors and to AI agents alike.
+
 ## Build information
-This is version 0.6.33.
+This is version 0.6.34.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
@@ -358,6 +362,7 @@ Not supported nor tested anymore:
 * v0.6.31 pins the exact expected toolchain with CMake 4.4.2 and Qt 6.11.1 as hard requirements instead of version floors, and documents every dependency in the README
 * v0.6.32 adds a GitHub Actions workflow that runs the local pipeline on every push and pull request with the same exactly pinned CMake, Qt and gcovr releases
 * v0.6.33 adds the CI status badge and badges for the pinned license, Qt, CMake and C++ standard to the top of the README
+* v0.6.34 documents the working agreements in AGENTS.md, covering the quality gate, atomic conventional commits, the per-commit version bump, the exact dependency pins, and the code, test and localization conventions
 
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
