@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>it.marcelpetrick.Cullendula</id>
+
+  <name>Cullendula</name>
+  <summary>Pick the best shots out of a photo session</summary>
+
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <developer id="it.marcelpetrick">
+    <name>Marcel Petrick</name>
+  </developer>
+
+  <description>
+    <p>
+      Cullendula is a keyboard-driven culling tool for photographers. Drop a folder or a
+      single picture onto the window, step through the session with the left and right
+      arrow keys, and decide on each frame with a single keypress: up moves it to the
+      output folder, down moves it to the trash folder.
+    </p>
+    <p>
+      Every decision is a file move that can be undone and redone, so nothing is lost by
+      a mistaken keypress. The application works entirely on local files and never
+      accesses the network.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Keyboard-driven navigation and sorting of a whole session</li>
+      <li>Undo and redo kept consistent with the moves on disk</li>
+      <li>Selectable image file extensions, based on the formats Qt supports</li>
+      <li>Light, dark and purple themes</li>
+      <li>English, German, Croatian and Chinese user interface, switchable at run time</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">it.marcelpetrick.Cullendula.desktop</launchable>
+
+  <categories>
+    <category>Graphics</category>
+    <category>Photography</category>
+  </categories>
+
+  <keywords>
+    <keyword>photo</keyword>
+    <keyword>photography</keyword>
+    <keyword>culling</keyword>
+    <keyword>viewer</keyword>
+  </keywords>
+
+  <url type="homepage">https://github.com/marcelpetrick/Cullendula</url>
+  <url type="bugtracker">https://github.com/marcelpetrick/Cullendula/issues</url>
+
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </supports>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/marcelpetrick/Cullendula/master/media/Cullendula_current_state.png</image>
+      <caption>The main window with a photo session loaded</caption>
+    </screenshot>
+  </screenshots>
+
+  <content_rating type="oars-1.1"/>
+
+  <releases>
+    <release version="@PROJECT_VERSION@" date="@CULLENDULA_RELEASE_DATE@">
+      <url type="details">https://github.com/marcelpetrick/Cullendula/blob/master/CHANGELOG.md</url>
+    </release>
+  </releases>
+</component>

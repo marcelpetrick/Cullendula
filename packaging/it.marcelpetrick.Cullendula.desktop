@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=Cullendula
+GenericName=Photo Culling Tool
+Comment=Pick the best shots out of a photo session
+Exec=Cullendula
+Icon=it.marcelpetrick.Cullendula
+Terminal=false
+Categories=Graphics;Photography;Viewer;
+Keywords=photo;photography;culling;cull;image;viewer;
+StartupWMClass=Cullendula

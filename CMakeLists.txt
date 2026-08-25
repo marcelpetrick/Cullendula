@@ -23,7 +23,7 @@ if(NOT CMAKE_VERSION VERSION_EQUAL CULLENDULA_EXPECTED_CMAKE_VERSION)
 endif()
 
 project(Cullendula
-    VERSION 0.6.43
+    VERSION 0.6.44
     LANGUAGES CXX
 )
 
@@ -91,6 +91,41 @@ endif()
 
 # Build the application code
 add_subdirectory(src)
+
+# -----------------------------------------------------------------------------
+# Installation and Linux desktop integration metadata.
+#
+# The AppStream metainfo takes its version from the CMake project version, so the
+# packaged metadata cannot drift away from the single source of truth.
+# -----------------------------------------------------------------------------
+include(GNUInstallDirs)
+
+string(TIMESTAMP CULLENDULA_RELEASE_DATE "%Y-%m-%d" UTC)
+
+set(CULLENDULA_APPSTREAM_ID "it.marcelpetrick.Cullendula")
+set(CULLENDULA_METAINFO_FILE "${CMAKE_CURRENT_BINARY_DIR}/${CULLENDULA_APPSTREAM_ID}.metainfo.xml")
+
+configure_file(
+    "${CMAKE_SOURCE_DIR}/packaging/${CULLENDULA_APPSTREAM_ID}.metainfo.xml.in"
+    "${CULLENDULA_METAINFO_FILE}"
+    @ONLY
+)
+
+install(TARGETS Cullendula
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+)
+
+install(FILES "${CMAKE_SOURCE_DIR}/packaging/${CULLENDULA_APPSTREAM_ID}.desktop"
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications"
+)
+
+install(FILES "${CULLENDULA_METAINFO_FILE}"
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
+)
+
+install(FILES "${CMAKE_SOURCE_DIR}/media/${CULLENDULA_APPSTREAM_ID}.png"
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/32x32/apps"
+)
 
 # Enable testing
 if(CULLENDULA_BUILD_TESTS)
