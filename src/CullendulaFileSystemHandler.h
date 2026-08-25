@@ -285,4 +285,16 @@ OutputFolderHooks defaultOutputFolderHooks();
  * @return `true` when the target directory exists after the call.
  */
 bool createOutputFolder(QDir& workingPath, QString const& subdir, QString& errorMessage, OutputFolderHooks const& hooks);
+
+/*!
+ * @brief Remove the leading slash a dropped file URL puts in front of a drive letter.
+ *
+ * A path dropped onto the window can arrive as "/C:/pictures" instead of "C:/pictures".
+ * Only that shape is corrected; an ordinary absolute path is returned unchanged, on every
+ * platform.
+ *
+ * @param path Path as it arrived from the drop or from the caller.
+ * @return Path without the spurious leading slash, otherwise unchanged.
+ */
+QString normalizeDroppedPath(QString const& path);
 }  // namespace CullendulaFileSystemHandlerDetail

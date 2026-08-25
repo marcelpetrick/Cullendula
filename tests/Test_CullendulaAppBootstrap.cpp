@@ -129,14 +129,20 @@ void Test_CullendulaAppBootstrap::slot_Test_ScheduleAutoQuitForTests_ValidDelayQ
 void Test_CullendulaAppBootstrap::slot_Test_ScheduleAutoQuitForTests_InvalidDelayDoesNothing() {
     qputenv("CULLENDULA_EXIT_AFTER_STARTUP_MS", QByteArray("-1"));
 
-    QElapsedTimer timer;
-    timer.start();
+    // The point is that an invalid delay must not quit the loop by itself. Asserting on
+    // elapsed wall-clock time made that depend on timer granularity, which is coarse
+    // enough on some platforms for a 50 ms timer to read as less than 40 ms. Checking
+    // which timer ended the loop tests the actual behaviour instead.
+    bool quitCameFromOwnTimer = false;
 
     CullendulaAppBootstrap::scheduleAutoQuitForTests(*qApp);
-    QTimer::singleShot(50, qApp, &QCoreApplication::quit);
+    QTimer::singleShot(50, qApp, [&quitCameFromOwnTimer]() {
+        quitCameFromOwnTimer = true;
+        QCoreApplication::quit();
+    });
     QCOMPARE(CullendulaAppBootstrap::runEventLoop(*qApp), 0);
 
-    QVERIFY(timer.elapsed() >= 40);
+    QVERIFY(quitCameFromOwnTimer);
     qunsetenv("CULLENDULA_EXIT_AFTER_STARTUP_MS");
 }
 

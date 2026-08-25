@@ -66,3 +66,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.7.1 fixes the path comparison that made the application lose the selected image after every move on platforms whose directory separator is not a slash, and builds all internal paths with the canonical separator
 * v0.7.2 captures the whole Windows unit test console instead of a single overwritten report file, so the failures that the packaging run reports can be read and fixed
 * v0.7.3 lets each test object write its own report when CULLENDULA_TEST_REPORT_DIR is set, so the results are readable on platforms where the test executable writes nothing to the console
+* v0.7.4 stops mangling every path on platforms other than Linux: the leading slash of a dropped file URL is now removed only when it really precedes a drive letter, which is what made the application unable to open any folder on Windows

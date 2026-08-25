@@ -112,6 +112,19 @@ QStringList CullendulaFileSystemHandlerDetail::getSuggestedImageExtensions(QSet<
 
 //----------------------------------------------------------------------------
 
+QString CullendulaFileSystemHandlerDetail::normalizeDroppedPath(QString const& path) {
+    // "/C:/pictures" -> "C:/pictures". The slash is only spurious when a drive letter
+    // follows it; stripping it unconditionally would turn every ordinary absolute path
+    // into an unusable one.
+    if (path.size() >= 3 && path.at(0) == QLatin1Char('/') && path.at(1).isLetter() && path.at(2) == QLatin1Char(':')) {
+        return path.mid(1);
+    }
+
+    return path;
+}
+
+//----------------------------------------------------------------------------
+
 CullendulaFileSystemHandlerDetail::OutputFolderHooks CullendulaFileSystemHandlerDetail::defaultOutputFolderHooks() {
     return OutputFolderHooks{.pathExists = pathExists, .pathIsDirectory = pathIsDirectory, .directoryExists = directoryExists, .mkdir = mkdirInDirectory};
 }
@@ -348,13 +361,7 @@ bool CullendulaFileSystemHandler::processNewPath() {
 
     qDebug() << "CullendulaFileSystemHandler::processNewPath():";
 
-    // Dropped file URLs can carry a leading slash before the Windows drive letter.
-    QString const intermediatePath =
-#ifdef __linux__
-        m_workingPath.path();
-#else
-        m_workingPath.path().remove(0, 1);  // remove the leading slash ("/")
-#endif
+    QString const intermediatePath = CullendulaFileSystemHandlerDetail::normalizeDroppedPath(m_workingPath.path());
     QFileInfo const fileInfo(intermediatePath);
 
     qDebug() << "\tfileInfo.isDir():" << fileInfo.isDir();

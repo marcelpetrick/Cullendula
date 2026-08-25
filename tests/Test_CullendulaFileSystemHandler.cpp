@@ -626,6 +626,25 @@ void Test_CullendulaFileSystemHandler::slot_Test_CreateOutputFolder_HelperReport
 
 //----------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaFileSystemHandler::slot_Test_NormalizeDroppedPath_OnlyStripsSlashBeforeDriveLetter() {
+    using CullendulaFileSystemHandlerDetail::normalizeDroppedPath;
+
+    // A dropped file URL puts a slash in front of the drive letter; that one goes.
+    QCOMPARE(normalizeDroppedPath(QStringLiteral("/C:/pictures")), QStringLiteral("C:/pictures"));
+    QCOMPARE(normalizeDroppedPath(QStringLiteral("/d:/pictures/holiday")), QStringLiteral("d:/pictures/holiday"));
+
+    // Everything else has to survive untouched. Stripping the first character of an
+    // ordinary absolute path made every directory unusable on platforms that are not
+    // Linux, which is what this guards against.
+    QCOMPARE(normalizeDroppedPath(QStringLiteral("/home/user/pictures")), QStringLiteral("/home/user/pictures"));
+    QCOMPARE(normalizeDroppedPath(QStringLiteral("C:/pictures")), QStringLiteral("C:/pictures"));
+    QCOMPARE(normalizeDroppedPath(QStringLiteral("/tmp")), QStringLiteral("/tmp"));
+    QCOMPARE(normalizeDroppedPath(QStringLiteral("/1:/notadrive")), QStringLiteral("/1:/notadrive"));
+    QCOMPARE(normalizeDroppedPath(QString()), QString());
+}
+
 void Test_CullendulaFileSystemHandler::slot_Test_CheckInternalSanity_FailsForOutOfRangeIndex() {
     createImageSet();
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));

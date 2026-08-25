@@ -148,6 +148,7 @@ class Test_CullendulaFileSystemHandler : public QObject {
 
     //! Verify internal sanity rejects an out-of-range current image index.
     void slot_Test_CheckInternalSanity_FailsForOutOfRangeIndex();
+    void slot_Test_NormalizeDroppedPath_OnlyStripsSlashBeforeDriveLetter();
 
    private:
     /*!
