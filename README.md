@@ -2,8 +2,8 @@
 
 [![CI](https://github.com/marcelpetrick/Cullendula/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/marcelpetrick/Cullendula/actions/workflows/ci.yml)
 [![License: GPL v3 or later](https://img.shields.io/badge/license-GPLv3%20or%20later-blue.svg)](LICENSE)
-[![Qt 6.11.1](https://img.shields.io/badge/Qt-6.11.1-41cd52.svg)](https://www.qt.io/)
-[![CMake 4.4.2](https://img.shields.io/badge/CMake-4.4.2-064f8c.svg)](https://cmake.org/)
+[![Qt 6.11.2](https://img.shields.io/badge/Qt-6.11.2-41cd52.svg)](https://www.qt.io/)
+[![CMake 4.4.3](https://img.shields.io/badge/CMake-4.4.3-064f8c.svg)](https://cmake.org/)
 [![C++23](https://img.shields.io/badge/C%2B%2B-23-00599c.svg)](https://en.cppreference.com/w/cpp/23)
 
 A program to pick out the best shots of the vast amount of taken pictures per photo session.  
@@ -101,8 +101,8 @@ The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated cov
 Pushing a version tag publishes a release:
 
 ```bash
-git tag v0.7.7
-git push origin v0.7.7
+git tag v0.7.8
+git push origin v0.7.8
 ```
 
 `.github/workflows/release.yml` refuses to publish unless the tag matches the version in `CMakeLists.txt` and `CHANGELOG.md` has an entry for it, then runs the full pipeline, builds an AppImage, and starts that AppImage headless once to prove the packaged application actually runs.
@@ -307,21 +307,21 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.7.7.
+This is version 0.7.8.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
 The buildsystem carries the two enforced pins in one place, at the top of `CMakeLists.txt`:
 
 ```cmake
-set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.4.2")
-set(CULLENDULA_EXPECTED_QT_VERSION "6.11.1")
+set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.4.3")
+set(CULLENDULA_EXPECTED_QT_VERSION "6.11.2")
 ```
 
 | Dependency | Exact expected version | How it is enforced |
 | --- | --- | --- |
-| CMake | 4.4.2 | `CMakeLists.txt` aborts with a `FATAL_ERROR` on any other version |
-| Qt | 6.11.1 | `find_package(Qt6 ... EXACT REQUIRED)`, so a different patch release fails to configure |
+| CMake | 4.4.3 | `CMakeLists.txt` aborts with a `FATAL_ERROR` on any other version |
+| Qt | 6.11.2 | `find_package(Qt6 ... EXACT REQUIRED)`, so a different patch release fails to configure |
 | C++ standard | C++23 | `CMAKE_CXX_STANDARD` with `CMAKE_CXX_STANDARD_REQUIRED` |
 | gcovr | 8.6 | installed as `gcovr==8.6` in CI |
 | GCC | 16.2.1 | verified, not enforced |
@@ -329,7 +329,7 @@ set(CULLENDULA_EXPECTED_QT_VERSION "6.11.1")
 | Doxygen | 1.18.0 | verified, not enforced |
 | clang-format | 22.1.8 | verified, not enforced |
 
-The last four are deliberately *not* hard-pinned: they are distribution packages whose exact release differs between a rolling Linux desktop and the CI image, and a `FATAL_ERROR` on them would make the project unbuildable on most machines without improving the produced binary. Their versions are recorded here so a behavioural difference in a report can be traced back to a tool version. The upstream Qt 6.11.2 patch release exists but is not yet packaged for the development machine; the pin moves to it once it is, in its own commit.
+The last four are deliberately *not* hard-pinned: they are distribution packages whose exact release differs between a rolling Linux desktop and the CI image, and a `FATAL_ERROR` on them would make the project unbuildable on most machines without improving the produced binary. Their versions are recorded here so a behavioural difference in a report can be traced back to a tool version.
 
 Everything above is what CI installs too, so a local pipeline run and a CI run use the same toolchain.
 

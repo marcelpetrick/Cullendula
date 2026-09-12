@@ -30,8 +30,8 @@ concurrency:
 
 env:
   # Keep these in sync with CULLENDULA_EXPECTED_*_VERSION in CMakeLists.txt.
-  CULLENDULA_EXPECTED_CMAKE_VERSION: 4.4.2
-  CULLENDULA_EXPECTED_QT_VERSION: 6.11.1
+  CULLENDULA_EXPECTED_CMAKE_VERSION: 4.4.3
+  CULLENDULA_EXPECTED_QT_VERSION: 6.11.2
   CULLENDULA_EXPECTED_GCOVR_VERSION: 8.6
   # Newest non-prerelease tags; linuxdeploy's "continuous" tag is a moving target.
   LINUXDEPLOY_VERSION: 1-alpha-20251107-1
@@ -225,14 +225,14 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           # install-qt-action cannot be used here. It drives aqtinstall, and 3.3.0, the
-          # newest release, looks for .../qt6_6111/qt6_6111/Updates.xml on Windows, which
+          # newest release, looks for .../qt6_6112/qt6_6112/Updates.xml on Windows, which
           # is a 404: Qt publishes the Windows packages under an architecture-suffixed
-          # folder (qt6_6111_msvc2022_64). The official archives are fetched directly
+          # folder (qt6_6112_msvc2022_64). The official archives are fetched directly
           # instead, which keeps the exactly pinned Qt version.
-          $base = "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt6_6111/qt6_6111_msvc2022_64"
+          $base = "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt6_6112/qt6_6112_msvc2022_64"
           $packages = [ordered]@{
-            "qt.qt6.6111.win64_msvc2022_64" = @("qtbase", "qttools", "qtdeclarative", "qtsvg", "qttranslations", "d3dcompiler_47", "opengl32sw")
-            "qt.qt6.6111.addons.qtimageformats.win64_msvc2022_64" = @("qtimageformats")
+            "qt.qt6.6112.win64_msvc2022_64" = @("qtbase", "qttools", "qtdeclarative", "qtsvg", "qttranslations", "d3dcompiler_47", "opengl32sw")
+            "qt.qt6.6112.addons.qtimageformats.win64_msvc2022_64" = @("qtimageformats")
           }
           New-Item -ItemType Directory -Force -Path qt-win | Out-Null
           foreach ($package in $packages.Keys) {
