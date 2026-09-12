@@ -29,6 +29,7 @@ concurrency:
 env:
   # Keep these in sync with CULLENDULA_EXPECTED_*_VERSION in CMakeLists.txt.
   CULLENDULA_EXPECTED_CMAKE_VERSION: 4.4.3
+  CULLENDULA_EXPECTED_CMAKE_SHA256: d6c83076c575bc00b823522ac974bda66d0af05d6ddc30e739c12385cf32c6cc
   CULLENDULA_EXPECTED_QT_VERSION: 6.11.2
   CULLENDULA_EXPECTED_GCOVR_VERSION: 8.6
 
@@ -75,9 +76,14 @@ jobs:
             libxcb-xkb1
 
       - name: Install the pinned CMake
-        uses: lukka/get-cmake@v4.4.2
-        with:
-          cmakeVersion: ${{ env.CULLENDULA_EXPECTED_CMAKE_VERSION }}
+        run: |
+          set -euo pipefail
+          archive="cmake-${CULLENDULA_EXPECTED_CMAKE_VERSION}-linux-x86_64.tar.gz"
+          curl -fsSLo "${RUNNER_TEMP}/${archive}" \
+            "https://github.com/Kitware/CMake/releases/download/v${CULLENDULA_EXPECTED_CMAKE_VERSION}/${archive}"
+          echo "${CULLENDULA_EXPECTED_CMAKE_SHA256}  ${RUNNER_TEMP}/${archive}" | sha256sum --check
+          tar -xzf "${RUNNER_TEMP}/${archive}" -C "${RUNNER_TEMP}"
+          echo "${RUNNER_TEMP}/cmake-${CULLENDULA_EXPECTED_CMAKE_VERSION}-linux-x86_64/bin" >> "${GITHUB_PATH}"
 
       - name: Install the pinned Qt
         uses: jurplel/install-qt-action@v4.3.1

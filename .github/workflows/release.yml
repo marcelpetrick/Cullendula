@@ -31,6 +31,8 @@ concurrency:
 env:
   # Keep these in sync with CULLENDULA_EXPECTED_*_VERSION in CMakeLists.txt.
   CULLENDULA_EXPECTED_CMAKE_VERSION: 4.4.3
+  CULLENDULA_EXPECTED_CMAKE_SHA256_LINUX: d6c83076c575bc00b823522ac974bda66d0af05d6ddc30e739c12385cf32c6cc
+  CULLENDULA_EXPECTED_CMAKE_SHA256_WINDOWS: 4d52ebab7193a698651639ed80d8d04fd903358843572cf44c7fd234cb7c26ab
   CULLENDULA_EXPECTED_QT_VERSION: 6.11.2
   CULLENDULA_EXPECTED_GCOVR_VERSION: 8.6
   # Newest non-prerelease tags; linuxdeploy's "continuous" tag is a moving target.
@@ -88,9 +90,14 @@ jobs:
             libxcb-xinerama0 libxcb-xkb1
 
       - name: Install the pinned CMake
-        uses: lukka/get-cmake@v4.4.2
-        with:
-          cmakeVersion: ${{ env.CULLENDULA_EXPECTED_CMAKE_VERSION }}
+        run: |
+          set -euo pipefail
+          archive="cmake-${CULLENDULA_EXPECTED_CMAKE_VERSION}-linux-x86_64.tar.gz"
+          curl -fsSLo "${RUNNER_TEMP}/${archive}" \
+            "https://github.com/Kitware/CMake/releases/download/v${CULLENDULA_EXPECTED_CMAKE_VERSION}/${archive}"
+          echo "${CULLENDULA_EXPECTED_CMAKE_SHA256_LINUX}  ${RUNNER_TEMP}/${archive}" | sha256sum --check
+          tar -xzf "${RUNNER_TEMP}/${archive}" -C "${RUNNER_TEMP}"
+          echo "${RUNNER_TEMP}/cmake-${CULLENDULA_EXPECTED_CMAKE_VERSION}-linux-x86_64/bin" >> "${GITHUB_PATH}"
 
       - name: Install the pinned Qt
         uses: jurplel/install-qt-action@v4.3.1
@@ -216,9 +223,19 @@ jobs:
         uses: actions/checkout@v7.0.1
 
       - name: Install the pinned CMake
-        uses: lukka/get-cmake@v4.4.2
-        with:
-          cmakeVersion: ${{ env.CULLENDULA_EXPECTED_CMAKE_VERSION }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $archive = "cmake-$env:CULLENDULA_EXPECTED_CMAKE_VERSION-windows-x86_64.zip"
+          $archivePath = Join-Path $env:RUNNER_TEMP $archive
+          Invoke-WebRequest -Uri "https://github.com/Kitware/CMake/releases/download/v$env:CULLENDULA_EXPECTED_CMAKE_VERSION/$archive" -OutFile $archivePath -UseBasicParsing
+          $actualHash = (Get-FileHash -Algorithm SHA256 $archivePath).Hash.ToLowerInvariant()
+          if ($actualHash -ne $env:CULLENDULA_EXPECTED_CMAKE_SHA256_WINDOWS) {
+            throw "CMake archive checksum mismatch: expected $env:CULLENDULA_EXPECTED_CMAKE_SHA256_WINDOWS, got $actualHash"
+          }
+          Expand-Archive -Path $archivePath -DestinationPath $env:RUNNER_TEMP
+          $cmakeRoot = Join-Path $env:RUNNER_TEMP "cmake-$env:CULLENDULA_EXPECTED_CMAKE_VERSION-windows-x86_64"
+          "$cmakeRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
 
       - name: Install the pinned Qt from the official archives
         shell: pwsh

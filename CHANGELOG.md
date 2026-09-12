@@ -71,3 +71,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.7.6 joins every path in the tests with the canonical separator, which removes the last cross-platform failures and the whole class of comparisons that only held where the native separator is a slash
 * v0.7.7 makes the Windows unit suite a release gate now that it passes there, so a regression on either platform stops a release instead of being reported and ignored
 * v0.7.8 updates the exactly pinned toolchain to CMake 4.4.3 and Qt 6.11.2
+* v0.7.9 installs the pinned CMake release from Kitware's checksummed archives because the CI install action does not yet catalog CMake 4.4.3
