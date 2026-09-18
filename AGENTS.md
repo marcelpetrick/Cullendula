@@ -150,7 +150,10 @@ that is not installable here would mean shipping a repository whose pipeline can
 ## 5. Continuous integration
 
 `.github/workflows/ci.yml` runs `./localPipeline.sh --noRun --verbose` on `ubuntu-24.04`
-for pushes to `master`, pull requests against `master`, and manual dispatch.
+for pushes to `master`, pull requests against `master`, and manual dispatch. A second job
+builds on `windows-2022` against the same pinned Qt and runs the unit suite and the smoke
+test there, so both supported platforms are covered by every CI run and not only by a
+release.
 
 CI deliberately calls the same script that is used locally, so the two cannot drift apart.
 **When the gate changes, change `localPipeline.sh`, never the workflow's command list.**

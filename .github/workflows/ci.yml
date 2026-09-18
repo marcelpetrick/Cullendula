@@ -30,6 +30,7 @@ env:
   # Keep these in sync with CULLENDULA_EXPECTED_*_VERSION in CMakeLists.txt.
   CULLENDULA_EXPECTED_CMAKE_VERSION: 4.4.3
   CULLENDULA_EXPECTED_CMAKE_SHA256: d6c83076c575bc00b823522ac974bda66d0af05d6ddc30e739c12385cf32c6cc
+  CULLENDULA_EXPECTED_CMAKE_SHA256_WINDOWS: 4d52ebab7193a698651639ed80d8d04fd903358843572cf44c7fd234cb7c26ab
   CULLENDULA_EXPECTED_QT_VERSION: 6.11.2
   CULLENDULA_EXPECTED_GCOVR_VERSION: 8.6
 
@@ -141,3 +142,90 @@ jobs:
             build/doxygen/warnings.txt
             build-coverage/coverage
             reports/cppcheck
+
+  windows-tests:
+    name: Unit tests (Windows, Qt 6.11.2)
+    runs-on: windows-2022
+    # A Qt fatal error appears as a modal dialog on Windows and nothing dismisses it on a
+    # runner, so the job is capped instead of blocking until the account limit.
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Install the pinned CMake
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $archive = "cmake-$env:CULLENDULA_EXPECTED_CMAKE_VERSION-windows-x86_64.zip"
+          $archivePath = Join-Path $env:RUNNER_TEMP $archive
+          Invoke-WebRequest -Uri "https://github.com/Kitware/CMake/releases/download/v$env:CULLENDULA_EXPECTED_CMAKE_VERSION/$archive" -OutFile $archivePath -UseBasicParsing
+          $actualHash = (Get-FileHash -Algorithm SHA256 $archivePath).Hash.ToLowerInvariant()
+          if ($actualHash -ne $env:CULLENDULA_EXPECTED_CMAKE_SHA256_WINDOWS) {
+            throw "CMake archive checksum mismatch: expected $env:CULLENDULA_EXPECTED_CMAKE_SHA256_WINDOWS, got $actualHash"
+          }
+          Expand-Archive -Path $archivePath -DestinationPath $env:RUNNER_TEMP
+          $cmakeRoot = Join-Path $env:RUNNER_TEMP "cmake-$env:CULLENDULA_EXPECTED_CMAKE_VERSION-windows-x86_64"
+          "$cmakeRoot\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+      - name: Install the pinned Qt from the official archives
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          # Same reason as in release.yml: install-qt-action drives aqtinstall, which looks
+          # for a Windows path that does not exist on the Qt server, so the official
+          # archives are fetched directly to keep the exactly pinned Qt version.
+          $base = "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt6_6112/qt6_6112_msvc2022_64"
+          $packages = [ordered]@{
+            "qt.qt6.6112.win64_msvc2022_64" = @("qtbase", "qttools", "qtdeclarative", "qtsvg", "qttranslations", "d3dcompiler_47", "opengl32sw")
+            "qt.qt6.6112.addons.qtimageformats.win64_msvc2022_64" = @("qtimageformats")
+          }
+          New-Item -ItemType Directory -Force -Path qt-win | Out-Null
+          foreach ($package in $packages.Keys) {
+            $listing = (Invoke-WebRequest -Uri "$base/$package/" -UseBasicParsing).Content
+            $links = [regex]::Matches($listing, 'href="([^"]+\.7z)"') | ForEach-Object { $_.Groups[1].Value }
+            foreach ($component in $packages[$package]) {
+              $file = $links |
+                Where-Object { $_ -like "*$component*" -and $_ -notmatch 'debug|doc|example' } |
+                Select-Object -First 1
+              if (-not $file) { throw "no archive found for '$component' in $package" }
+              Write-Host "downloading $file"
+              Invoke-WebRequest -Uri "$base/$package/$file" -OutFile "$component.7z" -UseBasicParsing
+              & 7z x -y "$component.7z" -oqt-win | Out-Null
+              if ($LASTEXITCODE -ne 0) { throw "extracting $component failed" }
+            }
+          }
+          $qt = (Resolve-Path qt-win).Path
+          if (-not (Test-Path "$qt\lib\cmake\Qt6\Qt6Config.cmake")) { throw "Qt6Config.cmake missing from the extracted Qt" }
+          # The tests link against the Qt DLLs, so the Qt bin directory has to be on PATH.
+          "QT_ROOT_DIR=$qt" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "CMAKE_PREFIX_PATH=$qt" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "$qt\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+      - name: Configure and build
+        run: |
+          cmake -S . -B build -DCULLENDULA_BUILD_TESTS=ON
+          cmake --build build --config Release --parallel
+
+      - name: Run the tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        # This executable writes nothing to the console on Windows, so a bare exit code
+        # would say nothing about what broke. CULLENDULA_TEST_REPORT_DIR makes each test
+        # object write its own report, which is the only way to see the results here.
+        run: |
+          $test = Get-ChildItem -Recurse -Filter CullendulaTests.exe build |
+                  Select-Object -First 1 -ExpandProperty FullName
+          Write-Host "running $test"
+          $env:CULLENDULA_TEST_REPORT_DIR = "$PWD\test-reports"
+          New-Item -ItemType Directory -Force -Path $env:CULLENDULA_TEST_REPORT_DIR | Out-Null
+          & $test
+          $failed = $LASTEXITCODE
+          Write-Host "unit test exit code: $failed"
+          Get-ChildItem $env:CULLENDULA_TEST_REPORT_DIR -Filter *.txt | ForEach-Object {
+            Write-Host "----- $($_.Name) -----"
+            Get-Content $_.FullName
+          }
+          ctest --test-dir build -C Release -R CullendulaMainSmokeTest --output-on-failure
+          if ($failed -ne 0) { throw "the unit suite reported failures (status $failed)" }

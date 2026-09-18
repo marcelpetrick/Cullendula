@@ -93,7 +93,7 @@ cmake --build build --parallel $(nproc)
 ```
 
 ### Continuous integration
-Every push to `master`, every pull request against `master`, and every manual dispatch runs the same gate on GitHub Actions.
+Every push to `master`, every pull request against `master`, and every manual dispatch runs the same gate on GitHub Actions, on Linux and on Windows.
 The workflow in `.github/workflows/ci.yml` calls `./localPipeline.sh --noRun`, so CI and the local run cannot drift apart: build, CTest, the 95% line-coverage threshold, an empty Doxygen warning log, Cppcheck and clang-format are all checked by one script.
 CI installs the exact pinned dependencies from the table above, and a dedicated step fails the run if the installed CMake or gcovr is not the expected release; a wrong Qt release already fails the CMake configure step.
 The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated coverage, Doxygen and Cppcheck reports are attached to every run as the `cullendula-reports` artifact.
@@ -102,8 +102,8 @@ The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated cov
 Pushing a version tag publishes a release:
 
 ```bash
-git tag v0.7.19
-git push origin v0.7.19
+git tag v0.7.20
+git push origin v0.7.20
 ```
 
 `.github/workflows/release.yml` refuses to publish unless the tag matches the version in `CMakeLists.txt` and `CHANGELOG.md` has an entry for it, then runs the full pipeline, builds an AppImage, and starts that AppImage headless once to prove the packaged application actually runs.
@@ -117,6 +117,8 @@ Each release carries a package for both desktop platforms, plus the generated AP
 Both packages are started once by the release workflow before anything is published, so a package that cannot start never becomes a release.
 
 The coverage gate, the documentation check and the static analysis run on Linux, which is the development platform. The Windows job builds the application, runs the same unit suite, and requires the packaged executable to start cleanly, so both platforms have to be green before a release is published.
+
+Both platforms are also covered by the ordinary CI run, not only by a release: `ci.yml` has a second job that builds on `windows-2022` against the same pinned Qt and runs the whole unit suite plus the headless smoke test there. A pull request therefore cannot be green while Windows is broken.
 
 The AppImage carries the image format plugins whose system libraries exist on the build image. A few of the official Qt plugins link against sonames Ubuntu does not ship, so they are dropped from the package and the corresponding formats simply do not appear in `Main -> Extensions` there; a build from source on your own distribution offers them.
 
@@ -311,7 +313,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.7.19.
+This is version 0.7.20.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.

@@ -82,3 +82,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.7.17 raises the line-coverage gate to 95% and fails the pipeline on formatting drift
 * v0.7.18 removes the worst-findings notes now that every item is resolved or documented policy
 * v0.7.19 refuses an empty working path instead of adopting the process working directory
+* v0.7.20 runs the unit suite on Windows in CI, not only in the release workflow
