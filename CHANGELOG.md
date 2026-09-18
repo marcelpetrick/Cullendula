@@ -78,3 +78,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.7.13 keeps the running session intact when a dropped path cannot be resolved
 * v0.7.14 resolves dropped URLs with toLocalFile so Windows drive letters and UNC paths survive
 * v0.7.15 drops the unreachable existence check in refreshLabel and pins the vanished-file behaviour with a test
+* v0.7.16 restores QT_QPA_PLATFORM after the bootstrap tests change it

@@ -6,6 +6,7 @@
 
 #include "Test_CullendulaAppBootstrap.h"
 
+#include <QtCore/QByteArray>
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
@@ -21,12 +22,45 @@ bool failingLoad(QTranslator&, QString const&) { return false; }
 
 bool successfulInstall(QApplication&, QTranslator*) { return true; }
 
+/*!
+ * @brief Restore QT_QPA_PLATFORM when a test that changes it goes out of scope.
+ *
+ * All test objects share one process, so a test that leaves this variable pointing at a
+ * platform plugin of its own choosing decides what every later test and every later suite
+ * sees. Restoring it keeps the suites independent of the order they run in.
+ */
+class PlatformPluginEnvironmentGuard {
+   public:
+    PlatformPluginEnvironmentGuard() : m_wasSet(qEnvironmentVariableIsSet(c_variable)), m_previousValue(qgetenv(c_variable)) {}
+
+    ~PlatformPluginEnvironmentGuard() {
+        if (m_wasSet) {
+            qputenv(c_variable, m_previousValue);
+        } else {
+            qunsetenv(c_variable);
+        }
+    }
+
+    PlatformPluginEnvironmentGuard(PlatformPluginEnvironmentGuard const&) = delete;
+    PlatformPluginEnvironmentGuard& operator=(PlatformPluginEnvironmentGuard const&) = delete;
+    PlatformPluginEnvironmentGuard(PlatformPluginEnvironmentGuard&&) = delete;
+    PlatformPluginEnvironmentGuard& operator=(PlatformPluginEnvironmentGuard&&) = delete;
+
+   private:
+    static constexpr char const* c_variable = "QT_QPA_PLATFORM";
+
+    bool const m_wasSet;
+    QByteArray const m_previousValue;
+};
+
 bool failingInstall(QApplication&, QTranslator*) { return false; }
 
 void removeTranslator(QApplication&, QTranslator*) {}
 }  // namespace
 
 void Test_CullendulaAppBootstrap::slot_Test_EnsureQtPlatformPluginForTests_SetsFallbackWhenUnset() {
+    PlatformPluginEnvironmentGuard const guard;
+
     qunsetenv("QT_QPA_PLATFORM");
 
     CullendulaAppBootstrap::ensureQtPlatformPluginForTests();
@@ -37,6 +71,8 @@ void Test_CullendulaAppBootstrap::slot_Test_EnsureQtPlatformPluginForTests_SetsF
 //----------------------------------------------------------------------------------
 
 void Test_CullendulaAppBootstrap::slot_Test_EnsureQtPlatformPluginForTests_RespectsExistingValue() {
+    PlatformPluginEnvironmentGuard const guard;
+
     qputenv("QT_QPA_PLATFORM", QByteArray("wayland"));
 
     CullendulaAppBootstrap::ensureQtPlatformPluginForTests();
