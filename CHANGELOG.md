@@ -76,3 +76,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.7.11 renames the CTest unit-suite entry to CullendulaUnitTests and corrects the test documentation
 * v0.7.12 embeds the application icon as a Qt resource and sets it as the window icon at startup
 * v0.7.13 keeps the running session intact when a dropped path cannot be resolved
+* v0.7.14 resolves dropped URLs with toLocalFile so Windows drive letters and UNC paths survive

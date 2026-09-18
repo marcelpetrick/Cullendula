@@ -102,6 +102,9 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify unsupported drag payloads report an error status.
     void slot_Test_DropInvalidPayload_ShowsErrorStatus();
 
+    //! Verify a dropped URL that is not a local file is rejected instead of being path-mangled.
+    void slot_Test_DropNonLocalUrl_ShowsErrorStatus();
+
     //! Verify dropping an empty URL list leaves the current session unchanged.
     void slot_Test_DropEmptyUrlList_LeavesStateUnchanged();
 

@@ -333,7 +333,18 @@ void CullendulaMainWindow::dropEvent(QDropEvent* event) {
 
         // just use the very first one ..
         if (!urlList.isEmpty()) {
-            bool const success = m_fileSystemHandler.setWorkingPath(urlList.first().path());
+            // toLocalFile() is the only correct way to turn a file URL into a path. path()
+            // hands back "/C:/pictures" for a Windows drop and mangles UNC locations, which
+            // then needed string surgery further down to become usable again.
+            QString const droppedPath = urlList.first().toLocalFile();
+            if (droppedPath.isEmpty()) {
+                //: Status bar error after a drop carried a URL that does not point at a local file.
+                printStatus(tr("The load was not usable! :("));
+                event->acceptProposedAction();
+                return;
+            }
+
+            bool const success = m_fileSystemHandler.setWorkingPath(droppedPath);
             refreshLabel();
             updateUndoRedoButtonStatus();
             if (!success) {

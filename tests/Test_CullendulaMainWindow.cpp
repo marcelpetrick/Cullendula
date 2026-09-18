@@ -185,17 +185,17 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
     QFile cmakeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.7.13"));
+    QVERIFY(cmakeContents.contains("VERSION 0.7.14"));
 
     QFile readmeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.7.13."));
+    QVERIFY(readmeContents.contains("This is version 0.7.14."));
 
     QFile changelogFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/CHANGELOG.md"));
     QVERIFY(changelogFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const changelogContents = QString::fromUtf8(changelogFile.readAll());
-    QVERIFY(changelogContents.contains("* v0.7.13 keeps the running session intact"));
+    QVERIFY(changelogContents.contains("* v0.7.14 resolves dropped URLs with toLocalFile"));
 }
 
 //----------------------------------------------------------------------------------
@@ -454,6 +454,17 @@ void Test_CullendulaMainWindow::slot_Test_InvalidImagePreview_ShowsFallbackError
     QCOMPARE(findStatusBar()->currentMessage(), QString("could not load the current image preview"));
     QVERIFY(!findButton("savePB")->isEnabled());
     QVERIFY(!findButton("trashPB")->isEnabled());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_DropNonLocalUrl_ShowsErrorStatus() {
+    // QUrl::path() would happily return "/some/remote/folder" for this and hand a bogus
+    // local path to the filesystem handler. toLocalFile() returns an empty string instead,
+    // which is what lets the drop be refused cleanly.
+    sendDropWithUrls({QUrl(QStringLiteral("https://example.invalid/some/remote/folder"))});
+
+    QCOMPARE(findStatusBar()->currentMessage(), QString("The load was not usable! :("));
 }
 
 //----------------------------------------------------------------------------------
