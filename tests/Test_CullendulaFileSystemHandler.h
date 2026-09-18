@@ -59,6 +59,9 @@ class Test_CullendulaFileSystemHandler : public QObject {
     //! Verify paths whose parent directory does not exist fail with an actionable error.
     void slot_Test_SetWorkingPath_PathWithMissingParentDirectory_ReturnsError();
 
+    //! Verify a rejected path leaves the running session, including the undo stack, untouched.
+    void slot_Test_SetWorkingPath_RejectedPathKeepsPreviousSession();
+
     //! Verify setup fails when the output directory path is blocked by a file.
     void slot_Test_SetWorkingPath_FailsWhenOutputDirectoryCannotBeCreated();
 

@@ -75,3 +75,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.7.10 updates the Qt install action to 4.4.0
 * v0.7.11 renames the CTest unit-suite entry to CullendulaUnitTests and corrects the test documentation
 * v0.7.12 embeds the application icon as a Qt resource and sets it as the window icon at startup
+* v0.7.13 keeps the running session intact when a dropped path cannot be resolved

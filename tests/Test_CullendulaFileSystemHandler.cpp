@@ -188,6 +188,33 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_PathWithMissingP
 
 //----------------------------------------------------------------------------------
 
+void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_RejectedPathKeepsPreviousSession() {
+    createImageSet();
+    QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
+
+    // Build up some session state worth losing: advance past the first image and move one
+    // file, so both the position and the undo stack carry something.
+    QString const firstImage = m_handler->getCurrentImagePath();
+    QVERIFY(!firstImage.isEmpty());
+    QVERIFY(m_handler->saveCurrentFile());
+    QVERIFY(m_handler->canUndo());
+
+    QString const pathBeforeDrop = m_handler->getCurrentImagePath();
+
+    // A drop that cannot be resolved must be refused without disturbing any of that.
+    QVERIFY(!m_handler->setWorkingPath(QDir(m_tempDir->path()).filePath("does/not/exist")));
+
+    QCOMPARE(m_handler->getCurrentImagePath(), pathBeforeDrop);
+    QVERIFY(m_handler->canUndo());
+    QVERIFY(m_handler->getLastErrorMessage().contains("could not be resolved to an existing directory"));
+
+    // The undo stack still has to work on the session that survived.
+    QVERIFY(m_handler->undo());
+    QCOMPARE(m_handler->getCurrentImagePath(), firstImage);
+}
+
+//----------------------------------------------------------------------------------
+
 void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_FailsWhenOutputDirectoryCannotBeCreated() {
     createImageSet();
     createFile("output");

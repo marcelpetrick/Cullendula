@@ -180,16 +180,27 @@ QStringList CullendulaFileSystemHandler::getAllowedImageExtensions() const {
 //----------------------------------------------------------------------------
 
 bool CullendulaFileSystemHandler::setWorkingPath(const QString& urlPath) {
-    bool returnValue(false);
-
     qDebug() << "CullendulaFileSystemHandler::setWorkingPath(): urlPath=" << urlPath;
+
+    // Resolve and validate before touching anything. The reset used to happen first, so a
+    // drop of an unreadable or non-existing path threw away the image list, the position
+    // and the whole undo stack of the session the user was in the middle of, and only then
+    // reported the failure. A rejected path must leave the running session untouched.
+    QString const intermediatePath = CullendulaFileSystemHandlerDetail::normalizeDroppedPath(urlPath);
+    QFileInfo const fileInfo(intermediatePath);
+    QDir const candidateDirectory(fileInfo.isDir() ? fileInfo.absoluteFilePath() : fileInfo.absolutePath());
+
+    if (!candidateDirectory.exists()) {
+        qDebug() << "ERROR: given directory does not exist";
+        //: Error after a dropped path or selected path does not resolve to an existing directory on disk.
+        setLastErrorMessage(tr("The path '%1' could not be resolved to an existing directory.").arg(intermediatePath));
+        return false;
+    }
+
     resetCurrentState();
-    m_workingPath.setPath("");
-    m_workingPath.setPath(urlPath);
+    m_workingPath.setPath(candidateDirectory.path());
 
-    returnValue = processNewPath();
-
-    return returnValue;
+    return processNewPath();
 }
 
 //----------------------------------------------------------------------------
@@ -357,42 +368,20 @@ bool CullendulaFileSystemHandler::redo() {
 //----------------------------------------------------------------------------
 
 bool CullendulaFileSystemHandler::processNewPath() {
-    bool returnValue(false);
+    // The caller has already resolved m_workingPath to an existing directory.
+    qDebug() << "CullendulaFileSystemHandler::processNewPath(): directory:" << m_workingPath.path();
 
-    qDebug() << "CullendulaFileSystemHandler::processNewPath():";
+    bool const foundImages = createImageFileList();
+    bool const outputReady = createOutputFolder(c_hardcodedOutput);
+    bool const trashReady = createOutputFolder(c_hardcodedTrash);
 
-    QString const intermediatePath = CullendulaFileSystemHandlerDetail::normalizeDroppedPath(m_workingPath.path());
-    QFileInfo const fileInfo(intermediatePath);
-
-    qDebug() << "\tfileInfo.isDir():" << fileInfo.isDir();
-    qDebug() << "fileInfo.absoluteFilePath(): " << fileInfo.absoluteFilePath();
-    qDebug() << "fileInfo.absolutePath(): " << fileInfo.absolutePath();
-
-    QDir const tempDir = QDir(fileInfo.isDir() ? fileInfo.absoluteFilePath() : fileInfo.absolutePath());
-    qDebug() << "\t resulting directory:" << tempDir.path();
-
-    // additionally check if the directory is usable
-    if (tempDir.exists()) {
-        m_workingPath.setPath(tempDir.path());
-
-        bool const foundImages = createImageFileList();
-        bool const outputReady = createOutputFolder(c_hardcodedOutput);
-        bool const trashReady = createOutputFolder(c_hardcodedTrash);
-
-        returnValue = foundImages && outputReady && trashReady;
-
-        if (!outputReady || !trashReady) {
-            m_currentImages.clear();
-            m_positionCurrentFile = -1;
-            m_undoStack = CullendulaUndoStack();
-        }
-    } else {
-        qDebug() << "ERROR: given directory does not exist";
-        //: Error after a dropped path or selected path does not resolve to an existing directory on disk.
-        setLastErrorMessage(tr("The path '%1' could not be resolved to an existing directory.").arg(intermediatePath));
+    if (!outputReady || !trashReady) {
+        m_currentImages.clear();
+        m_positionCurrentFile = -1;
+        m_undoStack = CullendulaUndoStack();
     }
 
-    return returnValue;
+    return foundImages && outputReady && trashReady;
 }
 
 //----------------------------------------------------------------------------
