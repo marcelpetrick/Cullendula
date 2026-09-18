@@ -16,6 +16,10 @@
 #include "CullendulaMainWindow.h"
 
 namespace {
+//! Resource path of the embedded application icon; the BASE of qt_add_resources strips the
+//! directory, so the file keeps its name below the /icons prefix.
+QString const c_applicationIconResource = QStringLiteral(":/icons/it.marcelpetrick.Cullendula.png");
+
 std::unique_ptr<QTranslator>& applicationTranslator() {
     static std::unique_ptr<QTranslator> translator;
     return translator;
@@ -97,6 +101,10 @@ void CullendulaAppBootstrap::ensureQtPlatformPluginForTests() {
 }
 
 //----------------------------------------------------------------------------------
+
+QIcon CullendulaAppBootstrap::applicationIcon() { return QIcon(c_applicationIconResource); }
+
+void CullendulaAppBootstrap::applyApplicationIcon() { QApplication::setWindowIcon(applicationIcon()); }
 
 void CullendulaAppBootstrap::showMainWindow(CullendulaMainWindow& mainWindow) { mainWindow.show(); }
 

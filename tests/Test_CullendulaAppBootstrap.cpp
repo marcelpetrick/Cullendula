@@ -7,7 +7,10 @@
 #include "Test_CullendulaAppBootstrap.h"
 
 #include <QtCore/QElapsedTimer>
+#include <QtCore/QFile>
 #include <QtCore/QTimer>
+#include <QtGui/QIcon>
+#include <QtGui/QPixmap>
 #include <QtWidgets/QApplication>
 
 #include "CullendulaAppBootstrap.h"
@@ -157,4 +160,36 @@ void Test_CullendulaAppBootstrap::slot_Test_ShowMainWindow_MakesWindowVisible() 
     QApplication::processEvents();
 
     QVERIFY(window.isVisible());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaAppBootstrap::slot_Test_ApplicationIcon_ResolvesEmbeddedResource() {
+    // A resource path that does not resolve yields a perfectly valid but empty QIcon, so
+    // asserting on the QIcon alone would still pass with a mistyped prefix or a file name
+    // the resource compiler stored under a different path. Checking the file and the
+    // rendered pixmap is what actually proves the icon ships inside the binary.
+    QVERIFY(QFile::exists(QStringLiteral(":/icons/it.marcelpetrick.Cullendula.png")));
+
+    QIcon const icon = CullendulaAppBootstrap::applicationIcon();
+    QVERIFY(!icon.isNull());
+
+    QPixmap const pixmap = icon.pixmap(32, 32);
+    QVERIFY(!pixmap.isNull());
+    QCOMPARE(pixmap.size(), QSize(32, 32));
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaAppBootstrap::slot_Test_ApplyApplicationIcon_SetsWindowIcon() {
+    QIcon const previousIcon = QApplication::windowIcon();
+    QApplication::setWindowIcon(QIcon());
+    QVERIFY(QApplication::windowIcon().isNull());
+
+    CullendulaAppBootstrap::applyApplicationIcon();
+
+    QVERIFY(!QApplication::windowIcon().isNull());
+    QCOMPARE(QApplication::windowIcon().pixmap(32, 32).size(), QSize(32, 32));
+
+    QApplication::setWindowIcon(previousIcon);
 }
