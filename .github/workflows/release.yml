@@ -385,7 +385,7 @@ jobs:
               "${CULLENDULA_VERSION}"
             printf '* **API documentation:** `cullendula-%s-doxygen-html.tar.gz`\n\n' "${GITHUB_REF_NAME}"
             printf 'Both packages were started once by the release workflow before publishing. '
-            printf 'The Linux build additionally passed the full project pipeline: unit tests, the 90%% line-coverage gate, an empty Doxygen warning log, Cppcheck and clang-format.\n\n'
+            printf 'The Linux build additionally passed the full project pipeline: unit tests, the 95%% line-coverage gate, an empty Doxygen warning log, Cppcheck and clang-format.\n\n'
             printf 'To build from source you need exactly Qt %s and CMake %s; see the README for the full expected toolchain.\n\n' \
               "${CULLENDULA_EXPECTED_QT_VERSION}" "${CULLENDULA_EXPECTED_CMAKE_VERSION}"
             printf 'The full history is in [CHANGELOG.md](https://github.com/%s/blob/master/CHANGELOG.md).\n' "${GITHUB_REPOSITORY}"

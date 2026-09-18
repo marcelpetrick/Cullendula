@@ -3,7 +3,7 @@
 #
 # Runs the very same verification that is run locally:
 # ./localPipeline.sh --noRun performs configure+build, CTest, the coverage build
-# with its 90% line-coverage gate, Doxygen with an empty-warning-log gate,
+# with its 95% line-coverage gate, Doxygen with an empty-warning-log gate,
 # Cppcheck, and clang-format. --noRun suppresses the final interactive app
 # launch, which is exactly what that option was added for.
 #

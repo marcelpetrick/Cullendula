@@ -25,7 +25,7 @@ The pipeline runs, in order:
 
 1. CMake configure and build
 2. unit tests via CTest
-3. a dedicated coverage build, plus a **90% line-coverage threshold** (currently 98.6%)
+3. a dedicated coverage build, plus a **95% line-coverage threshold** (currently 98.6%)
 4. Doxygen, plus the requirement that `build/doxygen/warnings.txt` is **empty**
 5. Cppcheck (XML plus HTML report)
 6. clang-format over `src/` and `tests/`
@@ -209,7 +209,7 @@ containing a `[Paths]` `Plugins=` entry.
 * Test slots are named `slot_Test_<Subject>_<Expectation>()`.
 * Tests must run headless: the harness falls back to `QT_QPA_PLATFORM=offscreen`, so never
   require a real display or user interaction.
-* Line coverage must stay at or above 90%. It currently sits at 98.6% — do not let a
+* Line coverage must stay at or above 95%. It currently sits at 98.6% — do not let a
   change erode it; add tests together with the code that needs them.
 * Cppcheck findings are kept at zero. Fix the real issue where there is one. Where a
   pattern is deliberate, suppress it narrowly and inline with `// cppcheck-suppress <id>`

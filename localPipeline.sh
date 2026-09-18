@@ -12,7 +12,7 @@
 #   2. Build the configured targets in parallel
 #   3. Run the unit test suite with CTest, using parallel workers when possible
 #   4. Build a dedicated coverage configuration and generate an HTML report
-#   5. Fail if total line coverage is below 90%
+#   5. Fail if total line coverage is below 95%
 #   6. Generate Doxygen documentation
 #   7. Verify that the Doxygen warnings file exists and is empty
 #   8. Print the generated Doxygen index.html path and try to open it
@@ -61,7 +61,7 @@ CTEST_COMMAND=""
 PARALLEL_JOBS=1
 GCOV_COMMAND=""
 GCOVR_COMMAND=""
-readonly COVERAGE_MIN_LINE_PERCENT="90.0"
+readonly COVERAGE_MIN_LINE_PERCENT="95.0"
 PYTHON3_COMMAND=""
 CPPCHECK_COMMAND=""
 CPPCHECK_HTMLREPORT_COMMAND=""
@@ -92,7 +92,7 @@ Usage: ${SCRIPT_NAME} [--verbose] [--noRun] [--build-dir PATH] [--coverage-build
 Local project pipeline:
   1. Configure and build the project
   2. Run unit tests
-  3. Build a dedicated coverage tree, generate coverage, and enforce a 90% line coverage threshold
+  3. Build a dedicated coverage tree, generate coverage, and enforce a 95% line coverage threshold
   4. Generate Doxygen documentation
   5. Check that the Doxygen warning log is empty
   6. Open the generated HTML reports when possible
@@ -828,10 +828,13 @@ main() {
     fi
 
     if run_clang_format; then
-        FORMAT_OK=1
         if [[ "${FORMAT_CHANGED}" -eq 1 ]]; then
-            mark_result "clang-format" "WARN" "Formatting completed and changed files"
+            # A verification run that rewrites tracked files and still reports success hides
+            # the drift it just papered over, so the changed files fail the run. The files are
+            # left formatted on purpose: the fix is already applied and only needs committing.
+            mark_result "clang-format" "FAIL" "Formatting changed files; review and commit them"
         else
+            FORMAT_OK=1
             mark_result "clang-format" "PASS" "Formatting completed without changing files"
         fi
     else

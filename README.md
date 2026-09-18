@@ -69,7 +69,7 @@ time ./localPipeline.sh
 Configure+Build    : PASS Project configured and built in /home/mpetrick/repos/Cullendula/build
 Unit Tests         : PASS CTest completed without failures
 Coverage           : PASS Coverage HTML generated successfully in /home/mpetrick/repos/Cullendula/build-coverage
-Coverage Gate      : PASS Line coverage is 98.6% (threshold 90.0%)
+Coverage Gate      : PASS Line coverage is 98.6% (threshold 95.0%)
 Open Coverage      : PASS Coverage index.html was handed to the desktop opener
 Doxygen            : PASS Documentation generated successfully
 Doxygen Warnings   : PASS warnings.txt is empty
@@ -94,7 +94,7 @@ cmake --build build --parallel $(nproc)
 
 ### Continuous integration
 Every push to `master`, every pull request against `master`, and every manual dispatch runs the same gate on GitHub Actions.
-The workflow in `.github/workflows/ci.yml` calls `./localPipeline.sh --noRun`, so CI and the local run cannot drift apart: build, CTest, the 90% line-coverage threshold, an empty Doxygen warning log, Cppcheck and clang-format are all checked by one script.
+The workflow in `.github/workflows/ci.yml` calls `./localPipeline.sh --noRun`, so CI and the local run cannot drift apart: build, CTest, the 95% line-coverage threshold, an empty Doxygen warning log, Cppcheck and clang-format are all checked by one script.
 CI installs the exact pinned dependencies from the table above, and a dedicated step fails the run if the installed CMake or gcovr is not the expected release; a wrong Qt release already fails the CMake configure step.
 The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated coverage, Doxygen and Cppcheck reports are attached to every run as the `cullendula-reports` artifact.
 
@@ -102,8 +102,8 @@ The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated cov
 Pushing a version tag publishes a release:
 
 ```bash
-git tag v0.7.16
-git push origin v0.7.16
+git tag v0.7.17
+git push origin v0.7.17
 ```
 
 `.github/workflows/release.yml` refuses to publish unless the tag matches the version in `CMakeLists.txt` and `CHANGELOG.md` has an entry for it, then runs the full pipeline, builds an AppImage, and starts that AppImage headless once to prove the packaged application actually runs.
@@ -311,7 +311,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.7.16.
+This is version 0.7.17.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
