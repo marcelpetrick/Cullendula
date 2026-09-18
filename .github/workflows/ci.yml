@@ -86,7 +86,7 @@ jobs:
           echo "${RUNNER_TEMP}/cmake-${CULLENDULA_EXPECTED_CMAKE_VERSION}-linux-x86_64/bin" >> "${GITHUB_PATH}"
 
       - name: Install the pinned Qt
-        uses: jurplel/install-qt-action@v4.3.1
+        uses: jurplel/install-qt-action@v4.4.0
         with:
           version: ${{ env.CULLENDULA_EXPECTED_QT_VERSION }}
           host: linux
