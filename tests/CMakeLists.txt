@@ -46,7 +46,7 @@ target_compile_definitions(CullendulaTests
 #
 # Register test with CTest
 #
-add_test(NAME CullendulaUndoStackTest COMMAND CullendulaTests)
+add_test(NAME CullendulaUnitTests COMMAND CullendulaTests)
 
 add_test(
     NAME CullendulaMainSmokeTest

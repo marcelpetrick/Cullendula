@@ -101,8 +101,8 @@ The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated cov
 Pushing a version tag publishes a release:
 
 ```bash
-git tag v0.7.10
-git push origin v0.7.10
+git tag v0.7.11
+git push origin v0.7.11
 ```
 
 `.github/workflows/release.yml` refuses to publish unless the tag matches the version in `CMakeLists.txt` and `CHANGELOG.md` has an entry for it, then runs the full pipeline, builds an AppImage, and starts that AppImage headless once to prove the packaged application actually runs.
@@ -197,9 +197,10 @@ The local pipeline also prints that path and tries to open the generated `index.
 
 The unit tests cover the core CLI and GUI behavior from the command line. They verify:
 
+* `CullendulaAppBootstrap` platform-plugin selection and the startup-exit hook used by the smoke test
 * `CullendulaUndoStack` push/undo/redo semantics
 * `CullendulaFileSystemHandler` path parsing, navigation, file moves, and undo/redo integration
-* `CullendulaMainWindow` drag and drop, button flows, menu actions, and basic widget state
+* `CullendulaMainWindow` drag and drop, button flows, menu actions, basic widget state, and the version metadata consistency check
 
 You can run them in three supported CLI ways:
 
@@ -211,9 +212,11 @@ cmake --build build --target check --parallel $(nproc)
 ./build/tests/CullendulaTests
 ```
 
-At the moment the test suite contains one test executable registered with CTest:
+The single test executable `CullendulaTests` runs all four test classes above in one process.
+CTest registers two tests:
 
-* `CullendulaUndoStackTest`
+* `CullendulaUnitTests` runs that executable, so it covers the whole unit suite
+* `CullendulaMainSmokeTest` starts the real application headless and requires it to exit cleanly
 
 ## Compute coverage
 
@@ -307,7 +310,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.7.10.
+This is version 0.7.11.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
