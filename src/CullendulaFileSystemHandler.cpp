@@ -190,6 +190,17 @@ bool CullendulaFileSystemHandler::setWorkingPath(const QString& urlPath) {
     QFileInfo const fileInfo(intermediatePath);
     QDir const candidateDirectory(fileInfo.isDir() ? fileInfo.absoluteFilePath() : fileInfo.absolutePath());
 
+    // An empty path has to be refused explicitly. QFileInfo("") reports an empty absolute
+    // path, QDir("") resolves to ".", and that directory exists, so an empty argument would
+    // otherwise pass the check below and make the application adopt whatever directory the
+    // process happens to be running in, creating output/ and trash/ inside it.
+    if (intermediatePath.isEmpty() || candidateDirectory.path().isEmpty()) {
+        qDebug() << "ERROR: empty path given";
+        //: Error after a dropped path or selected path does not resolve to an existing directory on disk.
+        setLastErrorMessage(tr("The path '%1' could not be resolved to an existing directory.").arg(intermediatePath));
+        return false;
+    }
+
     if (!candidateDirectory.exists()) {
         qDebug() << "ERROR: given directory does not exist";
         //: Error after a dropped path or selected path does not resolve to an existing directory on disk.

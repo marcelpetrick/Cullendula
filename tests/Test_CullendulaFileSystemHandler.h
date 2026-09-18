@@ -62,6 +62,9 @@ class Test_CullendulaFileSystemHandler : public QObject {
     //! Verify a rejected path leaves the running session, including the undo stack, untouched.
     void slot_Test_SetWorkingPath_RejectedPathKeepsPreviousSession();
 
+    //! Verify an empty path is refused instead of adopting the current working directory.
+    void slot_Test_SetWorkingPath_EmptyPathIsRejected();
+
     //! Verify setup fails when the output directory path is blocked by a file.
     void slot_Test_SetWorkingPath_FailsWhenOutputDirectoryCannotBeCreated();
 

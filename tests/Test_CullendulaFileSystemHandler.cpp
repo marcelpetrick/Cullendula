@@ -188,6 +188,27 @@ void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_PathWithMissingP
 
 //----------------------------------------------------------------------------------
 
+void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_EmptyPathIsRejected() {
+    // QDir("") resolves to "." and that always exists, so an empty path would otherwise be
+    // accepted and the handler would adopt the process working directory, creating output
+    // and trash folders somewhere the user never pointed at.
+    // Run from a directory of our own, so "adopted the working directory" would be visible
+    // as output/ and trash/ appearing in it rather than polluting wherever the suite ran.
+    QString const previousWorkingDirectory = QDir::currentPath();
+    QVERIFY(QDir::setCurrent(m_tempDir->path()));
+
+    QVERIFY(!m_handler->setWorkingPath(QString()));
+
+    QVERIFY(m_handler->getCurrentImagePath().isEmpty());
+    QVERIFY(m_handler->getLastErrorMessage().contains("could not be resolved to an existing directory"));
+    QVERIFY(!QDir(m_tempDir->path()).exists("output"));
+    QVERIFY(!QDir(m_tempDir->path()).exists("trash"));
+
+    QVERIFY(QDir::setCurrent(previousWorkingDirectory));
+}
+
+//----------------------------------------------------------------------------------
+
 void Test_CullendulaFileSystemHandler::slot_Test_SetWorkingPath_RejectedPathKeepsPreviousSession() {
     createImageSet();
     QVERIFY(m_handler->setWorkingPath(m_tempDir->path()));
