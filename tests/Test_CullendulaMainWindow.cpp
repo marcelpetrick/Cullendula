@@ -30,6 +30,7 @@ class TestableCullendulaMainWindow : public CullendulaMainWindow {
     using CullendulaMainWindow::CullendulaMainWindow;
     using CullendulaMainWindow::dragEnterEvent;
     using CullendulaMainWindow::dropEvent;
+    using CullendulaMainWindow::refreshLabel;
 };
 }  // namespace
 
@@ -185,17 +186,17 @@ void Test_CullendulaMainWindow::slot_Test_VersionMetadata_IsDocumentedConsistent
     QFile cmakeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/CMakeLists.txt"));
     QVERIFY(cmakeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const cmakeContents = QString::fromUtf8(cmakeFile.readAll());
-    QVERIFY(cmakeContents.contains("VERSION 0.7.14"));
+    QVERIFY(cmakeContents.contains("VERSION 0.7.15"));
 
     QFile readmeFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/README.md"));
     QVERIFY(readmeFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const readmeContents = QString::fromUtf8(readmeFile.readAll());
-    QVERIFY(readmeContents.contains("This is version 0.7.14."));
+    QVERIFY(readmeContents.contains("This is version 0.7.15."));
 
     QFile changelogFile(QStringLiteral(CULLENDULA_SOURCE_DIR "/CHANGELOG.md"));
     QVERIFY(changelogFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString const changelogContents = QString::fromUtf8(changelogFile.readAll());
-    QVERIFY(changelogContents.contains("* v0.7.14 resolves dropped URLs with toLocalFile"));
+    QVERIFY(changelogContents.contains("* v0.7.15 drops the unreachable existence check"));
 }
 
 //----------------------------------------------------------------------------------
@@ -454,6 +455,28 @@ void Test_CullendulaMainWindow::slot_Test_InvalidImagePreview_ShowsFallbackError
     QCOMPARE(findStatusBar()->currentMessage(), QString("could not load the current image preview"));
     QVERIFY(!findButton("savePB")->isEnabled());
     QVERIFY(!findButton("trashPB")->isEnabled());
+}
+
+//----------------------------------------------------------------------------------
+
+void Test_CullendulaMainWindow::slot_Test_RefreshLabel_MissingCurrentFile_DisablesButtonsAndReports() {
+    createImage("alpha.jpg", Qt::red);
+    sendDropWithUrls({QUrl::fromLocalFile(m_tempDir->path())});
+
+    QVERIFY(m_window->findChild<QPushButton*>("savePB")->isEnabled());
+
+    // Delete the loaded file behind the application's back, the way another program or a
+    // file manager would, then refresh once with the now-stale selection.
+    QVERIFY(QFile::remove(QDir(m_tempDir->path()).filePath("alpha.jpg")));
+    static_cast<TestableCullendulaMainWindow*>(m_window.get())->refreshLabel();
+
+    // The handler reports no current image at all once the file is gone, so the window has
+    // to fall back to the empty state instead of keeping the buttons armed for a file that
+    // cannot be moved anywhere.
+    QVERIFY(!m_window->findChild<QPushButton*>("savePB")->isEnabled());
+    QVERIFY(!m_window->findChild<QPushButton*>("trashPB")->isEnabled());
+    QVERIFY(m_window->findChild<QLabel*>("centerLabel")->text().contains("no more valid images found"));
+    QCOMPARE(findStatusBar()->currentMessage(), QString("no more files"));
 }
 
 //----------------------------------------------------------------------------------

@@ -63,6 +63,19 @@ class CullendulaMainWindow : public QMainWindow {
 
    protected:
     /*!
+     * @brief Refresh the central preview and the related window state.
+     *
+     * The method updates the image label, button enabled state, and status bar
+     * message based on whether a current image is available.
+     *
+     * Protected rather than private so the test seam can drive exactly one refresh.
+     * Going through a resize or a button click instead triggers several refreshes in a
+     * row, and the last one decides what the label shows, which makes the state after a
+     * single refresh impossible to assert.
+     */
+    void refreshLabel();
+
+    /*!
      * @brief Accept drag payloads so image folders or files can be dropped.
      * @param event Qt drag-enter event supplied by the window system.
      */
@@ -132,14 +145,6 @@ class CullendulaMainWindow : public QMainWindow {
      * @param language Requested language.
      */
     void applyLanguage(CullendulaAppBootstrap::UiLanguage language);
-
-    /*!
-     * @brief Refresh the central preview and the related window state.
-     *
-     * The method updates the image label, button enabled state, and status bar
-     * message based on whether a current image is available.
-     */
-    void refreshLabel();
 
     /*!
      * @brief Enable or disable the navigation and move buttons as a group.

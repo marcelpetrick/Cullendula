@@ -510,29 +510,28 @@ void CullendulaMainWindow::refreshLabel() {
         //: Status bar message when the current directory no longer contains any matching images to show.
         printStatus(tr("no more files"));
     } else {
-        if (QFile::exists(path)) {
-            loadAndCachePhoto(path);
-            if (m_cachedPhoto.isNull()) {
-                clearCachedPhoto();
-                //: Error shown both in the center label and the status bar when Qt cannot render the current image preview.
-                ui->centerLabel->setText(tr("could not load the current image preview"));
-                activateButtons(false);
-                printStatus(tr("could not load the current image preview"));
-                return;
-            }
-
-            // scale the cached file to the current label geometry
-            showCachedPhoto();
-
-            activateButtons(true);
-
-            // print the current file-path as user-notification
-            QString const message = m_fileSystemHandler.getCurrentStatus() + ": " + path;
-            printStatus(message);
-        } else {
+        // No existence check here. getCurrentImagePath() only returns a path after it has
+        // confirmed the file is still on disk, so a second check was unreachable, and the
+        // branch behind it could never run. A file that disappears in the window between
+        // those two moments produces a null pixmap, which the check below already reports.
+        loadAndCachePhoto(path);
+        if (m_cachedPhoto.isNull()) {
             clearCachedPhoto();
-            qDebug() << "CullendulaMainWindow::refreshLabel(): given path did not exist: " << path;
+            //: Error shown both in the center label and the status bar when Qt cannot render the current image preview.
+            ui->centerLabel->setText(tr("could not load the current image preview"));
+            activateButtons(false);
+            printStatus(tr("could not load the current image preview"));
+            return;
         }
+
+        // scale the cached file to the current label geometry
+        showCachedPhoto();
+
+        activateButtons(true);
+
+        // print the current file-path as user-notification
+        QString const message = m_fileSystemHandler.getCurrentStatus() + ": " + path;
+        printStatus(message);
     }
 }
 

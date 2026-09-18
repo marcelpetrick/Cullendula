@@ -105,6 +105,9 @@ class Test_CullendulaMainWindow : public QObject {
     //! Verify a dropped URL that is not a local file is rejected instead of being path-mangled.
     void slot_Test_DropNonLocalUrl_ShowsErrorStatus();
 
+    //! Verify a current image that vanished from disk disables the buttons and is reported.
+    void slot_Test_RefreshLabel_MissingCurrentFile_DisablesButtonsAndReports();
+
     //! Verify dropping an empty URL list leaves the current session unchanged.
     void slot_Test_DropEmptyUrlList_LeavesStateUnchanged();
 
