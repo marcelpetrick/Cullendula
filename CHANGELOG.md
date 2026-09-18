@@ -80,3 +80,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.7.15 drops the unreachable existence check in refreshLabel and pins the vanished-file behaviour with a test
 * v0.7.16 restores QT_QPA_PLATFORM after the bootstrap tests change it
 * v0.7.17 raises the line-coverage gate to 95% and fails the pipeline on formatting drift
+* v0.7.18 removes the worst-findings notes now that every item is resolved or documented policy
