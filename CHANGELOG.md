@@ -74,3 +74,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.7.9 installs the pinned CMake release from Kitware's checksummed archives because the CI install action does not yet catalog CMake 4.4.3
 * v0.7.10 updates the Qt install action to 4.4.0
 * v0.7.11 renames the CTest unit-suite entry to CullendulaUnitTests and corrects the test documentation
+* v0.7.12 embeds the application icon as a Qt resource and sets it as the window icon at startup

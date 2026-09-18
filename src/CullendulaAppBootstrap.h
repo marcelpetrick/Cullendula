@@ -8,6 +8,7 @@
 
 // Qt includes
 #include <QtCore/QString>
+#include <QtGui/QIcon>
 
 class QApplication;
 class CullendulaMainWindow;
@@ -64,6 +65,27 @@ TranslatorHooks defaultTranslatorHooks();
  * when no explicit plugin was configured yet.
  */
 void ensureQtPlatformPluginForTests();
+
+/*!
+ * @brief Return the embedded application icon.
+ * @return Icon loaded from the Qt resource system.
+ *
+ * The icon is the same PNG that is installed into the hicolor theme and that the
+ * AppImage is packaged with, embedded as a resource so a running window shows it
+ * even when the application was started from a build directory.
+ */
+QIcon applicationIcon();
+
+/*!
+ * @brief Apply the embedded application icon to the whole application.
+ *
+ * Requires a constructed QApplication, because Qt stores the window icon on the
+ * application instance. On X11 and Windows this is what a window decoration and a
+ * task bar show. On Wayland the compositor resolves the icon through the desktop
+ * entry instead, which is matched by the `StartupWMClass` of the shipped
+ * `.desktop` file.
+ */
+void applyApplicationIcon();
 
 /*!
  * @brief Show the main window during application startup.

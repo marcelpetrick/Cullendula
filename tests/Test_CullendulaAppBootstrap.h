@@ -58,4 +58,10 @@ class Test_CullendulaAppBootstrap : public QObject {
 
     //! Verify the helper shows the main window.
     void slot_Test_ShowMainWindow_MakesWindowVisible();
+
+    //! Verify the embedded application icon resource exists and carries real pixels.
+    static void slot_Test_ApplicationIcon_ResolvesEmbeddedResource();
+
+    //! Verify applying the icon reaches the application-wide window icon.
+    static void slot_Test_ApplyApplicationIcon_SetsWindowIcon();
 };

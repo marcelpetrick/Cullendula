@@ -25,6 +25,7 @@ Switch between the images via the buttons at the bottom of the app or use the ar
 The button "save" (or **UP** arrow-key) moves the current image to the output-folder.  
 The button "trash" (or **DOWN** arrow-key) moves the current image to the trash-folder.  
 Undo and redo keep the in-memory image list and the visible main view synchronized with the on-disk file moves.  
+The window and task bar icon is embedded into the binary, so it is shown no matter whether the app was started from a package or straight from a build directory. On Wayland the compositor takes the icon from the installed desktop entry instead, which the AppImage ships.  
 When you are done, then close the app. The result (the best photos) are inside the output-folder :)  
 
 ![](media/Cullendula_current_state.png)
@@ -101,8 +102,8 @@ The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated cov
 Pushing a version tag publishes a release:
 
 ```bash
-git tag v0.7.11
-git push origin v0.7.11
+git tag v0.7.12
+git push origin v0.7.12
 ```
 
 `.github/workflows/release.yml` refuses to publish unless the tag matches the version in `CMakeLists.txt` and `CHANGELOG.md` has an entry for it, then runs the full pipeline, builds an AppImage, and starts that AppImage headless once to prove the packaged application actually runs.
@@ -310,7 +311,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.7.11.
+This is version 0.7.12.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
@@ -347,5 +348,4 @@ The full version history lives in [`CHANGELOG.md`](CHANGELOG.md).
 ## Open tasks
 * show left and right (if possible) neighbour of the current image as smaller preview ... so that you have some preview of similar pictures follow
 * show position and amount: like: "3/234 output: 7 trash: 10" - maybe in the status-bar?
-* add an icon for the program - started as feature-branch, but problematic for Linux/Wayland
 * important: add a file-existance_check before loading to QPixmap

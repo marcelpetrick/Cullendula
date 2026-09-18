@@ -15,10 +15,14 @@ add_library(CullendulaLib
     CullendulaMainWindow.ui
 )
 
+# PUBLIC keeps the previous plain-signature behaviour, where everything linking this
+# library also links Qt. The keyword form is required because qt_add_resources below
+# uses it internally, and CMake refuses to mix the two signatures on one target.
 target_link_libraries(CullendulaLib
-    Qt6::Core
-    Qt6::Gui
-    Qt6::Widgets
+    PUBLIC
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Widgets
 )
 
 # Expose src/ headers to targets linking CullendulaLib.
@@ -37,7 +41,20 @@ target_compile_definitions(CullendulaLib
 #
 add_executable(Cullendula
     main.cpp
-    ../media/cullendula.rc
+)
+
+# The .rc only carries the Windows executable icon and needs a resource compiler,
+# so it is attached on Windows instead of being listed unconditionally.
+if(WIN32)
+    target_sources(Cullendula PRIVATE ../media/cullendula.rc)
+endif()
+
+# The window icon is the very same file that is installed into hicolor and that the
+# AppImage is built with, so the packaged icon and the running window cannot drift.
+qt_add_resources(CullendulaLib "cullendula_icons"
+    PREFIX "/icons"
+    BASE "${CMAKE_SOURCE_DIR}/media"
+    FILES "${CMAKE_SOURCE_DIR}/media/it.marcelpetrick.Cullendula.png"
 )
 
 target_link_libraries(Cullendula
