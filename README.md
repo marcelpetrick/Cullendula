@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/marcelpetrick/Cullendula/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/marcelpetrick/Cullendula/actions/workflows/ci.yml)
 [![License: GPL v3 or later](https://img.shields.io/badge/license-GPLv3%20or%20later-blue.svg)](LICENSE)
-[![Qt 6.11.2](https://img.shields.io/badge/Qt-6.11.2-41cd52.svg)](https://www.qt.io/)
+[![Qt 6.12.0](https://img.shields.io/badge/Qt-6.12.0-41cd52.svg)](https://www.qt.io/)
 [![CMake 4.4.3](https://img.shields.io/badge/CMake-4.4.3-064f8c.svg)](https://cmake.org/)
 [![C++23](https://img.shields.io/badge/C%2B%2B-23-00599c.svg)](https://en.cppreference.com/w/cpp/23)
 
@@ -102,8 +102,8 @@ The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated cov
 Pushing a version tag publishes a release:
 
 ```bash
-git tag v0.8.0
-git push origin v0.8.0
+git tag v0.8.1
+git push origin v0.8.1
 ```
 
 `.github/workflows/release.yml` refuses to publish unless the tag matches the version in `CMakeLists.txt` and `CHANGELOG.md` has an entry for it, then runs the full pipeline, builds an AppImage, and starts that AppImage headless once to prove the packaged application actually runs.
@@ -313,7 +313,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.8.0.
+This is version 0.8.1.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
@@ -321,13 +321,13 @@ The buildsystem carries the two enforced pins in one place, at the top of `CMake
 
 ```cmake
 set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.4.3")
-set(CULLENDULA_EXPECTED_QT_VERSION "6.11.2")
+set(CULLENDULA_EXPECTED_QT_VERSION "6.12.0")
 ```
 
 | Dependency | Exact expected version | How it is enforced |
 | --- | --- | --- |
 | CMake | 4.4.3 | `CMakeLists.txt` aborts with a `FATAL_ERROR` on any other version |
-| Qt | 6.11.2 | `find_package(Qt6 ... EXACT REQUIRED)`, so a different patch release fails to configure |
+| Qt | 6.12.0 | `find_package(Qt6 ... EXACT REQUIRED)`, so a different patch release fails to configure |
 | C++ standard | C++23 | `CMAKE_CXX_STANDARD` with `CMAKE_CXX_STANDARD_REQUIRED` |
 | gcovr | 8.6 | installed as `gcovr==8.6` in CI |
 | GCC | 16.2.1 | verified, not enforced |

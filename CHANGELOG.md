@@ -84,3 +84,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.7.19 refuses an empty working path instead of adopting the process working directory
 * v0.7.20 runs the unit suite on Windows in CI, not only in the release workflow
 * v0.8.0 rounds off the overhaul: the application icon is shown at runtime, a rejected drop no longer destroys the running session, dropped URLs are resolved properly on every platform, the line-coverage gate is 95%, formatting drift fails the pipeline, and Windows is tested on every push
+* v0.8.1 updates the exactly pinned Qt toolchain from 6.11.2 to the Qt 6.12.0 LTS release across local builds, CI, release packaging, and documentation
