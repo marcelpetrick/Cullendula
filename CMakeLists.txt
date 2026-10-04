@@ -14,7 +14,7 @@ set(QT_CREATOR_SKIP_MAINTENANCE_TOOL_PROVIDER ON)
 # dependency table in README.md, and AGENTS.md in the same commit.
 # -----------------------------------------------------------------------------
 set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.4.3")
-set(CULLENDULA_EXPECTED_QT_VERSION "6.11.2")
+set(CULLENDULA_EXPECTED_QT_VERSION "6.12.0")
 
 if(NOT CMAKE_VERSION VERSION_EQUAL CULLENDULA_EXPECTED_CMAKE_VERSION)
     message(FATAL_ERROR
@@ -23,7 +23,7 @@ if(NOT CMAKE_VERSION VERSION_EQUAL CULLENDULA_EXPECTED_CMAKE_VERSION)
 endif()
 
 project(Cullendula
-    VERSION 0.8.0
+    VERSION 0.8.1
     LANGUAGES CXX
 )
 

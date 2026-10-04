@@ -31,12 +31,12 @@ env:
   CULLENDULA_EXPECTED_CMAKE_VERSION: 4.4.3
   CULLENDULA_EXPECTED_CMAKE_SHA256: d6c83076c575bc00b823522ac974bda66d0af05d6ddc30e739c12385cf32c6cc
   CULLENDULA_EXPECTED_CMAKE_SHA256_WINDOWS: 4d52ebab7193a698651639ed80d8d04fd903358843572cf44c7fd234cb7c26ab
-  CULLENDULA_EXPECTED_QT_VERSION: 6.11.2
+  CULLENDULA_EXPECTED_QT_VERSION: 6.12.0
   CULLENDULA_EXPECTED_GCOVR_VERSION: 8.6
 
 jobs:
   local-pipeline:
-    name: Local pipeline (Linux, Qt 6.11.2)
+    name: Local pipeline (Linux, Qt 6.12.0)
     runs-on: ubuntu-24.04
 
     env:
@@ -144,7 +144,7 @@ jobs:
             reports/cppcheck
 
   windows-tests:
-    name: Unit tests (Windows, Qt 6.11.2)
+    name: Unit tests (Windows, Qt 6.12.0)
     runs-on: windows-2022
     # A Qt fatal error appears as a modal dialog on Windows and nothing dismisses it on a
     # runner, so the job is capped instead of blocking until the account limit.
@@ -176,10 +176,10 @@ jobs:
           # Same reason as in release.yml: install-qt-action drives aqtinstall, which looks
           # for a Windows path that does not exist on the Qt server, so the official
           # archives are fetched directly to keep the exactly pinned Qt version.
-          $base = "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt6_6112/qt6_6112_msvc2022_64"
+          $base = "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt6_6120/qt6_6120_msvc2022_64"
           $packages = [ordered]@{
-            "qt.qt6.6112.win64_msvc2022_64" = @("qtbase", "qttools", "qtdeclarative", "qtsvg", "qttranslations", "d3dcompiler_47", "opengl32sw")
-            "qt.qt6.6112.addons.qtimageformats.win64_msvc2022_64" = @("qtimageformats")
+            "qt.qt6.6120.win64_msvc2022_64" = @("qtbase", "qttools", "qtdeclarative", "qtsvg", "qttranslations", "d3dcompiler_47", "opengl32sw")
+            "qt.qt6.6120.addons.qtimageformats.win64_msvc2022_64" = @("qtimageformats")
           }
           New-Item -ItemType Directory -Force -Path qt-win | Out-Null
           foreach ($package in $packages.Keys) {

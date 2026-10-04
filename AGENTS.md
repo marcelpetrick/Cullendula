@@ -113,7 +113,7 @@ The two enforced pins live together at the top of `CMakeLists.txt`:
 
 ```cmake
 set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.4.3")
-set(CULLENDULA_EXPECTED_QT_VERSION "6.11.2")
+set(CULLENDULA_EXPECTED_QT_VERSION "6.12.0")
 ```
 
 * CMake is checked with `VERSION_EQUAL` and a `FATAL_ERROR` on mismatch.
