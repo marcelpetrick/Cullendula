@@ -145,6 +145,10 @@ Confirm the candidate is a stable release and not a pre-release, then update **a
 Only pin a version you can actually build and verify against locally. Pinning a release
 that is not installable here would mean shipping a repository whose pipeline cannot run.
 
+The repository-specific Qt 6.12 installation, archive-layout, migration, and verification
+procedure is documented in [`qt6_12.md`](qt6_12.md). Reuse that checklist for later Qt
+minor-version ports, updating the version-specific paths instead of copying them blindly.
+
 ---
 
 ## 5. Continuous integration

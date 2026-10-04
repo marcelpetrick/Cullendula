@@ -102,8 +102,8 @@ The runner stays headless via `QT_QPA_PLATFORM=offscreen`, and the generated cov
 Pushing a version tag publishes a release:
 
 ```bash
-git tag v0.8.1
-git push origin v0.8.1
+git tag v0.8.2
+git push origin v0.8.2
 ```
 
 `.github/workflows/release.yml` refuses to publish unless the tag matches the version in `CMakeLists.txt` and `CHANGELOG.md` has an entry for it, then runs the full pipeline, builds an AppImage, and starts that AppImage headless once to prove the packaged application actually runs.
@@ -313,7 +313,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.8.1.
+This is version 0.8.2.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
@@ -338,6 +338,8 @@ set(CULLENDULA_EXPECTED_QT_VERSION "6.12.0")
 The last four are deliberately *not* hard-pinned: they are distribution packages whose exact release differs between a rolling Linux desktop and the CI image, and a `FATAL_ERROR` on them would make the project unbuildable on most machines without improving the produced binary. Their versions are recorded here so a behavioural difference in a report can be traced back to a tool version.
 
 Everything above is what CI installs too, so a local pipeline run and a CI run use the same toolchain.
+The complete installation, archive-layout, migration, and verification procedure is recorded in
+[`qt6_12.md`](qt6_12.md) so the verified Qt 6.12 environment can be recreated without relying on shell history.
 
 Not supported nor tested anymore:
 
