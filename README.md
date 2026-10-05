@@ -28,10 +28,15 @@ Undo and redo keep the in-memory image list and the visible main view synchroniz
 The window and task bar icon is embedded into the binary, so it is shown no matter whether the app was started from a package or straight from a build directory. On Wayland the compositor takes the icon from the installed desktop entry instead, which the AppImage ships.  
 When you are done, then close the app. The result (the best photos) are inside the output-folder :)  
 
-![](media/Cullendula_current_state.png)
+![Cullendula walkthrough: load a photo session, cull the cat examples, undo and redo moves, switch themes and languages, inspect formats, and open Help](media/cullendula_walkthrough.gif)
 
-### Preview of the language- and style-switching
-![Runtime language switch recording](media/i18n_example_run.gif)
+The walkthrough is generated from the real Qt 6.12.0 application with the tracked cat images in `testItemFolder/`. A square alternative suitable for social posts is stored at [`media/cullendula_walkthrough_social.gif`](media/cullendula_walkthrough_social.gif). Both recordings stay below 20 seconds and can be regenerated from a KDE desktop session with Spectacle, FFmpeg, and ImageMagick:
+
+```bash
+PATH=/path/to/Qt/6.12.0/gcc_64/bin:$PATH ./scripts/generate_walkthrough.sh
+```
+
+The script captures the live application states and combines them with the system's actual decorated window shell. This keeps the title bar, frame, controls, and shadow authentic without recording unrelated desktop content. Those details may vary between desktops, so inspect the generated sequence for clean alignment and readable menus instead of expecting byte-identical output.
 
 ## Build
 
@@ -313,7 +318,7 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.8.2.
+This is version 0.8.3.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.

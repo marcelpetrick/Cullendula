@@ -86,3 +86,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.8.0 rounds off the overhaul: the application icon is shown at runtime, a rejected drop no longer destroys the running session, dropped URLs are resolved properly on every platform, the line-coverage gate is 95%, formatting drift fails the pipeline, and Windows is tested on every push
 * v0.8.1 updates the exactly pinned Qt toolchain from 6.11.2 to the Qt 6.12.0 LTS release across local builds, CI, release packaging, and documentation
 * v0.8.2 documents how to install the exact Qt 6.12.0 toolchain, locate its official archives, reproduce the local verification, and reuse the migration workflow for later Qt releases
+* v0.8.3 replaces the separate interface previews with a reproducible walkthrough of photo culling, undo and redo, themes, languages, format selection, and Help, plus a square social-media variant
