@@ -88,3 +88,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.8.2 documents how to install the exact Qt 6.12.0 toolchain, locate its official archives, reproduce the local verification, and reuse the migration workflow for later Qt releases
 * v0.8.3 replaces the separate interface previews with a reproducible walkthrough of photo culling, undo and redo, themes, languages, format selection, and Help, plus a square social-media variant
 * v0.8.4 updates the exactly pinned CMake from 4.4.3 to 4.5.0 and gcovr from 8.6 to 8.8 across local builds, CI, release packaging, and documentation
+* v0.8.5 updates the exactly pinned GitHub Actions to install-qt-action 4.5.0, upload-artifact 7.0.2, and download-artifact 8.0.2
