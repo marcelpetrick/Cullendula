@@ -112,7 +112,7 @@ Dependencies are pinned to **exact releases**. Not floors, not ranges, not "or n
 The two enforced pins live together at the top of `CMakeLists.txt`:
 
 ```cmake
-set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.4.3")
+set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.5.0")
 set(CULLENDULA_EXPECTED_QT_VERSION "6.12.0")
 ```
 
@@ -120,7 +120,7 @@ set(CULLENDULA_EXPECTED_QT_VERSION "6.12.0")
 * Qt is found with `find_package(Qt6 ${CULLENDULA_EXPECTED_QT_VERSION} EXACT REQUIRED ...)`,
   so a different patch release fails to configure.
 
-`gcovr` is pinned in CI (`gcovr==8.6`). GCC, Cppcheck, Doxygen and clang-format are
+`gcovr` is pinned in CI (`gcovr==8.8`). GCC, Cppcheck, Doxygen and clang-format are
 distribution packages whose exact release differs between a rolling desktop and the CI
 image; they are documented in the README dependency table and reported by CI, but not
 hard-pinned, because failing on them would make the project unbuildable without improving

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.4.3)
+cmake_minimum_required(VERSION 4.5.0)
 
 # Silence Qt Creator MaintenanceTool provider message (must be set early)
 set(QT_CREATOR_SKIP_MAINTENANCE_TOOL_PROVIDER ON)
@@ -13,7 +13,7 @@ set(QT_CREATOR_SKIP_MAINTENANCE_TOOL_PROVIDER ON)
 # Bumping one of them is a deliberate change: update the value here, the
 # dependency table in README.md, and AGENTS.md in the same commit.
 # -----------------------------------------------------------------------------
-set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.4.3")
+set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.5.0")
 set(CULLENDULA_EXPECTED_QT_VERSION "6.12.0")
 
 if(NOT CMAKE_VERSION VERSION_EQUAL CULLENDULA_EXPECTED_CMAKE_VERSION)
@@ -23,7 +23,7 @@ if(NOT CMAKE_VERSION VERSION_EQUAL CULLENDULA_EXPECTED_CMAKE_VERSION)
 endif()
 
 project(Cullendula
-    VERSION 0.8.3
+    VERSION 0.8.4
     LANGUAGES CXX
 )
 
