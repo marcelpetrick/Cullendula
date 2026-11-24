@@ -13,6 +13,7 @@
 #include <QtCore/QList>
 #include <QtGui/QImageReader>
 #include <algorithm>
+#include <iterator>
 
 //----------------------------------------------------------------------------
 
@@ -28,9 +29,8 @@ QSet<QString> const& getSupportedImageSuffixes() {
     // change while the process runs, so build the set once instead of on every rescan.
     static QSet<QString> const suffixes = [] {
         QSet<QString> result;
-        for (QByteArray const& format : QImageReader::supportedImageFormats()) {
-            result.insert(QString::fromLatin1(format).toLower());
-        }
+        auto const formats = QImageReader::supportedImageFormats();
+        std::ranges::transform(formats, std::inserter(result, result.end()), [](QByteArray const& format) { return QString::fromLatin1(format).toLower(); });
         return result;
     }();
 
