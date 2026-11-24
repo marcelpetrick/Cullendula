@@ -112,8 +112,8 @@ Dependencies are pinned to **exact releases**. Not floors, not ranges, not "or n
 The two enforced pins live together at the top of `CMakeLists.txt`:
 
 ```cmake
-set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.5.0")
-set(CULLENDULA_EXPECTED_QT_VERSION "6.12.0")
+set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.5.1")
+set(CULLENDULA_EXPECTED_QT_VERSION "6.12.1")
 ```
 
 * CMake is checked with `VERSION_EQUAL` and a `FATAL_ERROR` on mismatch.

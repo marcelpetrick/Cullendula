@@ -2,8 +2,8 @@
 
 [![CI](https://github.com/marcelpetrick/Cullendula/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/marcelpetrick/Cullendula/actions/workflows/ci.yml)
 [![License: GPL v3 or later](https://img.shields.io/badge/license-GPLv3%20or%20later-blue.svg)](LICENSE)
-[![Qt 6.12.0](https://img.shields.io/badge/Qt-6.12.0-41cd52.svg)](https://www.qt.io/)
-[![CMake 4.5.0](https://img.shields.io/badge/CMake-4.5.0-064f8c.svg)](https://cmake.org/)
+[![Qt 6.12.1](https://img.shields.io/badge/Qt-6.12.1-41cd52.svg)](https://www.qt.io/)
+[![CMake 4.5.1](https://img.shields.io/badge/CMake-4.5.1-064f8c.svg)](https://cmake.org/)
 [![C++23](https://img.shields.io/badge/C%2B%2B-23-00599c.svg)](https://en.cppreference.com/w/cpp/23)
 
 A program to pick out the best shots of the vast amount of taken pictures per photo session.  
@@ -30,10 +30,10 @@ When you are done, then close the app. The result (the best photos) are inside t
 
 ![Cullendula walkthrough: load a photo session, cull the cat examples, undo and redo moves, switch themes and languages, inspect formats, and open Help](media/cullendula_walkthrough.gif)
 
-The walkthrough is generated from the real Qt 6.12.0 application with the tracked cat images in `testItemFolder/`. A square alternative suitable for social posts is stored at [`media/cullendula_walkthrough_social.gif`](media/cullendula_walkthrough_social.gif). Both recordings stay below 20 seconds and can be regenerated from a KDE desktop session with Spectacle, FFmpeg, and ImageMagick:
+The walkthrough is generated from the real application with the tracked cat images in `testItemFolder/`. A square alternative suitable for social posts is stored at [`media/cullendula_walkthrough_social.gif`](media/cullendula_walkthrough_social.gif). Both recordings stay below 20 seconds and can be regenerated from a KDE desktop session with Spectacle, FFmpeg, and ImageMagick:
 
 ```bash
-PATH=/path/to/Qt/6.12.0/gcc_64/bin:$PATH ./scripts/generate_walkthrough.sh
+PATH=/path/to/Qt/6.12.1/gcc_64/bin:$PATH ./scripts/generate_walkthrough.sh
 ```
 
 The script captures the live application states and combines them with the system's actual decorated window shell. This keeps the title bar, frame, controls, and shadow authentic without recording unrelated desktop content. Those details may vary between desktops, so inspect the generated sequence for clean alignment and readable menus instead of expecting byte-identical output.
@@ -318,21 +318,21 @@ The working agreements for this repository live in [`AGENTS.md`](AGENTS.md): the
 They apply to human contributors and to AI agents alike.
 
 ## Build information
-This is version 0.8.7.
+This is version 0.8.8.
 
 ### Expected dependencies
 Cullendula pins its toolchain to **exact releases**, not to version floors and not to ranges.
 The buildsystem carries the two enforced pins in one place, at the top of `CMakeLists.txt`:
 
 ```cmake
-set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.5.0")
-set(CULLENDULA_EXPECTED_QT_VERSION "6.12.0")
+set(CULLENDULA_EXPECTED_CMAKE_VERSION "4.5.1")
+set(CULLENDULA_EXPECTED_QT_VERSION "6.12.1")
 ```
 
 | Dependency | Exact expected version | How it is enforced |
 | --- | --- | --- |
-| CMake | 4.5.0 | `CMakeLists.txt` aborts with a `FATAL_ERROR` on any other version |
-| Qt | 6.12.0 | `find_package(Qt6 ... EXACT REQUIRED)`, so a different patch release fails to configure |
+| CMake | 4.5.1 | `CMakeLists.txt` aborts with a `FATAL_ERROR` on any other version |
+| Qt | 6.12.1 | `find_package(Qt6 ... EXACT REQUIRED)`, so a different patch release fails to configure |
 | C++ standard | C++23 | `CMAKE_CXX_STANDARD` with `CMAKE_CXX_STANDARD_REQUIRED` |
 | gcovr | 8.8 | installed as `gcovr==8.8` in CI |
 | GCC | 16.2.1 | verified, not enforced |

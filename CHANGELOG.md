@@ -91,3 +91,4 @@ Every commit bumps the patch version and appends one entry here; see [`AGENTS.md
 * v0.8.5 updates the exactly pinned GitHub Actions to install-qt-action 4.5.0, upload-artifact 7.0.2, and download-artifact 8.0.2
 * v0.8.6 fixes the pinned CMake 4.5.0 archive checksums in the CI and release workflows, which still carried the 4.4.3 values and stopped every hosted run
 * v0.8.7 uses a standard algorithm to normalize supported image formats and clears the Cppcheck finding
+* v0.8.8 updates the pinned toolchain to Qt 6.12.1 and CMake 4.5.1

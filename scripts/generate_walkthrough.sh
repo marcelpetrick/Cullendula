@@ -11,14 +11,14 @@ if [[ -z "${DISPLAY:-}" ]]; then
 fi
 
 if [[ -z "${QT_PATHS_COMMAND}" ]]; then
-    echo "qtpaths6 was not found. Put the pinned Qt 6.12.0 bin directory on PATH." >&2
+    echo "qtpaths6 was not found. Put the pinned Qt 6.12.1 bin directory on PATH." >&2
     exit 1
 fi
 
 QT_ROOT="$(${QT_PATHS_COMMAND} --query QT_INSTALL_PREFIX)"
 QT_VERSION="$(${QT_PATHS_COMMAND} --qt-version)"
-if [[ "${QT_VERSION}" != "6.12.0" ]]; then
-    echo "The walkthrough requires Qt 6.12.0, but qtpaths6 reports ${QT_VERSION}." >&2
+if [[ "${QT_VERSION}" != "6.12.1" ]]; then
+    echo "The walkthrough requires Qt 6.12.1, but qtpaths6 reports ${QT_VERSION}." >&2
     exit 1
 fi
 
